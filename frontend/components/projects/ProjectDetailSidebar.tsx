@@ -1,0 +1,134 @@
+'use client';
+
+import Link from 'next/link';
+import { MapPin, MessageCircle } from 'lucide-react';
+import { projectsPageContent } from '@/config/projects';
+import { siteConfig } from '@/config/site';
+import { getWhatsAppUrl } from '@/lib/contact';
+import { formatAmount, formatYear } from '@/lib/format';
+import type { Project } from '@/types';
+
+interface ProjectDetailSidebarProps {
+  project: Project;
+}
+
+export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
+  const { detail } = projectsPageContent;
+  const showAmount = project.showAmount && project.amount;
+  const yearLabel = formatYear(project.year);
+  const whatsappUrl = getWhatsAppUrl(
+    `Bonjour, je souhaite des informations sur le projet « ${project.name} ».`,
+  );
+
+  return (
+    <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+      <div className="border border-[#252A30]/10 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(17,24,32,0.28)] sm:p-6">
+        <h2 className="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-[#252A30]">
+          {detail.technicalSheetTitle}
+        </h2>
+
+        <dl className="mt-5 space-y-4">
+          {project.sector ? (
+            <div>
+              <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+                {detail.sectorLabel}
+              </dt>
+              <dd className="mt-1 text-sm font-medium text-[#252A30]">{project.sector.name}</dd>
+            </div>
+          ) : null}
+
+          <div>
+            <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+              {detail.locationLabel}
+            </dt>
+            <dd className="mt-1 flex items-center gap-2 text-sm font-medium text-[#252A30]">
+              <MapPin className="h-4 w-4 shrink-0 text-[#FF6B1A]" aria-hidden />
+              {project.location}
+            </dd>
+          </div>
+
+          {showAmount ? (
+            <div>
+              <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+                {detail.amountLabel}
+              </dt>
+              <dd className="mt-1 text-sm font-semibold text-[#252A30]">
+                {formatAmount(project.amount!)}
+              </dd>
+            </div>
+          ) : null}
+
+          {yearLabel ? (
+            <div>
+              <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+                {detail.yearLabel}
+              </dt>
+              <dd className="mt-1 text-sm font-medium text-[#252A30]">{yearLabel}</dd>
+            </div>
+          ) : null}
+
+          {project.client ? (
+            <div>
+              <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+                {detail.clientLabel}
+              </dt>
+              <dd className="mt-1 text-sm font-medium text-[#252A30]">{project.client}</dd>
+            </div>
+          ) : null}
+
+          <div>
+            <dt className="text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-[#6B7078]">
+              {detail.statusLabel}
+            </dt>
+            <dd className="mt-2">
+              <span className="inline-flex bg-[#1F8A4C] px-2.5 py-1 text-[0.625rem] font-bold uppercase tracking-[0.12em] text-white">
+                {detail.statusDelivered}
+              </span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-center text-sm italic text-[#6B7078]">{detail.similarProject}</p>
+
+        {whatsappUrl ? (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-focus flex w-full items-center justify-center gap-2 bg-[#25D366] px-4 py-3.5 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#1ebe57] focus-visible:ring-[#25D366]"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            {detail.whatsappLabel}
+          </a>
+        ) : null}
+
+        <Link
+          href="/contact"
+          className="link-focus flex w-full items-center justify-center bg-[#111820] px-4 py-3.5 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#0B1117] focus-visible:ring-[#FF6B1A]"
+        >
+          {detail.contactExpertLabel}
+        </Link>
+      </div>
+
+      <div className="flex aspect-[4/3] flex-col items-center justify-center border border-[#252A30]/10 bg-[#E8E4DC]/80 text-center">
+        <MapPin className="h-8 w-8 text-[#6B7078]/45" aria-hidden />
+        <p className="mt-3 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-[#6B7078]">
+          {detail.mapLabel}
+        </p>
+        <p className="mt-1 px-4 text-xs text-[#6B7078]/80">{project.location}</p>
+        {siteConfig.maps.embedUrl ? (
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location + ', Maroc')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-focus mt-3 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#FF6B1A] hover:underline"
+          >
+            Ouvrir dans Maps
+          </a>
+        ) : null}
+      </div>
+    </aside>
+  );
+}
