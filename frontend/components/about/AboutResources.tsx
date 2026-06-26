@@ -3,55 +3,58 @@
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
-import { AboutContainer, AboutLabel, AboutSection, AboutTitle } from './AboutLayout';
-import { fadeUpView } from './aboutMotion';
+import { cn } from '@/lib/cn';
+import { AboutContainer, AboutSection, AboutTitle } from './AboutLayout';
+import { fadeUpView, staggerItem } from './aboutMotion';
 
-function ResourceBand({
-  title,
-  summary,
-  points,
-  imageSrc,
-  imageAlt,
-  delay,
-  reduced,
-}: {
+type ResourceItem = {
   title: string;
   summary: string;
   points: readonly string[];
   imageSrc: string;
   imageAlt: string;
-  delay: number;
+};
+
+function ResourceCard({
+  item,
+  index,
+  reduced,
+  reversed,
+}: {
+  item: ResourceItem;
+  index: number;
   reduced: boolean;
+  reversed?: boolean;
 }) {
+  const number = String(index + 1).padStart(2, '0');
+
   return (
-    <motion.article {...fadeUpView(delay, reduced)} className="about-v2-resource">
-      <div className="about-v2-resource__visual relative">
+    <motion.article
+      {...staggerItem(index, reduced)}
+      className={cn(
+        'about-v2-resources__card group',
+        reversed && 'about-v2-resources__card--reverse',
+      )}
+    >
+      <div className="about-v2-resources__visual">
         <Image
-          src={imageSrc}
-          alt={imageAlt}
+          src={item.imageSrc}
+          alt={item.imageAlt}
           fill
-          className="object-cover object-center"
-          sizes="(max-width: 1023px) 100vw, 42vw"
+          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          sizes="(max-width: 767px) 100vw, 44vw"
         />
-        <div className="about-v2-resource__visual-shade" aria-hidden />
+        <div className="about-v2-resources__visual-shade" aria-hidden />
       </div>
-      <div className="about-v2-resource__body">
-        <h3 className="enoteb-title text-[clamp(1.375rem,2.4vw,1.75rem)] enoteb-title--on-dark">
-          {title}
-        </h3>
-        <p className="mt-4 max-w-xl text-sm leading-[1.75] text-[rgba(248,245,238,0.58)] sm:text-[0.9375rem]">
-          {summary}
-        </p>
-        <ul className="mt-6 space-y-2.5 sm:mt-7">
-          {points.map((point) => (
-            <li
-              key={point}
-              className="text-sm font-medium text-[rgba(248,245,238,0.8)]"
-            >
-              {point}
-            </li>
-          ))}
-        </ul>
+
+      <div className="about-v2-resources__content">
+        <span className="about-v2-resources__index" aria-hidden>
+          {number}
+        </span>
+
+        <h3 className="about-v2-resources__title">{item.title}</h3>
+        <p className="about-v2-resources__summary">{item.summary}</p>
+        <p className="about-v2-resources__points">{item.points.join(' · ')}</p>
       </div>
     </motion.article>
   );
@@ -61,35 +64,50 @@ export function AboutResources() {
   const { humanCapital, equipment, resources } = aboutContent;
   const reduced = useReducedMotion() ?? false;
 
+  const items: ResourceItem[] = [
+    {
+      title: humanCapital.title,
+      summary: humanCapital.summary,
+      points: humanCapital.points,
+      imageSrc: humanCapital.imageSrc,
+      imageAlt: humanCapital.imageAlt,
+    },
+    {
+      title: equipment.title,
+      summary: equipment.summary,
+      points: equipment.highlights,
+      imageSrc: equipment.imageSrc,
+      imageAlt: equipment.imageAlt,
+    },
+  ];
+
   return (
-    <AboutSection tone="dark" aria-label="Capital humain et moyens matériels">
-      <AboutContainer>
-        <motion.header {...fadeUpView(0, reduced)} className="mb-10 max-w-2xl sm:mb-12 lg:mb-14">
-          <AboutLabel light>{resources.overline}</AboutLabel>
-          <AboutTitle light className="mt-5 text-[clamp(1.625rem,3vw,2.25rem)]">
+    <AboutSection
+      tone="deep"
+      className="about-v2-resources-section"
+      aria-labelledby="about-resources-title"
+    >
+      <AboutContainer compact>
+        <motion.header {...fadeUpView(0, reduced)} className="about-v2-resources__header max-w-2xl">
+          <AboutTitle
+            light
+            id="about-resources-title"
+            className="text-[clamp(1.625rem,3vw,2.25rem)]"
+          >
             {resources.title}
           </AboutTitle>
         </motion.header>
 
-        <div className="about-v2-resources__shell">
-          <ResourceBand
-            title={humanCapital.title}
-            summary={humanCapital.summary}
-            points={humanCapital.points}
-            imageSrc={humanCapital.imageSrc}
-            imageAlt={humanCapital.imageAlt}
-            delay={0.06}
-            reduced={reduced}
-          />
-          <ResourceBand
-            title={equipment.title}
-            summary={equipment.summary}
-            points={equipment.highlights}
-            imageSrc={equipment.imageSrc}
-            imageAlt={equipment.imageAlt}
-            delay={0.12}
-            reduced={reduced}
-          />
+        <div className="about-v2-resources__stack" role="list">
+          {items.map((item, index) => (
+            <ResourceCard
+              key={item.title}
+              item={item}
+              index={index}
+              reduced={reduced}
+              reversed={index % 2 === 1}
+            />
+          ))}
         </div>
       </AboutContainer>
     </AboutSection>

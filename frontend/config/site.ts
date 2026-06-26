@@ -34,8 +34,8 @@ export const siteConfig = {
   },
   contact: {
     email: 'm.elfilali@enoteb.com',
-    /** Ex. +212 6 00 00 00 00 */
-    phone: '',
+    /** Ex. +212 6 61 52 86 08 */
+    phone: '+212 6 61 52 86 08',
     address: 'Laâyoune, Maroc',
     addressLines: ['Hay El Wahda 02, Av. Rass El Khaima, rue 29 n° 37', 'Laâyoune', 'MA'],
   },
@@ -58,8 +58,8 @@ export const siteConfig = {
     facebook: 'https://www.facebook.com/enoteb',
   },
   whatsapp: {
-    /** Format international sans +, ex. 212600000000 */
-    number: '',
+    /** Format international sans +, ex. 212661528608 */
+    number: '212661528608',
     defaultMessage: 'Bonjour, je souhaite obtenir des informations sur vos services ENOTEB.',
   },
   url: 'https://enoteb.ma',

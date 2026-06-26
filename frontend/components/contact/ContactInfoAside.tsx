@@ -72,7 +72,7 @@ export function ContactInfoAside() {
               rel="noopener noreferrer"
               className="contact-info-row__link"
             >
-              {whatsappNumber}
+              {phone || whatsappNumber}
             </a>
           ) : (
             <span className="contact-info-row__placeholder">{info.whatsappPlaceholder}</span>

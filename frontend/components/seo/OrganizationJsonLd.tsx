@@ -15,6 +15,7 @@ export function OrganizationJsonLd() {
     logo: absoluteUrl(siteConfig.seo.logoPath),
     image: absoluteUrl('/opengraph-image'),
     email: siteConfig.contact.email,
+    telephone: siteConfig.contact.phone.replace(/\s/g, ''),
     address: {
       '@type': 'PostalAddress',
       streetAddress: siteConfig.contact.addressLines[0],
