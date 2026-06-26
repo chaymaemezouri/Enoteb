@@ -1,0 +1,10 @@
+export declare const KEBAB_SLUG_REGEX: RegExp;
+export declare const KEBAB_SLUG_MESSAGE = "Le slug doit \u00EAtre en kebab-case (lettres minuscules, chiffres et tirets)";
+export declare const PROJECT_YEAR_MIN = 1990;
+export declare const PROJECT_YEAR_MAX = 2030;
+export declare const UPLOAD_PUBLIC_PREFIX = "/uploads";
+export declare const MAX_IMAGE_SIZE_BYTES: number;
+export declare const THUMBNAIL_FILENAME_SUFFIX = "-thumb";
+export declare const ALLOWED_IMAGE_MIMES: readonly ["image/jpeg", "image/png", "image/webp"];
+export type AllowedImageMime = (typeof ALLOWED_IMAGE_MIMES)[number];
+export declare const IMAGE_MIME_EXTENSIONS: Record<AllowedImageMime, string>;

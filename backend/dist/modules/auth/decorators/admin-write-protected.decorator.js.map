@@ -1,0 +1,1 @@
+{"version":3,"file":"admin-write-protected.decorator.js","sourceRoot":"","sources":["../../../../src/modules/auth/decorators/admin-write-protected.decorator.ts"],"names":[],"mappings":";;AAOA,kDAEC;AATD,2CAA4D;AAC5D,6DAAwD;AAMxD,SAAgB,mBAAmB;IACjC,OAAO,IAAA,wBAAe,EAAC,IAAA,kBAAS,EAAC,6BAAY,CAAC,CAAC,CAAC;AAClD,CAAC"}
