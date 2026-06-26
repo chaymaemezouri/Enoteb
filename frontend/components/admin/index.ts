@@ -1,6 +1,11 @@
 export { AdminAuthGate } from './AdminAuthGate';
 export { AdminShell } from './AdminShell';
+export { AdminIconButton } from './AdminIconButton';
+export { AdminPageHeader } from './AdminPageHeader';
+export { AdminPagination } from './AdminPagination';
+export { AdminToastProvider, useAdminToast } from './AdminToast';
 export { ConfirmModal } from './ConfirmModal';
 export { GalleryPhotosField } from './GalleryPhotosField';
 export { ImageUploadField } from './ImageUploadField';
 export { ProjectForm } from './ProjectForm';
+export { ProfileAvatarField } from './ProfileAvatarField';

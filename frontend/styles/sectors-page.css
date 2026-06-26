@@ -8,43 +8,28 @@
   --sectors-orange: #ff6a1a;
 }
 
-/* ─── Hero compact (sable, distinct de Qui sommes-nous) ─── */
+/* ─── Hero compact ─── */
 
-.sectors-page-hero__aside {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-left: 1rem;
-  border-left: 2px solid rgb(255 106 26 / 0.55);
+.sectors-page-hero__inner {
+  max-width: 40rem;
 }
 
-.sectors-page-hero__count {
-  font-family: var(--font-fraunces), Georgia, 'Times New Roman', serif;
-  font-size: clamp(3rem, 6vw, 4.5rem);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--sectors-ink);
+.sectors-page-hero__title {
+  margin-top: 1.25rem;
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
 }
 
-.sectors-page-hero__count-label {
-  margin-top: 0.375rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--sectors-muted);
+.sectors-page-hero__lead {
+  margin-top: 1.25rem;
+  max-width: 34rem;
 }
 
-.sectors-page-hero__rule {
-  margin-top: 2rem;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgb(255 106 26 / 0.65) 0%,
-    rgb(24 33 43 / 0.12) 42%,
-    transparent 100%
-  );
+@media (min-width: 640px) {
+  .sectors-page-hero__lead {
+    margin-top: 1.5rem;
+  }
 }
 
 /* ─── Grille secteurs ─── */

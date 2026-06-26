@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
 import {
-  AboutAccentMark,
   AboutContainer,
   AboutLabel,
   AboutLead,
@@ -51,7 +50,6 @@ export function AboutFoundations() {
                   role="listitem"
                   className="about-v2-values__card"
                 >
-                  <AboutAccentMark />
                   <h3 className="about-v2-values__title">{value.title}</h3>
                   <p className="about-v2-values__text">{value.description}</p>
                 </motion.article>

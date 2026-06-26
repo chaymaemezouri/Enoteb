@@ -9,13 +9,33 @@ import { fadeUpView } from './homeMotion';
 
 const TRACK_REPEATS = 2;
 
-function PartnerLogoSlot({ name, logo }: { name: string; logo: string }) {
+function PartnerLogoSlot({
+  name,
+  logo,
+  compact,
+}: {
+  name: string;
+  logo: string;
+  compact?: boolean;
+}) {
   const colorLogo = logo.replace('/partenaires/mono/', '/partenaires/');
   const [colorAvailable, setColorAvailable] = useState(colorLogo !== logo);
 
   return (
-    <div className="partner-logo-slot mx-8 flex h-11 shrink-0 items-center justify-center sm:mx-10 sm:h-12 md:mx-12 md:h-14 lg:mx-14 lg:h-[3.75rem]">
-      <div className="relative flex h-full w-[9rem] items-center justify-center sm:w-[11rem] md:w-[12.5rem] lg:w-[14rem]">
+    <div
+      className={cn(
+        'partner-logo-slot flex h-11 shrink-0 items-center justify-center sm:h-12 md:h-14 lg:h-[3.75rem]',
+        compact ? 'mx-2 sm:mx-2.5 md:mx-3' : 'mx-5 sm:mx-6 md:mx-8 lg:mx-10',
+      )}
+    >
+      <div
+        className={cn(
+          'relative flex h-full items-center justify-center',
+          compact
+            ? 'w-[4.5rem] sm:w-[5.25rem] md:w-[6rem] lg:w-[6.75rem]'
+            : 'w-[7rem] sm:w-[8rem] md:w-[9rem] lg:w-[10rem]',
+        )}
+      >
         <Image
           src={logo}
           alt={name}
@@ -46,10 +66,12 @@ function PartnerTrack({
   items,
   trackId,
   ariaHidden,
+  compact,
 }: {
   items: typeof homeContent.partners.items;
   trackId: string;
   ariaHidden?: boolean;
+  compact?: boolean;
 }) {
   const track = Array.from({ length: TRACK_REPEATS }, () => items).flat();
 
@@ -60,21 +82,22 @@ function PartnerTrack({
           key={`${trackId}-${partner.name}-${index}`}
           name={partner.name}
           logo={partner.logo}
+          compact={compact}
         />
       ))}
     </div>
   );
 }
 
-function PartnersMarquee({ reduced }: { reduced: boolean }) {
+function PartnersMarquee({ reduced, embedded }: { reduced: boolean; embedded?: boolean }) {
   const { partners } = homeContent;
 
   if (reduced) {
     return (
-      <ul className="home-shell flex flex-wrap justify-center gap-x-7 gap-y-4">
+      <ul className="home-shell flex flex-wrap justify-center gap-x-5 gap-y-4 sm:gap-x-6">
         {partners.items.map((partner) => (
           <li key={partner.name} className="list-none">
-            <PartnerLogoSlot name={partner.name} logo={partner.logo} />
+            <PartnerLogoSlot name={partner.name} logo={partner.logo} compact />
           </li>
         ))}
       </ul>
@@ -84,7 +107,10 @@ function PartnersMarquee({ reduced }: { reduced: boolean }) {
   return (
     <motion.div
       {...fadeUpView(0, reduced)}
-      className="partners-marquee-bleed relative overflow-hidden"
+      className={cn(
+        'partners-marquee-bleed relative overflow-hidden',
+        embedded && 'partners-marquee-bleed--embedded',
+      )}
     >
       <div
         className="partners-marquee-bleed__fade partners-marquee-bleed__fade--left pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 lg:w-32"
@@ -98,8 +124,8 @@ function PartnersMarquee({ reduced }: { reduced: boolean }) {
         className="flex w-max animate-partners-marquee"
         style={{ '--partners-marquee-duration': '140s' } as React.CSSProperties}
       >
-        <PartnerTrack items={partners.items} trackId="a" />
-        <PartnerTrack items={partners.items} trackId="b" ariaHidden />
+        <PartnerTrack items={partners.items} trackId="a" compact />
+        <PartnerTrack items={partners.items} trackId="b" ariaHidden compact />
       </div>
     </motion.div>
   );
@@ -114,17 +140,19 @@ function PartnersEditorialSection({ embedded }: { embedded?: boolean }) {
       className={cn(
         'partners-section partners-section--editorial relative overflow-x-hidden',
         embedded
-          ? 'partners-section--embedded py-8 sm:py-10'
-          : 'partners-section--below-hero py-9 sm:py-10 md:py-12',
+          ? 'partners-section--embedded py-3 sm:py-4'
+          : 'partners-section--below-hero pt-12 pb-8 sm:pt-14 sm:pb-9 md:pt-16 md:pb-10',
       )}
       data-header-theme="dark"
       aria-label="Logos partenaires"
     >
-      <div
-        className="partners-section--editorial__bottom-fade pointer-events-none absolute inset-x-0 bottom-0 z-[5]"
-        aria-hidden
-      />
-      <PartnersMarquee reduced={reduced} />
+      {!embedded ? (
+        <div
+          className="partners-section--editorial__bottom-fade pointer-events-none absolute inset-x-0 bottom-0 z-[5]"
+          aria-hidden
+        />
+      ) : null}
+      <PartnersMarquee reduced={reduced} embedded={embedded} />
     </Tag>
   );
 }
@@ -165,8 +193,8 @@ function PartnersStripSection() {
           style={{ '--partners-marquee-duration': '180s' } as React.CSSProperties}
           aria-label="Logos partenaires"
         >
-          <PartnerTrack items={partners.items} trackId="strip-a" />
-          <PartnerTrack items={partners.items} trackId="strip-b" ariaHidden />
+          <PartnerTrack items={partners.items} trackId="strip-a" compact />
+          <PartnerTrack items={partners.items} trackId="strip-b" ariaHidden compact />
         </div>
       </div>
     </section>

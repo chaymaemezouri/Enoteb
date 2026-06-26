@@ -1,34 +1,53 @@
 import type { PaginatedResponse, ProjectSummary, Sector } from '@/types';
+import { ProjectsHero } from './ProjectsHero';
 import { ProjectsListingBody } from './ProjectsListingBody';
-import { ProjectsListingHeader } from './ProjectsListingHeader';
+import { ProjectsFiltersSidebar } from './ProjectsSectorFilter';
+import { ProjectsCatalogToolbar } from './ProjectsCatalogToolbar';
 import { PROJECTS_SHELL } from './projectsMotion';
 
 interface ProjectsListingProps {
   sectors: Sector[];
   projects: PaginatedResponse<ProjectSummary>;
   activeSector?: Sector;
+  searchQuery?: string;
 }
 
-export function ProjectsListing({ sectors, projects, activeSector }: ProjectsListingProps) {
+export function ProjectsListing({
+  sectors,
+  projects,
+  activeSector,
+  searchQuery,
+}: ProjectsListingProps) {
   return (
-    <section
-      className="projects-listing relative overflow-x-hidden py-20 sm:py-20 md:py-24 lg:py-28"
-      style={{ backgroundColor: '#F6F2EA' }}
-      data-header-theme="light"
-    >
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(24,33,43,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(24,33,43,0.022)_1px,transparent_1px)] bg-[size:72px_72px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#FF6A1A]/10 to-transparent"
-        aria-hidden
-      />
+    <section className="projects-catalog" data-header-theme="light">
+      <div className="projects-catalog__sand" aria-hidden />
+      <div className="projects-catalog__grid" aria-hidden />
 
-      <div className={`relative ${PROJECTS_SHELL}`}>
-        <ProjectsListingHeader activeSector={activeSector} total={projects.meta.total} />
+      <div className={`relative ${PROJECTS_SHELL} projects-catalog__inner`}>
+        <ProjectsHero sector={activeSector} />
 
-        <ProjectsListingBody sectors={sectors} projects={projects} activeSector={activeSector} />
+        <ProjectsCatalogToolbar
+          sectors={sectors}
+          activeSector={activeSector}
+          searchQuery={searchQuery}
+          total={projects.meta.total}
+        />
+
+        <div className="projects-listing__layout">
+          <ProjectsFiltersSidebar
+            sectors={sectors}
+            activeSector={activeSector}
+            searchQuery={searchQuery}
+            total={projects.meta.total}
+            className="projects-listing__sidebar hidden lg:block"
+          />
+
+          <ProjectsListingBody
+            projects={projects}
+            activeSector={activeSector}
+            searchQuery={searchQuery}
+          />
+        </div>
       </div>
     </section>
   );

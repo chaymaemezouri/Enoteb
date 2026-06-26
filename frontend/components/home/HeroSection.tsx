@@ -123,7 +123,7 @@ export function HeroSection() {
       />
       <HeroOverlays />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-5 pb-4 pt-20 sm:px-8 sm:pb-5 sm:pt-24 lg:px-10">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-5 pb-3 pt-20 sm:px-8 sm:pb-4 sm:pt-24 lg:px-10">
         <div className="flex flex-1 flex-col items-center justify-center pb-6 text-center sm:pb-8">
           <motion.p {...fadeUp(0, reduced, 0.85)} className="section-label">
             ENOTEB
@@ -149,7 +149,7 @@ export function HeroSection() {
           >
             <Link
               href="/projets"
-              className="btn-orange-glass link-focus group inline-flex w-fit items-center justify-center gap-2 rounded-none px-5 py-2.5 text-sm font-medium focus-visible:ring-[#ff6a1a]"
+              className="btn-orange-solid link-focus group inline-flex w-fit items-center justify-center gap-2 rounded-none px-5 py-2.5 text-sm font-medium text-white focus-visible:ring-[#e85f14]"
             >
               {hero.primaryCta}
               <ArrowUpRight
@@ -166,7 +166,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative z-20 mt-auto shrink-0">
+        <div className="relative z-20 mt-auto w-full shrink-0 pb-1 sm:pb-2">
           <HeroStatsBar reduced={reduced} />
         </div>
       </div>

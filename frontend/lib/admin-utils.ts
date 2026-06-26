@@ -17,6 +17,10 @@ export function formatAdminError(error: unknown): string {
       return 'Email ou mot de passe incorrect.';
     }
 
+    if (message.includes('déjà utilisée') || message.includes('already')) {
+      return 'Cette adresse email est déjà utilisée.';
+    }
+
     if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
       return 'Connexion au serveur impossible. Vérifiez votre réseau.';
     }
@@ -32,6 +36,22 @@ export function formatAdminDate(value: string): string {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(value));
+}
+
+export function resolveAdminAvatarUrl(url: string | null | undefined): string | null {
+  if (!url) {
+    return null;
+  }
+
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  if (url.startsWith('/uploads/')) {
+    return `${getApiUrl()}${url}`;
+  }
+
+  return url;
 }
 
 export async function uploadImage(file: File, accessToken: string): Promise<string> {

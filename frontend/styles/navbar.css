@@ -5,6 +5,7 @@
   --navbar-ink-muted: rgb(24 33 43 / 0.55);
   --navbar-cream: #f6f2ea;
   --navbar-dark: #071018;
+  --navbar-navy: #18212b;
   --navbar-orange: #ff6a1a;
   position: fixed;
   inset-inline: 0;
@@ -25,15 +26,71 @@
   --navbar-ink-muted: rgb(248 245 238 / 0.68);
 }
 
+.site-navbar--scrolled {
+  padding: 0.75rem 1rem 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .site-navbar--scrolled {
+    padding: 0.875rem 2rem 1rem;
+  }
+}
+
 .site-navbar__backdrop {
   position: absolute;
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition:
+    opacity 0.35s ease,
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
 }
 
-.site-navbar--scrolled.site-navbar--dark .site-navbar__backdrop {
+/* Barre au scroll — bleu marine glassmorphism */
+.site-navbar--scrolled.site-navbar--solid .site-navbar__backdrop {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  backdrop-filter: blur(20px) saturate(145%);
+}
+
+.site-navbar--dark.site-navbar--solid .site-navbar__backdrop {
+  background: linear-gradient(
+    180deg,
+    rgb(24 33 43 / 0.88) 0%,
+    rgb(24 33 43 / 0.8) 100%
+  );
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow:
+    0 10px 36px -14px rgb(7 16 24 / 0.42),
+    inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+.site-navbar--scrolled.site-navbar--dark.site-navbar--solid .site-navbar__backdrop {
+  background: linear-gradient(
+    180deg,
+    rgb(24 33 43 / 0.84) 0%,
+    rgb(24 33 43 / 0.76) 100%
+  );
+}
+
+.site-navbar--scrolled.site-navbar--light.site-navbar--solid .site-navbar__backdrop {
+  background: linear-gradient(
+    180deg,
+    rgb(246 242 234 / 0.9) 0%,
+    rgb(246 242 234 / 0.82) 100%
+  );
+  border-bottom: 1px solid rgb(24 33 43 / 0.08);
+  box-shadow:
+    0 8px 28px -12px rgb(24 33 43 / 0.12),
+    inset 0 1px 0 rgb(255 255 255 / 0.65);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+/* Ancien dégradé — conservé uniquement si pas en mode solid */
+.site-navbar--scrolled:not(.site-navbar--solid).site-navbar--dark .site-navbar__backdrop {
   opacity: 1;
   background: linear-gradient(
     180deg,
@@ -43,7 +100,7 @@
   );
 }
 
-.site-navbar--scrolled.site-navbar--light .site-navbar__backdrop {
+.site-navbar--scrolled:not(.site-navbar--solid).site-navbar--light .site-navbar__backdrop {
   opacity: 1;
   background: linear-gradient(
     180deg,
@@ -61,6 +118,10 @@
   width: 100%;
   align-items: center;
   gap: 1rem;
+}
+
+.site-navbar__inner--bar {
+  gap: 0.625rem;
 }
 
 .site-navbar__brand {
@@ -143,6 +204,68 @@
     inset 0 1px 0 rgb(255 255 255 / 0.85);
 }
 
+/* Barre solide au scroll */
+.navbar-shell--solid {
+  gap: clamp(0.875rem, 2vw, 1.5rem);
+  padding: 0;
+}
+
+.navbar-shell--solid-dark .nav-cta.btn-orange-solid {
+  border-color: #e85f14;
+  color: #fff;
+}
+
+.navbar-shell--solid-light .nav-cta--light {
+  background: rgb(255 106 26 / 0.14);
+}
+
+/* Nav horizontale mobile au scroll */
+.site-navbar--mobile-bar .site-navbar__actions {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-navbar--mobile-bar .site-navbar__brand-logo {
+  height: 2rem;
+  max-width: 6.75rem;
+  filter: none;
+}
+
+.navbar-shell--mobile-scroll {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+  overflow-x: auto;
+  gap: 0.875rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 0.375rem,
+    #000 calc(100% - 0.375rem),
+    transparent 100%
+  );
+}
+
+.navbar-shell--mobile-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.navbar-shell--mobile-scroll .nav-link {
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0;
+  flex-shrink: 0;
+}
+
+.navbar-shell--mobile-scroll .nav-cta {
+  min-height: 1.875rem;
+  padding: 0 0.75rem;
+  font-size: 0.5625rem;
+  flex-shrink: 0;
+}
+
 /* Liens */
 .site-navbar .nav-link {
   position: relative;
@@ -177,7 +300,7 @@
   box-shadow: 0 0 12px rgb(255 106 26 / 0.55);
 }
 
-/* CTA Contact — carré, aligné btn-orange-glass du site */
+/* CTA Contact — carré, aligné btn-orange-solid du site */
 .nav-cta {
   min-height: 2.25rem;
   padding: 0 1rem;

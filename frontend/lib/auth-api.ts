@@ -52,3 +52,57 @@ export async function logoutRequest(): Promise<void> {
     credentials: 'include',
   });
 }
+
+export async function meRequest(accessToken: string): Promise<import('@/types/admin').AdminProfile> {
+  const response = await fetch(`${getApiUrl()}/auth/me`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    await parseAuthError(response);
+  }
+
+  return response.json() as Promise<import('@/types/admin').AdminProfile>;
+}
+
+export async function changePasswordRequest(
+  accessToken: string,
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  const response = await fetch(`${getApiUrl()}/auth/password`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    credentials: 'include',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+  if (!response.ok) {
+    await parseAuthError(response);
+  }
+}
+
+export async function updateProfileRequest(
+  accessToken: string,
+  payload: { name: string; email: string; avatarUrl?: string },
+): Promise<import('@/types/admin').AdminProfile> {
+  const response = await fetch(`${getApiUrl()}/auth/me`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    await parseAuthError(response);
+  }
+
+  return response.json() as Promise<import('@/types/admin').AdminProfile>;
+}

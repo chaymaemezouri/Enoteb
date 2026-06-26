@@ -106,10 +106,7 @@ export function WhyUsSection() {
         <div className="why-us-section__grid">
           <div className="why-us-section__copy min-w-0">
             <motion.div {...fadeUpView(0, reduced)}>
-              <div className="flex items-center gap-2.5">
-                <span className="section-label-line" aria-hidden />
-                <p className="section-label">{whyUs.overline}</p>
-              </div>
+              <p className="section-label">{whyUs.overline}</p>
             </motion.div>
 
             <motion.h2

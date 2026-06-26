@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Label } from '@/components/ui/Label';
 import { uploadImage } from '@/lib/admin-utils';
 import { getApiUrl } from '@/lib/api';
 import { cn } from '@/lib/cn';
@@ -51,7 +49,7 @@ export function ImageUploadField({
       onChange(url);
     } catch {
       setUploadError(
-        'Impossible d’envoyer cette image. Choisissez un fichier JPG ou PNG (5 Mo max).',
+        'Impossible d\u2019envoyer cette image. Choisissez un fichier JPG, PNG ou WebP (20 Mo max).',
       );
     } finally {
       setIsUploading(false);
@@ -62,15 +60,12 @@ export function ImageUploadField({
 
   return (
     <div>
-      <Label required={required}>{label}</Label>
-      <div
-        className={cn(
-          'rounded-card border border-dashed border-neutral-300 bg-white p-4',
-          displayError && 'border-red-500',
-        )}
-      >
+      <span className={cn('admin-field__label', required && 'admin-field__label--required')}>
+        {label}
+      </span>
+      <div className={cn('admin-upload', displayError && 'admin-upload--error')}>
         {value ? (
-          <div className="relative mb-4 aspect-video w-full max-w-md overflow-hidden rounded-button bg-neutral-100">
+          <div className="admin-upload__preview">
             <Image
               src={resolveImageSrc(value)}
               alt="Aperçu"
@@ -89,19 +84,18 @@ export function ImageUploadField({
           onChange={(event) => void handleFileChange(event.target.files?.[0])}
         />
 
-        <Button
+        <button
           type="button"
-          variant="secondary"
-          size="lg"
+          className="admin-btn admin-btn--secondary admin-btn--sm"
           disabled={isUploading}
           onClick={() => inputRef.current?.click()}
         >
-          <Upload className="h-5 w-5" aria-hidden />
-          {isUploading ? 'Envoi en cours…' : value ? 'Changer l’image' : 'Choisir une image'}
-        </Button>
+          <Upload className="h-4 w-4" aria-hidden />
+          {isUploading ? 'Envoi en cours…' : value ? 'Changer l\u2019image' : 'Choisir une image'}
+        </button>
       </div>
 
-      {displayError ? <p className="mt-1.5 text-body-sm text-red-600">{displayError}</p> : null}
+      {displayError ? <p className="admin-field__error">{displayError}</p> : null}
     </div>
   );
 }

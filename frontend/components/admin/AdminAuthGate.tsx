@@ -16,8 +16,8 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-100">
-        <p className="text-body text-neutral-700">Chargement de votre session…</p>
+      <div className="admin-app__loading">
+        <p>Chargement de votre session…</p>
       </div>
     );
   }

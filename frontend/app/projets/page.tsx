@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ProjectsApproach, ProjectsHero, ProjectsListing } from '@/components/projects';
+import { ProjectsListing } from '@/components/projects';
 import { CtaFooterSection } from '@/components/home';
 import { BreadcrumbJsonLd } from '@/components/seo';
 import { projectsPageContent } from '@/config/projects';
@@ -12,22 +12,30 @@ export const revalidate = 3600;
 const PROJECTS_PER_PAGE = 8;
 
 interface ProjectsPageProps {
-  searchParams: { sector?: string; page?: string };
+  searchParams: { sector?: string; page?: string; q?: string };
 }
 
 async function getProjectsPageData(
   sector?: string,
   page = 1,
+  q?: string,
 ): Promise<{
   sectors: Sector[];
   projects: PaginatedResponse<ProjectSummary>;
 }> {
+  const trimmedQuery = q?.trim() || undefined;
+
   const [sectors, projects] = await Promise.all([
     api.getSectors({ revalidate: 3600 }).catch(() => [] as Sector[]),
-    api.getProjects({ sector, page, limit: PROJECTS_PER_PAGE }, { revalidate: 3600 }).catch(() => ({
-      data: [],
-      meta: { total: 0, page: 1, limit: PROJECTS_PER_PAGE, totalPages: 0 },
-    })),
+    api
+      .getProjects(
+        { sector, page, limit: PROJECTS_PER_PAGE, q: trimmedQuery },
+        { revalidate: 3600 },
+      )
+      .catch(() => ({
+        data: [],
+        meta: { total: 0, page: 1, limit: PROJECTS_PER_PAGE, totalPages: 0 },
+      })),
   ]);
 
   return { sectors, projects };
@@ -73,13 +81,14 @@ export async function generateMetadata({ searchParams }: ProjectsPageProps): Pro
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
   const sectorSlug = searchParams.sector;
+  const searchQuery = searchParams.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(searchParams.page ?? '1', 10) || 1);
 
-  const { sectors, projects } = await getProjectsPageData(sectorSlug, page);
+  const { sectors, projects } = await getProjectsPageData(sectorSlug, page, searchQuery);
   const activeSector = sectors.find((item) => item.slug === sectorSlug);
 
   return (
-    <>
+    <div className="projects-page">
       <BreadcrumbJsonLd
         items={[
           { name: 'Accueil', path: '/' },
@@ -89,10 +98,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             : []),
         ]}
       />
-      <ProjectsHero sector={activeSector} />
-      <ProjectsListing sectors={sectors} projects={projects} activeSector={activeSector} />
-      <ProjectsApproach />
+      <ProjectsListing
+        sectors={sectors}
+        projects={projects}
+        activeSector={activeSector}
+        searchQuery={searchQuery}
+      />
       <CtaFooterSection />
-    </>
+    </div>
   );
 }

@@ -2,14 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
-import {
-  AboutAccentMark,
-  AboutContainer,
-  AboutLabel,
-  AboutLead,
-  AboutSection,
-  AboutTitle,
-} from './AboutLayout';
+import { AboutContainer, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
 import { fadeUpView, staggerItem } from './aboutMotion';
 
 export function AboutPillars() {
@@ -19,40 +12,36 @@ export function AboutPillars() {
   return (
     <AboutSection tone="sandSoft" aria-labelledby="about-pillars-title">
       <AboutContainer>
-        <div className="about-v2-pillars">
-          <motion.aside
-            {...fadeUpView(0, reduced)}
-            className="about-v2-pillars__aside"
+        <motion.header
+          {...fadeUpView(0, reduced)}
+          className="about-v2-pillars__header"
+        >
+          <AboutTitle
+            id="about-pillars-title"
+            className="about-v2-pillars__title text-[clamp(1.75rem,3.2vw,2.5rem)] leading-[1.12]"
           >
-            <AboutLabel>
-              <span id="about-pillars-title">{pillars.overline}</span>
-            </AboutLabel>
-            <AboutTitle className="mt-5 text-[clamp(1.625rem,3vw,2.25rem)] leading-[1.14]">
-              {pillars.title}
-            </AboutTitle>
-            <AboutLead className="mt-5">{pillars.intro}</AboutLead>
-          </motion.aside>
+            {pillars.title}
+          </AboutTitle>
+          <AboutLead className="about-v2-pillars__intro">{pillars.intro}</AboutLead>
+        </motion.header>
 
-          <div className="about-v2-shell--light about-v2-pillars__list-shell">
-            <div className="about-v2-pillars__list" role="list">
-              {pillars.items.map((item, index) => (
-                <motion.article
-                  key={item.title}
-                  {...staggerItem(index, reduced)}
-                  role="listitem"
-                  className="about-v2-pillars__item group"
-                >
-                  <AboutAccentMark />
-                  <div className="min-w-0">
-                    <h3 className="about-v2-pillars__item-title">{item.title}</h3>
-                    <p className="about-v2-pillars__item-text">{item.description}</p>
-                  </div>
-                  <span className="about-v2-pillars__item-rule" aria-hidden />
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </div>
+        <ul className="about-v2-pillars__grid" role="list">
+          {pillars.items.map((item, index) => (
+            <motion.li
+              key={item.title}
+              {...staggerItem(index, reduced)}
+              role="listitem"
+              className="about-v2-pillars__card"
+            >
+              <span className="about-v2-pillars__index" aria-hidden>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span className="about-v2-accent-mark about-v2-pillars__mark" aria-hidden />
+              <h3 className="about-v2-pillars__card-title">{item.title}</h3>
+              <p className="about-v2-pillars__card-text">{item.description}</p>
+            </motion.li>
+          ))}
+        </ul>
       </AboutContainer>
     </AboutSection>
   );

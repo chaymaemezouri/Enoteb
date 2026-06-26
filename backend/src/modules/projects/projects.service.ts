@@ -24,6 +24,7 @@ type SerializedProject = {
   sectorId: string;
   client: string | null;
   location: string;
+  address: string | null;
   amount: string | null;
   showAmount: boolean;
   year: number | null;
@@ -60,6 +61,15 @@ export class ProjectsService {
     const where: Prisma.ProjectWhereInput = {
       isPublished: true,
       ...(query.sector && { sector: { slug: query.sector } }),
+      ...(query.q?.trim() && {
+        OR: [
+          { name: { contains: query.q.trim() } },
+          { location: { contains: query.q.trim() } },
+          { address: { contains: query.q.trim() } },
+          { client: { contains: query.q.trim() } },
+          { description: { contains: query.q.trim() } },
+        ],
+      }),
     };
 
     const [projects, total] = await Promise.all([
@@ -114,6 +124,7 @@ export class ProjectsService {
         sectorId: dto.sectorId,
         client: dto.client,
         location: dto.location,
+        address: dto.address,
         amount: dto.amount,
         showAmount: dto.showAmount ?? false,
         year: dto.year,
@@ -152,7 +163,20 @@ export class ProjectsService {
 
     const project = await this.prisma.project.update({
       where: { id },
-      data: dto,
+      data: {
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.slug !== undefined && { slug: dto.slug }),
+        ...(dto.sectorId !== undefined && { sectorId: dto.sectorId }),
+        ...(dto.client !== undefined && { client: dto.client }),
+        ...(dto.location !== undefined && { location: dto.location }),
+        ...(dto.address !== undefined && { address: dto.address }),
+        ...(dto.amount !== undefined && { amount: dto.amount }),
+        ...(dto.showAmount !== undefined && { showAmount: dto.showAmount }),
+        ...(dto.year !== undefined && { year: dto.year }),
+        ...(dto.description !== undefined && { description: dto.description }),
+        ...(dto.mainImageUrl !== undefined && { mainImageUrl: dto.mainImageUrl }),
+        ...(dto.isPublished !== undefined && { isPublished: dto.isPublished }),
+      },
       include: {
         sector: {
           select: { id: true, name: true, slug: true },
@@ -270,6 +294,7 @@ export class ProjectsService {
     sectorId: string;
     client: string | null;
     location: string;
+    address: string | null;
     amount: Prisma.Decimal | null;
     showAmount: boolean;
     year: number | null;
@@ -293,6 +318,7 @@ export class ProjectsService {
       sectorId: project.sectorId,
       client: project.client,
       location: project.location,
+      address: project.address,
       amount:
         project.showAmount && project.amount !== null
           ? project.amount.toString()

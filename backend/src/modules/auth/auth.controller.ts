@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
+  Patch,
   Post,
   Req,
   Res,
@@ -18,6 +20,11 @@ import {
   REFRESH_TOKEN_COOKIE,
 } from './constants';
 import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentAdmin } from './decorators/current-admin.decorator';
+import { AuthenticatedAdmin } from './interfaces/jwt-payload.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -76,6 +83,40 @@ export class AuthController {
 
     await this.authService.logout(refreshToken);
     this.clearRefreshTokenCookie(res);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async me(@CurrentAdmin() admin: AuthenticatedAdmin) {
+    return this.authService.getProfile(admin.id);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @CurrentAdmin() admin: AuthenticatedAdmin,
+    @Body() body: UpdateProfileDto,
+  ) {
+    return this.authService.updateProfile(
+      admin.id,
+      body.name,
+      body.email,
+      body.avatarUrl,
+    );
+  }
+
+  @Patch('password')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @CurrentAdmin() admin: AuthenticatedAdmin,
+    @Body() body: ChangePasswordDto,
+  ) {
+    await this.authService.changePassword(
+      admin.id,
+      body.currentPassword,
+      body.newPassword,
+    );
   }
 
   private setRefreshTokenCookie(res: Response, refreshToken: string): void {

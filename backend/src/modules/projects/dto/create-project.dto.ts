@@ -35,6 +35,10 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsString()
+  address?: string | null;
+
+  @IsOptional()
+  @IsString()
   client?: string;
 
   @IsOptional()

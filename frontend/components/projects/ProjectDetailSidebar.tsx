@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { MapPin, MessageCircle } from 'lucide-react';
 import { projectsPageContent } from '@/config/projects';
-import { siteConfig } from '@/config/site';
 import { getWhatsAppUrl } from '@/lib/contact';
 import { formatAmount, formatYear } from '@/lib/format';
 import type { Project } from '@/types';
@@ -21,8 +20,8 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
   );
 
   return (
-    <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
-      <div className="border border-[#252A30]/10 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(17,24,32,0.28)] sm:p-6">
+    <aside className="project-detail-sidebar">
+      <div className="project-detail-sidebar__sheet">
         <h2 className="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-[#252A30]">
           {detail.technicalSheetTitle}
         </h2>
@@ -89,8 +88,8 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
         </dl>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-center text-sm italic text-[#6B7078]">{detail.similarProject}</p>
+      <div className="project-detail-sidebar__actions">
+        <p>{detail.similarProject}</p>
 
         {whatsappUrl ? (
           <a
@@ -112,7 +111,7 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
         </Link>
       </div>
 
-      <div className="flex aspect-[4/3] flex-col items-center justify-center border border-[#252A30]/10 bg-[#E8E4DC]/80 text-center">
+      <div className="project-detail-sidebar__map">
         <MapPin className="h-8 w-8 text-[#6B7078]/45" aria-hidden />
         <p className="mt-3 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-[#6B7078]">
           {detail.mapLabel}

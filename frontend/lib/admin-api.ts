@@ -1,6 +1,9 @@
 import { ApiClientError, getApiUrl } from './api';
 import type {
+  AdminContactRequest,
+  AdminContactRequestList,
   AdminDashboard,
+  SectorCreatePayload,
   AdminProjectDetail,
   AdminProjectListItem,
   ProjectWritePayload,
@@ -107,4 +110,26 @@ export const adminApi = {
       method: 'PATCH',
       body: JSON.stringify(payload),
     }),
+
+  createSector: (payload: SectorCreatePayload) =>
+    authFetch<Sector>('/sectors', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteSector: (id: string) => authFetch<void>(`/sectors/${id}`, { method: 'DELETE' }),
+
+  listContactRequests: (filter: 'all' | 'unread' = 'all') =>
+    authFetch<AdminContactRequestList>(`/admin/contact-requests?filter=${filter}`),
+
+  getContactRequest: (id: string) =>
+    authFetch<AdminContactRequest>(`/admin/contact-requests/${id}`),
+
+  markContactRequestRead: (id: string, isRead: boolean) =>
+    authFetch<AdminContactRequest>(`/admin/contact-requests/${id}/read?value=${isRead}`, {
+      method: 'PATCH',
+    }),
+
+  deleteContactRequest: (id: string) =>
+    authFetch<void>(`/admin/contact-requests/${id}`, { method: 'DELETE' }),
 };

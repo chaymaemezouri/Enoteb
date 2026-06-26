@@ -7,7 +7,9 @@ export const PROJECT_YEAR_MIN = 1990;
 export const PROJECT_YEAR_MAX = 2030;
 
 export const UPLOAD_PUBLIC_PREFIX = '/uploads';
-export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+export const MAX_IMAGE_SIZE_BYTES = Number(
+  process.env.MAX_FILE_SIZE ?? 20 * 1024 * 1024,
+);
 export const THUMBNAIL_FILENAME_SUFFIX = '-thumb';
 
 export const ALLOWED_IMAGE_MIMES = [

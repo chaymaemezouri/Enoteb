@@ -5,7 +5,7 @@ export const homeContent = {
     backgroundWord: 'ENOTEB',
     title: "Donner forme à l'avenir",
     subtitle:
-      'Études, bâtiment, aménagement et construction industrielle au service des projets exigeants.',
+      'Études, bâtiment, aménagement et construction industrielle des projets exigeants livrés avec précision et engagement.',
     videoSrc: '/videos/enoteb-hero.mp4',
     posterSrc: '/images/image.png',
     posterFallback:
@@ -25,9 +25,11 @@ export const homeContent = {
     overline: "L'entreprise",
     title: 'Une référence marocaine du BTP et de la construction industrielle',
     titleLines: [
-      'Une référence marocaine du\u00a0BTP',
+      'Une référence marocaine du BTP',
       'et de la construction industrielle',
     ],
+    description:
+      'ENOTEB accompagne les projets de bâtiment, d’aménagement et de construction industrielle avec rigueur, des moyens adaptés et une exigence constante de qualité, coûts et délais.',
     textLines: [
       'ENOTEB accompagne les projets de bâtiment,',
       "d'aménagement et de construction industrielle",

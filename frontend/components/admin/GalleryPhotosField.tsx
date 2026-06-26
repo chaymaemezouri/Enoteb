@@ -1,11 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Trash2, Upload } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
 import { uploadImage } from '@/lib/admin-utils';
 import { getApiUrl } from '@/lib/api';
 
@@ -42,6 +39,14 @@ export function GalleryPhotosField({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  const sortedEntries = useMemo(
+    () =>
+      photos
+        .map((photo, index) => ({ photo, index }))
+        .sort((a, b) => a.photo.order - b.photo.order),
+    [photos],
+  );
+
   async function handleFiles(files: FileList | null) {
     if (!files?.length) {
       return;
@@ -68,7 +73,7 @@ export function GalleryPhotosField({
       onChange(nextPhotos);
     } catch {
       setUploadError(
-        'Certaines images n’ont pas pu être envoyées. Réessayez avec des fichiers JPG ou PNG (5 Mo max).',
+        'Certaines images n\u2019ont pas pu être envoyées. Réessayez avec des fichiers JPG, PNG ou WebP (20 Mo max).',
       );
     } finally {
       setIsUploading(false);
@@ -89,13 +94,11 @@ export function GalleryPhotosField({
     onChange(photos.filter((_, photoIndex) => photoIndex !== index));
   }
 
-  const sorted = [...photos].sort((a, b) => a.order - b.order);
-
   return (
-    <div className="space-y-4">
+    <div className="admin-gallery-field">
       <div>
-        <Label>Photos de la galerie</Label>
-        <p className="mb-3 text-body-sm text-neutral-600">
+        <span className="admin-field__label">Photos de la galerie</span>
+        <p className="admin-field__hint admin-gallery-field__hint">
           Ajoutez une ou plusieurs images. Chaque photo doit avoir une description courte (texte
           alternatif).
         </p>
@@ -109,96 +112,96 @@ export function GalleryPhotosField({
           onChange={(event) => void handleFiles(event.target.files)}
         />
 
-        <Button
+        <button
           type="button"
-          variant="secondary"
-          size="lg"
+          className="admin-btn admin-btn--secondary admin-btn--sm"
           disabled={isUploading}
           onClick={() => inputRef.current?.click()}
         >
-          <Upload className="h-5 w-5" aria-hidden />
+          <Upload className="h-4 w-4" aria-hidden />
           {isUploading ? 'Envoi en cours…' : 'Ajouter des photos'}
-        </Button>
+        </button>
 
-        {uploadError ? <p className="mt-2 text-body-sm text-red-600">{uploadError}</p> : null}
+        {uploadError ? <p className="admin-field__error">{uploadError}</p> : null}
       </div>
 
-      {sorted.length === 0 ? (
-        <p className="rounded-card border border-neutral-200 bg-white p-4 text-body-sm text-neutral-600">
-          Aucune photo pour le moment.
-        </p>
+      {sortedEntries.length === 0 ? (
+        <p className="admin-field__hint">Aucune photo pour le moment.</p>
       ) : (
-        <ul className="space-y-4">
-          {sorted.map((photo) => {
-            const index = photos.findIndex(
-              (item) =>
-                (item.id && item.id === photo.id) ||
-                (!item.id && item.url === photo.url && item.order === photo.order),
-            );
-
-            return (
-              <li
-                key={photo.id ?? `${photo.url}-${photo.order}`}
-                className="rounded-card border border-neutral-200 bg-white p-4"
-              >
-                <div className="flex flex-col gap-4 sm:flex-row">
-                  <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-button bg-neutral-100 sm:w-40">
-                    <Image
-                      src={resolveImageSrc(photo.url)}
-                      alt={photo.altText || 'Photo du projet'}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <div>
-                      <Label htmlFor={`photo-alt-${index}`} required>
-                        Description de la photo
-                      </Label>
-                      <Input
-                        id={`photo-alt-${index}`}
-                        value={photo.altText}
-                        onChange={(event) => updatePhoto(index, { altText: event.target.value })}
-                        placeholder="Ex. : Vue générale du chantier"
-                        error={errors[index]?.altText}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor={`photo-order-${index}`} required>
-                        Ordre d’affichage
-                      </Label>
-                      <Input
-                        id={`photo-order-${index}`}
-                        type="number"
-                        min={0}
-                        value={photo.order}
-                        onChange={(event) =>
-                          updatePhoto(index, {
-                            order: Number(event.target.value),
-                          })
-                        }
-                        error={errors[index]?.order}
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="self-start text-red-600 hover:bg-red-50"
-                    aria-label="Retirer cette photo"
-                    onClick={() => removePhoto(index)}
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
+        <ul className="admin-gallery-field__list">
+          {sortedEntries.map(({ photo, index }) => (
+            <li
+              key={photo.id ?? `new-${index}-${photo.url}`}
+              className="admin-gallery-item"
+            >
+              <div className="admin-gallery-item__row">
+                <div className="admin-upload__preview admin-upload__preview--thumb">
+                  <Image
+                    src={resolveImageSrc(photo.url)}
+                    alt={photo.altText || 'Photo du projet'}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
                 </div>
-              </li>
-            );
-          })}
+
+                <div className="admin-gallery-item__fields">
+                  <div className="admin-gallery-item__field admin-gallery-item__field--description">
+                    <label
+                      htmlFor={`photo-alt-${index}`}
+                      className="admin-field__label admin-field__label--required"
+                    >
+                      Description de la photo
+                    </label>
+                    <input
+                      id={`photo-alt-${index}`}
+                      className="admin-field__input admin-gallery-item__input"
+                      value={photo.altText}
+                      onChange={(event) => updatePhoto(index, { altText: event.target.value })}
+                      placeholder="Ex. : Vue générale du chantier"
+                    />
+                    {errors[index]?.altText ? (
+                      <p className="admin-field__error">{errors[index]?.altText}</p>
+                    ) : null}
+                  </div>
+
+                  <div className="admin-gallery-item__field admin-gallery-item__field--order">
+                    <label
+                      htmlFor={`photo-order-${index}`}
+                      className="admin-field__label admin-field__label--required"
+                    >
+                      Ordre d&apos;affichage
+                    </label>
+                    <input
+                      id={`photo-order-${index}`}
+                      type="number"
+                      min={0}
+                      className="admin-field__input admin-gallery-item__input admin-gallery-item__input--order"
+                      value={Number.isFinite(photo.order) ? photo.order : ''}
+                      onChange={(event) => {
+                        const nextOrder = event.target.value.trim();
+                        updatePhoto(index, {
+                          order: nextOrder === '' ? Number.NaN : Number(nextOrder),
+                        });
+                      }}
+                    />
+                    {errors[index]?.order ? (
+                      <p className="admin-field__error">{errors[index]?.order}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--danger admin-btn--icon admin-gallery-item__remove"
+                  aria-label="Retirer cette photo"
+                  onClick={() => removePhoto(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </div>

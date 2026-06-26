@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,8 +9,7 @@ import { siteConfig } from '@/config/site';
 import { useHeaderTheme } from '@/hooks/useHeaderTheme';
 import { cn } from '@/lib/cn';
 
-const TOP_NAV = siteConfig.nav.slice(3);
-const DROPDOWN_NAV = siteConfig.nav.slice(1, 3);
+const MAIN_NAV = siteConfig.nav.filter((item) => item.href !== '/');
 const CONTACT_HREF = '/contact';
 
 function isNavActive(pathname: string, href: string) {
@@ -50,13 +49,11 @@ function NavCta({
   label,
   pathname,
   onClick,
-  variant,
 }: {
   href: string;
   label: string;
   pathname: string;
   onClick?: () => void;
-  variant: 'hero' | 'light';
 }) {
   const isActive = isNavActive(pathname, href);
 
@@ -66,8 +63,7 @@ function NavCta({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'nav-cta link-focus rounded-none inline-flex items-center justify-center',
-        variant === 'hero' ? 'btn-orange-glass' : 'nav-cta--light',
+        'nav-cta link-focus rounded-none inline-flex items-center justify-center btn-orange-solid',
       )}
     >
       {label}
@@ -75,85 +71,33 @@ function NavCta({
   );
 }
 
-function NavDropdown({
-  pathname,
-  variant,
-  className,
-}: {
-  pathname: string;
-  variant: 'hero' | 'light';
-  className?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+function renderMobileBarItems(pathname: string, variant: 'hero' | 'light') {
+  return MAIN_NAV.map((item) =>
+    item.href === CONTACT_HREF ? (
+      <NavCta
+        key={item.href}
+        href={item.href}
+        label={item.label}
+        pathname={pathname}
+      />
+    ) : (
+      <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
+    ),
+  );
+}
 
-  useEffect(() => {
-    if (!open) return;
-
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open]);
-
-  return (
-    <div ref={containerRef} className={cn('relative', className)}>
-      <button
-        type="button"
-        className="link-focus nav-link"
-        aria-expanded={open}
-        aria-haspopup="true"
-        aria-controls="navbar-dropdown-menu"
-        onClick={() => setOpen((value) => !value)}
-      >
-        À propos
-        <ChevronDown
-          className={cn('h-3 w-3 opacity-70 transition-transform duration-200', open && 'rotate-180')}
-          aria-hidden
-        />
-      </button>
-
-      {open ? (
-        <div
-          id="navbar-dropdown-menu"
-          role="menu"
-          className={cn(
-            'navbar-dropdown__panel',
-            variant === 'hero' ? 'navbar-dropdown__panel--dark' : 'navbar-dropdown__panel--light',
-          )}
-        >
-          {DROPDOWN_NAV.map((item) => {
-            const itemActive = isNavActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                role="menuitem"
-                onClick={() => setOpen(false)}
-                aria-current={itemActive ? 'page' : undefined}
-                className="navbar-dropdown__item link-focus"
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
+function renderNavItems(pathname: string, variant: 'hero' | 'light') {
+  return MAIN_NAV.map((item) =>
+    item.href === CONTACT_HREF ? (
+      <NavCta
+        key={item.href}
+        href={item.href}
+        label={item.label}
+        pathname={pathname}
+      />
+    ) : (
+      <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
+    ),
   );
 }
 
@@ -180,36 +124,28 @@ function BrandLogo({ variant }: { variant: 'hero' | 'light' }) {
   );
 }
 
-function getNavShellClass(showNavGlass: boolean, navVariant: 'hero' | 'light') {
-  if (!showNavGlass) {
-    return 'navbar-shell';
+function getNavShellClass(
+  navVariant: 'hero' | 'light',
+  options: { scrolled: boolean; showNavGlass: boolean; mobileBar?: boolean },
+) {
+  const { scrolled, showNavGlass, mobileBar } = options;
+
+  if (scrolled) {
+    return cn(
+      'navbar-shell navbar-shell--solid',
+      navVariant === 'light' ? 'navbar-shell--solid-light' : 'navbar-shell--solid-dark',
+      mobileBar && 'navbar-shell--mobile-scroll',
+    );
   }
 
-  return cn(
-    'navbar-shell navbar-shell--glass',
-    navVariant === 'light' ? 'navbar-shell--glass-light' : 'navbar-shell--glass-dark',
-  );
-}
+  if (showNavGlass) {
+    return cn(
+      'navbar-shell navbar-shell--glass',
+      navVariant === 'light' ? 'navbar-shell--glass-light' : 'navbar-shell--glass-dark',
+    );
+  }
 
-function renderNavItems(pathname: string, variant: 'hero' | 'light') {
-  return (
-    <>
-      <NavDropdown pathname={pathname} variant={variant} />
-      {TOP_NAV.map((item) =>
-        item.href === CONTACT_HREF ? (
-          <NavCta
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            pathname={pathname}
-            variant={variant}
-          />
-        ) : (
-          <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
-        ),
-      )}
-    </>
-  );
+  return 'navbar-shell';
 }
 
 export function Navbar() {
@@ -220,7 +156,9 @@ export function Navbar() {
     pathname === '/qui-sommes-nous' ||
     pathname === '/secteurs' ||
     pathname === '/projets' ||
+    pathname.startsWith('/projets/') ||
     pathname === '/contact';
+  const isInteriorPage = isCinematicPage && !isHome;
   const { theme: headerTheme, scrolled, hideLogo } = useHeaderTheme(isCinematicPage);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [compactNav, setCompactNav] = useState(true);
@@ -232,9 +170,12 @@ export function Navbar() {
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const navOnDark = isCinematicPage ? headerTheme !== 'light' : false;
+  const navOnDark = isInteriorPage || (isCinematicPage ? headerTheme !== 'light' : false);
+  const useSolidBar = scrolled || isInteriorPage;
   const navVariant: 'hero' | 'light' = navOnDark ? 'hero' : 'light';
-  const showNavGlass = isCinematicPage && (scrolled || headerTheme === 'light');
+  const showNavGlass = isCinematicPage && !useSolidBar && headerTheme === 'light';
+  const mobileScrolledBar = isMobile && scrolled;
+  const shellOptions = { scrolled: useSolidBar, showNavGlass, mobileBar: mobileScrolledBar };
 
   const evaluateNavMode = useCallback(() => {
     const row = rowRef.current;
@@ -314,18 +255,20 @@ export function Navbar() {
       observer.disconnect();
       window.removeEventListener('resize', evaluateNavMode);
     };
-  }, [evaluateNavMode, showNavGlass, pathname, navVariant]);
+  }, [evaluateNavMode, showNavGlass, scrolled, pathname, navVariant]);
 
-  const showHamburger = scrolled || compactNav || hideLogo;
-  const showMenuButton = showHamburger && (!hideLogo || isMobile);
   const hideNavChromeDesktop = hideLogo && !isMobile;
+  const showInlineNav = (scrolled || !compactNav) && !hideNavChromeDesktop;
+  const showMenuButton = !scrolled && compactNav && (!hideLogo || isMobile) && !hideNavChromeDesktop;
 
   return (
     <header
       className={cn(
         'site-navbar',
         navOnDark ? 'site-navbar--dark' : 'site-navbar--light',
-        scrolled && 'site-navbar--scrolled',
+        useSolidBar && 'site-navbar--scrolled site-navbar--solid',
+        isInteriorPage && 'site-navbar--interior',
+        mobileScrolledBar && 'site-navbar--mobile-bar',
         isHome && 'lg:px-10',
         !isHome && 'lg:pl-[calc(3.5rem+1.5rem)] lg:pr-14 xl:pl-[calc(4rem+2rem)]',
         hideNavChromeDesktop && 'md:pointer-events-none md:invisible md:opacity-0',
@@ -336,7 +279,11 @@ export function Navbar() {
 
       <div
         ref={rowRef}
-        className={cn('site-navbar__inner', hideLogo ? 'justify-end' : 'justify-between')}
+        className={cn(
+          'site-navbar__inner',
+          hideLogo ? 'justify-end' : 'justify-between',
+          mobileScrolledBar && 'site-navbar__inner--bar',
+        )}
       >
         {!hideLogo ? (
           <div ref={brandRef} className="site-navbar__brand">
@@ -351,19 +298,21 @@ export function Navbar() {
             ref={navSizerRef}
             className={cn(
               'pointer-events-none absolute -left-[9999px] top-0 flex h-0 overflow-hidden opacity-0',
-              getNavShellClass(showNavGlass, navVariant),
+              getNavShellClass(navVariant, shellOptions),
             )}
             aria-hidden
           >
             {renderNavItems(pathname, navVariant)}
           </div>
 
-          {!showHamburger ? (
+          {showInlineNav ? (
             <nav
-              className={getNavShellClass(showNavGlass, navVariant)}
+              className={getNavShellClass(navVariant, shellOptions)}
               aria-label="Navigation principale"
             >
-              {renderNavItems(pathname, navVariant)}
+              {mobileScrolledBar
+                ? renderMobileBarItems(pathname, navVariant)
+                : renderNavItems(pathname, navVariant)}
             </nav>
           ) : null}
 
@@ -399,7 +348,7 @@ export function Navbar() {
                   )}
                 >
                   <nav aria-label="Navigation mobile">
-                    {siteConfig.nav.map((item, index) => (
+                    {MAIN_NAV.map((item, index) => (
                       <Link
                         key={item.href}
                         ref={index === 0 ? firstMobileLinkRef : undefined}

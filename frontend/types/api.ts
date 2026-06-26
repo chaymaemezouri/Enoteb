@@ -58,6 +58,7 @@ export interface ProjectPhoto {
 
 export interface Project extends ProjectSummary {
   sectorId: string;
+  address: string | null;
   description: string;
   isPublished: boolean;
   createdAt: string;
@@ -74,6 +75,7 @@ export interface ContactPayload {
   name: string;
   email: string;
   phone?: string;
+  company?: string;
   message: string;
   website?: string;
 }

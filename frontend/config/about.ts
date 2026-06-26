@@ -6,10 +6,12 @@
   },
   hero: {
     overline: 'Qui sommes-nous',
-    titleLines: ['Une entreprise marocaine bâtie', "sur l'exigence et la maîtrise du terrain"],
-    titleAccent: "l'exigence",
+    titleLines: [
+      'Une entreprise marocaine bâtie',
+      "sur l'exigence et la maîtrise du terrain",
+    ],
     description:
-      "Depuis plus de 14 ans, ENOTEB accompagne les projets de bâtiment, d'aménagement et de construction industrielle avec une approche rigoureuse, des équipes qualifiées et des moyens adaptés.",
+      'Plus de 14 ans au service du bâtiment, de l’aménagement et de l’industrie — équipes qualifiées, moyens adaptés, exigence constante.',
     imageSrc: '/images/const2.png',
     imageAlt: 'Installation industrielle et pipeline sur le littoral marocain',
   },

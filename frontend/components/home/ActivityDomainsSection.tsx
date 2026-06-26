@@ -157,7 +157,6 @@ function DomainCard({
 
           {isActive ? (
             <>
-              <span className="mt-3.5 block h-px w-10 bg-[#FF6A1A]/75" aria-hidden />
               <Link
                 href="/secteurs"
                 className="link-focus mt-3 inline-flex items-center gap-1.5 text-[0.575rem] font-semibold uppercase tracking-[0.16em] text-[#FF6A1A] focus-visible:ring-[#FF6A1A]"
@@ -210,18 +209,10 @@ export function ActivityDomainsSection() {
 
       <Container fluid className="relative px-0">
         <div className="mx-auto text-center">
-          <motion.div {...fadeUpView(0, reduced)}>
-            <div className="flex items-center justify-center gap-3">
-              <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
-              <p className="section-label">{activityDomains.overline}</p>
-              <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
-            </div>
-          </motion.div>
-
           <motion.h2
-            {...fadeUpView(0.08, reduced)}
+            {...fadeUpView(0, reduced)}
             id="activity-domains-heading"
-            className="enoteb-title enoteb-title--section enoteb-title--on-light mx-auto mt-5 max-w-[850px]"
+            className="enoteb-title enoteb-title--section enoteb-title--on-light mx-auto max-w-[850px]"
           >
             {activityDomains.title}
           </motion.h2>
@@ -241,7 +232,7 @@ export function ActivityDomainsSection() {
           transition={{ duration: 0.7, delay: 0.15, ease: HOME_EASE }}
           className="mt-10 overflow-visible sm:mt-12"
           role="tablist"
-          aria-label={activityDomains.overline}
+          aria-label={activityDomains.title}
           onMouseLeave={resetToDefault}
         >
           <div className="hidden items-end gap-3 overflow-visible py-3 md:grid md:grid-cols-3 md:gap-4">

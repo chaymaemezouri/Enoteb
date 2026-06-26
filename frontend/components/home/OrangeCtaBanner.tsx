@@ -23,8 +23,6 @@ export function OrangeCtaBanner() {
         className="cta-banner__inner home-shell relative z-10"
       >
         <div className="cta-banner__row">
-          <span className="cta-banner__accent" aria-hidden />
-
           <div className="cta-banner__copy min-w-0">
             <SectionLabel>{orangeCta.overline}</SectionLabel>
 

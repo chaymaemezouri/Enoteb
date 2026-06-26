@@ -7,9 +7,9 @@ export const projectsPageContent = {
   hero: {
     overline: 'Projets',
     titleLine1: 'Nos réalisations',
-    titleLine2: 'Projets',
+    titleLine2: 'terrain',
     description:
-      'Des chantiers livrés avec rigueur, qualité et respect des délais pour les plus grands comptes nationaux.',
+      'Chantiers livrés avec rigueur pour les marchés publics et privés — construction, industrie et aménagement au Maroc.',
     descriptionSecondary:
       'OCP, Hikma, SPIE, ONEE et d’autres partenaires de confiance nous font confiance sur leurs ouvrages les plus exigeants.',
     imageSrc:
@@ -50,15 +50,19 @@ export const projectsPageContent = {
     },
   } as Record<string, { overline: string; titleSuffix: string; description: string }>,
   listing: {
-    subtitle: 'Parcourez nos chantiers livrés au Maroc, par secteur d’activité.',
-    refineTitle: 'Filtrer',
-    sectorLabel: 'Secteur',
-    allSectorsLabel: 'Tous les secteurs',
+    searchLabel: 'Rechercher',
+    searchPlaceholder: 'Rechercher par nom, ville ou client…',
+    clearSearchLabel: 'Effacer la recherche',
+    sectorLabel: 'Secteurs',
+    allSectorsLabel: 'Tous',
     filterLabel: 'Filtrer par secteur',
+    filtersToggleLabel: 'Ouvrir les filtres par secteur',
     allLabel: 'Tous',
     resultsLabel: 'projet',
     resultsLabelPlural: 'projets',
     emptyTitle: 'Aucun projet trouvé',
+    emptySearch:
+      'Aucun projet ne correspond à votre recherche. Essayez d’autres mots-clés ou changez de secteur.',
     emptyAll:
       'Nos projets seront bientôt disponibles. Revenez prochainement ou contactez-nous pour en savoir plus.',
     emptySector:
@@ -98,18 +102,25 @@ export const projectsPageContent = {
   },
   detail: {
     backLabel: 'Retour aux projets',
+    aboutHeading: 'À propos du projet',
+    keyFiguresHeading: 'Chiffres clés',
+    specificationsHeading: 'Spécifications',
     descriptionHeading: 'Description du projet',
     technicalSheetTitle: 'Fiche technique',
     sectorLabel: 'Secteur',
     locationLabel: 'Localisation',
+    addressLabel: 'Adresse',
+    typeLabel: 'Type',
     amountLabel: "Montant d'investissement",
-    yearLabel: 'Année de réalisation',
+    yearLabel: 'Année',
     clientLabel: 'Client',
     statusLabel: 'Statut',
     statusDelivered: 'Livré',
-    similarProject: 'Vous avez un projet similaire ?',
+    similarProject: 'Vous avez un projet similaire ? Contactez nos experts.',
     whatsappLabel: 'WhatsApp',
     contactExpertLabel: 'Contacter un expert',
+    requestQuoteLabel: 'Contacter',
+    viewOnMapLabel: 'Voir sur la carte',
     mapLabel: 'Carte interactive',
     highlightsBySector: {
       construction: [

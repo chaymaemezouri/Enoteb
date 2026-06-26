@@ -9,13 +9,11 @@ export const sectorsPageContent = {
     titleLine1: 'Nos secteurs',
     titleLine2: "d'activité",
     description:
-      'Construction, industrie, pharmaceutique, aménagement et énergies — cinq domaines où ENOTEB déploie son expertise de la conception à la livraison.',
+      'Des domaines d’intervention complémentaires — de la construction à l’industrie, de l’aménagement aux énergies.',
   },
   grid: {
     overline: 'Nos domaines',
-    title: 'Cinq marchés d’intervention',
-    topRowSlugs: ['construction', 'industrie', 'pharmaceutique'],
-    bottomRowSlugs: ['amenagement', 'energie-renouvelable'],
+    title: 'Nos domaines d’intervention',
     ctaLabel: 'Voir les projets',
   },
   sectorHero: {

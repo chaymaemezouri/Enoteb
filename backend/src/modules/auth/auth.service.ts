@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -59,6 +61,90 @@ export class AuthService {
     await this.revokeRefreshToken(storedToken.id);
 
     return this.issueTokens(storedToken.admin.id, storedToken.admin.email);
+  }
+
+  async getProfile(adminId: string) {
+    const admin = await this.prisma.adminUser.findUnique({
+      where: { id: adminId },
+      select: { id: true, email: true, name: true, avatarUrl: true, lastLoginAt: true },
+    });
+
+    if (!admin) {
+      throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
+    }
+
+    return admin;
+  }
+
+  async updateProfile(
+    adminId: string,
+    name: string,
+    email: string,
+    avatarUrl?: string,
+  ) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      throw new BadRequestException('Le nom est obligatoire.');
+    }
+
+    const existing = await this.prisma.adminUser.findUnique({
+      where: { id: adminId },
+    });
+
+    if (!existing) {
+      throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
+    }
+
+    if (normalizedEmail !== existing.email) {
+      const emailTaken = await this.prisma.adminUser.findUnique({
+        where: { email: normalizedEmail },
+      });
+
+      if (emailTaken) {
+        throw new ConflictException('Cette adresse email est déjà utilisée.');
+      }
+    }
+
+    return this.prisma.adminUser.update({
+      where: { id: adminId },
+      data: {
+        name: trimmedName,
+        email: normalizedEmail,
+        ...(avatarUrl !== undefined
+          ? { avatarUrl: avatarUrl.trim() || null }
+          : {}),
+      },
+      select: { id: true, email: true, name: true, avatarUrl: true, lastLoginAt: true },
+    });
+  }
+
+  async changePassword(
+    adminId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const admin = await this.prisma.adminUser.findUnique({
+      where: { id: adminId },
+    });
+
+    if (!admin) {
+      throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
+    }
+
+    const passwordValid = await bcrypt.compare(currentPassword, admin.passwordHash);
+
+    if (!passwordValid) {
+      throw new BadRequestException('Le mot de passe actuel est incorrect.');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.adminUser.update({
+      where: { id: adminId },
+      data: { passwordHash },
+    });
   }
 
   async logout(refreshToken?: string): Promise<void> {

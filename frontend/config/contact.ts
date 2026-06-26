@@ -36,6 +36,8 @@ export const contactPageContent = {
     emailPlaceholder: 'vous@entreprise.ma',
     companyLabel: 'Entreprise',
     companyPlaceholder: 'Nom de votre société',
+    phoneLabel: 'Téléphone',
+    phonePlaceholder: '+212 6 00 00 00 00',
     messageLabel: 'Message',
     messagePlaceholder: 'Décrivez votre projet ou votre demande…',
     submitLabel: 'Envoyer la demande',

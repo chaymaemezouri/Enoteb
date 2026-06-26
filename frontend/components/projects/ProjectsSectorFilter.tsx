@@ -1,62 +1,64 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { projectsPageContent } from '@/config/projects';
 import { cn } from '@/lib/cn';
 import type { Sector } from '@/types';
+import { ProjectsFiltersNav } from './ProjectsFiltersNav';
 
-interface ProjectsSectorFilterProps {
+interface ProjectsFiltersSidebarProps {
   sectors: Sector[];
-  activeSector?: string;
+  activeSector?: Sector;
+  searchQuery?: string;
+  total: number;
   className?: string;
 }
 
-function buildProjectsUrl(sector?: string): string {
-  if (!sector) return '/projets';
-  return `/projets?sector=${encodeURIComponent(sector)}`;
-}
-
-export function ProjectsRefineFilter({
+export function ProjectsFiltersSidebar({
   sectors,
   activeSector,
+  searchQuery,
+  total,
   className,
-}: ProjectsSectorFilterProps) {
+}: ProjectsFiltersSidebarProps) {
   const { listing } = projectsPageContent;
-  const router = useRouter();
-
-  const handleSectorChange = (value: string) => {
-    router.push(buildProjectsUrl(value || undefined));
-  };
+  const countLabel = total === 1 ? listing.resultsLabel : listing.resultsLabelPlural;
 
   return (
-    <aside className={cn('projects-refine', className)} aria-label={listing.refineTitle}>
-      <p className="projects-refine__title">{listing.refineTitle}</p>
+    <aside className={cn('projects-filters', className)} aria-label={listing.filterLabel}>
+      <p className="projects-filters__title">
+        <span>{listing.filterLabel}</span>
+      </p>
 
-      <div className="projects-refine__field">
-        <label htmlFor="projects-filter-sector" className="projects-refine__label">
-          {listing.sectorLabel}
-        </label>
-        <div className="projects-refine__control-wrap">
-          <select
-            id="projects-filter-sector"
-            value={activeSector ?? ''}
-            onChange={(e) => handleSectorChange(e.target.value)}
-            className="projects-refine__control"
-          >
-            <option value="">{listing.allSectorsLabel}</option>
-            {sectors.map((sector) => (
-              <option key={sector.id} value={sector.slug}>
-                {sector.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <ProjectsFiltersNav sectors={sectors} activeSector={activeSector} searchQuery={searchQuery} />
+
+      {total > 0 ? (
+        <p className="projects-filters__count">
+          <span className="tabular-nums">{total}</span> {countLabel}
+        </p>
+      ) : null}
     </aside>
   );
 }
 
-/** @deprecated Utiliser ProjectsRefineFilter */
-export function ProjectsSectorFilter(props: ProjectsSectorFilterProps) {
-  return <ProjectsRefineFilter {...props} />;
+/** @deprecated Utiliser ProjectsFiltersSidebar */
+export function ProjectsRefineFilter(
+  props: ProjectsFiltersSidebarProps & { activeSector?: string },
+) {
+  const sector = props.activeSector
+    ? props.sectors.find((s) => s.slug === props.activeSector)
+    : undefined;
+
+  return (
+    <ProjectsFiltersSidebar
+      sectors={props.sectors}
+      activeSector={sector}
+      searchQuery={props.searchQuery}
+      total={props.total}
+      className={props.className}
+    />
+  );
+}
+
+export function ProjectsSectorFilter(props: ProjectsFiltersSidebarProps) {
+  return <ProjectsFiltersSidebar {...props} />;
 }

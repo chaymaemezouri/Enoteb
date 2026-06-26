@@ -122,7 +122,6 @@ export function SiteFooter({
         </div>
 
         <div className="site-footer__bottom">
-          <span className="site-footer__rule" aria-hidden />
           <div className="site-footer__bottom-row">
             <p className="site-footer__copyright">
               © {year} {siteConfig.name}. Tous droits réservés.

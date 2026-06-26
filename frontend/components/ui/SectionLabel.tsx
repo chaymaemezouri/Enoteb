@@ -10,15 +10,10 @@ interface SectionLabelProps {
 
 export function SectionLabel({ children, centered = false, className, id }: SectionLabelProps) {
   return (
-    <div className={cn('section-label-row', centered && 'section-label-row--center', className)}>
-      <span
-        className={cn('section-label-line', centered && 'section-label-line--sm')}
-        aria-hidden
-      />
+    <div className={cn(centered && 'flex justify-center', className)}>
       <p className="section-label" id={id}>
         {children}
       </p>
-      {centered ? <span className="section-label-line section-label-line--sm" aria-hidden /> : null}
     </div>
   );
 }

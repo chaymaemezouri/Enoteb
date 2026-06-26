@@ -1,19 +1,18 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ExternalLink } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { adminApi } from '@/lib/admin-api';
 import { formatAdminError, slugify } from '@/lib/admin-utils';
+import { ApiClientError } from '@/lib/api';
+import { revalidatePublicProject } from '@/lib/revalidate-public';
 import type { AdminProjectDetail } from '@/types/admin';
 import type { Sector } from '@/types';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { Textarea } from '@/components/ui/Textarea';
+import { AdminPageHeader, ConfirmModal, useAdminToast } from '@/components/admin';
 import { ImageUploadField } from '@/components/admin/ImageUploadField';
 import { GalleryPhotosField, type GalleryPhotoDraft } from '@/components/admin/GalleryPhotosField';
-import { ConfirmModal } from '@/components/admin/ConfirmModal';
 
 interface ProjectFormProps {
   mode: 'create' | 'edit';
@@ -26,6 +25,7 @@ interface FormState {
   sectorId: string;
   client: string;
   location: string;
+  address: string;
   amount: string;
   showAmount: boolean;
   year: string;
@@ -56,6 +56,7 @@ function buildInitialForm(project?: AdminProjectDetail): FormState {
     sectorId: project?.sectorId ?? '',
     client: project?.client ?? '',
     location: project?.location ?? '',
+    address: project?.address ?? '',
     amount: project?.amount ?? '',
     showAmount: project?.showAmount ?? false,
     year: project?.year ? String(project.year) : '',
@@ -76,9 +77,14 @@ function buildInitialPhotos(project?: AdminProjectDetail): GalleryPhotoDraft[] {
   );
 }
 
+function serializeFormState(form: FormState, photos: GalleryPhotoDraft[]): string {
+  return JSON.stringify({ form, photos });
+}
+
 export function ProjectForm({ mode, projectId }: ProjectFormProps) {
   const router = useRouter();
   const { accessToken } = useAuth();
+  const { showToast } = useAdminToast();
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [form, setForm] = useState<FormState>(() => buildInitialForm());
   const [photos, setPhotos] = useState<GalleryPhotoDraft[]>([]);
@@ -89,6 +95,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [slugTouched, setSlugTouched] = useState(mode === 'edit');
+  const savedSnapshot = useRef('');
 
   useEffect(() => {
     let cancelled = false;
@@ -108,8 +115,13 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
             return;
           }
 
-          setForm(buildInitialForm(project));
-          setPhotos(buildInitialPhotos(project));
+          const initialForm = buildInitialForm(project);
+          const initialPhotos = buildInitialPhotos(project);
+          setForm(initialForm);
+          setPhotos(initialPhotos);
+          savedSnapshot.current = serializeFormState(initialForm, initialPhotos);
+        } else {
+          savedSnapshot.current = serializeFormState(buildInitialForm(), []);
         }
       } catch (error) {
         if (!cancelled) {
@@ -129,10 +141,26 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     };
   }, [mode, projectId]);
 
-  const pageTitle = useMemo(
-    () => (mode === 'create' ? 'Ajouter un projet' : 'Modifier le projet'),
-    [mode],
+  const isDirty = useMemo(
+    () => serializeFormState(form, photos) !== savedSnapshot.current,
+    [form, photos],
   );
+
+  useEffect(() => {
+    if (!isDirty) {
+      return;
+    }
+
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  const pageTitle = mode === 'create' ? 'Ajouter un projet' : 'Modifier le projet';
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => {
@@ -154,7 +182,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     }
 
     if (!form.slug.trim()) {
-      nextErrors.slug = 'Indiquez l’identifiant web du projet.';
+      nextErrors.slug = 'Indiquez l\u2019identifiant web du projet.';
     } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(form.slug)) {
       nextErrors.slug = 'Utilisez uniquement des lettres minuscules, chiffres et tirets.';
     }
@@ -177,7 +205,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     if (form.year.trim()) {
       const yearValue = Number(form.year);
       if (Number.isNaN(yearValue) || yearValue < 1900 || yearValue > currentYear + 1) {
-        nextErrors.year = `L’année doit être comprise entre 1900 et ${currentYear + 1}.`;
+        nextErrors.year = `L\u2019année doit être comprise entre 1900 et ${currentYear + 1}.`;
       }
     }
 
@@ -198,7 +226,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
       }
 
       if (Number.isNaN(photo.order) || photo.order < 0) {
-        itemErrors.order = 'L’ordre doit être un nombre positif ou zéro.';
+        itemErrors.order = 'L\u2019ordre doit être un nombre positif ou zéro.';
       }
 
       if (itemErrors.altText || itemErrors.order) {
@@ -213,25 +241,45 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     return nextErrors;
   }
 
-  async function syncPhotos(projectIdValue: string) {
+  async function syncPhotos(projectIdValue: string): Promise<GalleryPhotoDraft[]> {
     for (const photoId of removedPhotoIds) {
-      await adminApi.deletePhoto(projectIdValue, photoId);
+      try {
+        await adminApi.deletePhoto(projectIdValue, photoId);
+      } catch (error) {
+        if (!(error instanceof ApiClientError && error.statusCode === 404)) {
+          throw error;
+        }
+      }
     }
 
+    const syncedPhotos: GalleryPhotoDraft[] = [];
+
     for (const photo of photos) {
-      if (photo.id && !photo.isNew) {
+      if (photo.id) {
         await adminApi.updatePhoto(projectIdValue, photo.id, {
           altText: photo.altText.trim(),
           order: photo.order,
         });
-      } else {
-        await adminApi.addPhoto(projectIdValue, {
-          url: photo.url,
-          altText: photo.altText.trim(),
-          order: photo.order,
-        });
+        syncedPhotos.push({ ...photo, isNew: false });
+        continue;
       }
+
+      const created = await adminApi.addPhoto(projectIdValue, {
+        url: photo.url,
+        altText: photo.altText.trim(),
+        order: photo.order,
+      });
+
+      syncedPhotos.push({
+        id: created.id,
+        url: created.url,
+        altText: created.altText,
+        order: created.order,
+        isNew: false,
+      });
     }
+
+    return syncedPhotos;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -241,6 +289,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      showToast('Corrigez les erreurs du formulaire.', 'error');
       return;
     }
 
@@ -258,6 +307,7 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
       sectorId: form.sectorId,
       client: form.client.trim() || undefined,
       location: form.location.trim(),
+      address: form.address.trim() ? form.address.trim() : null,
       description: form.description.trim(),
       mainImageUrl: form.mainImageUrl.trim(),
       showAmount: form.showAmount,
@@ -269,7 +319,12 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     try {
       if (mode === 'create') {
         const created = await adminApi.createProject(payload);
-        await syncPhotos(created.id);
+        const syncedPhotos = await syncPhotos(created.id);
+        setPhotos(syncedPhotos);
+        setRemovedPhotoIds([]);
+        savedSnapshot.current = serializeFormState(form, syncedPhotos);
+        await revalidatePublicProject(created.slug);
+        showToast('Projet créé avec succès.', 'success');
         router.push('/admin/projects');
         router.refresh();
         return;
@@ -280,11 +335,18 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
       }
 
       await adminApi.updateProject(projectId, payload);
-      await syncPhotos(projectId);
+      const syncedPhotos = await syncPhotos(projectId);
+      setPhotos(syncedPhotos);
+      setRemovedPhotoIds([]);
+      savedSnapshot.current = serializeFormState(form, syncedPhotos);
+      await revalidatePublicProject(form.slug.trim());
+      showToast('Projet enregistré.', 'success');
       router.push('/admin/projects');
       router.refresh();
     } catch (error) {
-      setErrors({ form: formatAdminError(error) });
+      const message = formatAdminError(error);
+      setErrors({ form: message });
+      showToast(message, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -299,10 +361,13 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
 
     try {
       await adminApi.deleteProject(projectId);
+      showToast('Projet supprimé.', 'success');
       router.push('/admin/projects');
       router.refresh();
     } catch (error) {
-      setErrors({ form: formatAdminError(error) });
+      const message = formatAdminError(error);
+      setErrors({ form: message });
+      showToast(message, 'error');
       setShowDeleteModal(false);
     } finally {
       setIsDeleting(false);
@@ -322,10 +387,20 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
     setPhotos(nextPhotos);
   }
 
+  function handleCancel() {
+    if (isDirty && !window.confirm('Des modifications non enregistrées seront perdues. Continuer ?')) {
+      return;
+    }
+
+    router.push('/admin/projects');
+  }
+
   if (isLoading) {
     return (
-      <div className="rounded-card border border-neutral-200 bg-white p-8">
-        <p className="text-body text-neutral-700">Chargement du projet…</p>
+      <div className="admin-form-panel">
+        <p className="admin-loading-text" style={{ padding: '2rem' }}>
+          Chargement du projet…
+        </p>
       </div>
     );
   }
@@ -336,203 +411,257 @@ export function ProjectForm({ mode, projectId }: ProjectFormProps) {
 
   return (
     <>
-      <div className="mb-6">
-        <h2 className="text-title text-neutral-900">{pageTitle}</h2>
-        <p className="mt-1 text-body text-neutral-600">
-          Remplissez les informations ci-dessous. Les champs marqués d’un astérisque sont
-          obligatoires.
-        </p>
-      </div>
+      <AdminPageHeader
+        label={mode === 'create' ? 'Nouveau' : 'Édition'}
+        title={pageTitle}
+        lead="Les champs marqués d'un astérisque sont obligatoires."
+        actions={
+          mode === 'edit' && form.isPublished && form.slug ? (
+            <a
+              href={`/projets/${form.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="admin-btn admin-btn--ghost"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+              Voir sur le site
+            </a>
+          ) : undefined
+        }
+      />
 
-      <form
-        onSubmit={(event) => void handleSubmit(event)}
-        className="space-y-8 rounded-card border border-neutral-200 bg-white p-6"
-      >
+      {isDirty ? (
+        <p className="admin-field__hint" style={{ marginBottom: '1rem', color: 'var(--admin-orange)' }}>
+          Modifications non enregistrées
+        </p>
+      ) : null}
+
+      <form onSubmit={(event) => void handleSubmit(event)} className="admin-form">
         {errors.form ? (
-          <div
-            role="alert"
-            className="rounded-button border border-red-200 bg-red-50 px-4 py-3 text-body text-red-700"
-          >
+          <div role="alert" className="admin-alert">
             {errors.form}
           </div>
         ) : null}
 
-        <section className="grid gap-5 md:grid-cols-2">
-          <div>
-            <Label htmlFor="project-name" required>
-              Nom du projet
-            </Label>
-            <Input
-              id="project-name"
-              value={form.name}
-              onChange={(event) => updateField('name', event.target.value)}
-              error={errors.name}
-            />
+        <section className="admin-form-panel">
+          <div className="admin-form-panel__head">
+            <h2 className="admin-form-panel__title">Informations générales</h2>
+            <p className="admin-form-panel__lead">Nom, secteur et localisation du projet.</p>
           </div>
+          <div className="admin-form-panel__body admin-form-grid admin-form-grid--2">
+            <div>
+              <label htmlFor="project-name" className="admin-field__label admin-field__label--required">
+                Nom du projet
+              </label>
+              <input
+                id="project-name"
+                className="admin-field__input"
+                value={form.name}
+                onChange={(event) => updateField('name', event.target.value)}
+              />
+              {errors.name ? <p className="admin-field__error">{errors.name}</p> : null}
+            </div>
 
-          <div>
-            <Label htmlFor="project-slug" required>
-              Identifiant web (URL)
-            </Label>
-            <Input
-              id="project-slug"
-              value={form.slug}
-              onChange={(event) => {
-                setSlugTouched(true);
-                updateField('slug', event.target.value);
-              }}
-              error={errors.slug}
-            />
+            <div>
+              <label htmlFor="project-slug" className="admin-field__label admin-field__label--required">
+                Identifiant web (URL)
+              </label>
+              <input
+                id="project-slug"
+                className="admin-field__input"
+                value={form.slug}
+                onChange={(event) => {
+                  setSlugTouched(true);
+                  updateField('slug', event.target.value);
+                }}
+              />
+              {errors.slug ? <p className="admin-field__error">{errors.slug}</p> : null}
+            </div>
+
+            <div>
+              <label htmlFor="project-sector" className="admin-field__label admin-field__label--required">
+                Secteur
+              </label>
+              <select
+                id="project-sector"
+                className="admin-field__select"
+                value={form.sectorId}
+                onChange={(event) => updateField('sectorId', event.target.value)}
+              >
+                <option value="">Choisir un secteur</option>
+                {sectors.map((sector) => (
+                  <option key={sector.id} value={sector.id}>
+                    {sector.name}
+                  </option>
+                ))}
+              </select>
+              {errors.sectorId ? <p className="admin-field__error">{errors.sectorId}</p> : null}
+            </div>
+
+            <div>
+              <label htmlFor="project-client" className="admin-field__label">
+                Client / Maître d&apos;ouvrage
+              </label>
+              <input
+                id="project-client"
+                className="admin-field__input"
+                value={form.client}
+                onChange={(event) => updateField('client', event.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="project-location" className="admin-field__label admin-field__label--required">
+                Localisation
+              </label>
+              <input
+                id="project-location"
+                className="admin-field__input"
+                value={form.location}
+                onChange={(event) => updateField('location', event.target.value)}
+                placeholder="Ville ou région"
+              />
+              {errors.location ? <p className="admin-field__error">{errors.location}</p> : null}
+            </div>
+
+            <div>
+              <label htmlFor="project-address" className="admin-field__label">
+                Adresse 
+              </label>
+              <input
+                id="project-address"
+                className="admin-field__input"
+                value={form.address}
+                onChange={(event) => updateField('address', event.target.value)}
+                placeholder="N°, rue, code postal…"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="project-year" className="admin-field__label">
+                Année
+              </label>
+              <input
+                id="project-year"
+                type="number"
+                min={1900}
+                max={currentYear + 1}
+                className="admin-field__input"
+                value={form.year}
+                onChange={(event) => updateField('year', event.target.value)}
+              />
+              {errors.year ? <p className="admin-field__error">{errors.year}</p> : null}
+            </div>
+
+            <div>
+              <label htmlFor="project-amount" className="admin-field__label">
+                Montant (MAD)
+              </label>
+              <input
+                id="project-amount"
+                inputMode="decimal"
+                className="admin-field__input"
+                value={form.amount}
+                onChange={(event) => updateField('amount', event.target.value)}
+              />
+              {errors.amount ? <p className="admin-field__error">{errors.amount}</p> : null}
+              <label className="admin-checkbox-row" style={{ marginTop: '0.75rem' }}>
+                <input
+                  type="checkbox"
+                  checked={form.showAmount}
+                  onChange={(event) => updateField('showAmount', event.target.checked)}
+                />
+                Afficher le montant sur le site public
+              </label>
+            </div>
           </div>
+        </section>
 
-          <div>
-            <Label htmlFor="project-sector" required>
-              Secteur
-            </Label>
-            <select
-              id="project-sector"
-              value={form.sectorId}
-              onChange={(event) => updateField('sectorId', event.target.value)}
-              className="flex h-11 w-full rounded-button border border-border bg-background px-3 text-body text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
-            >
-              <option value="">Choisir un secteur</option>
-              {sectors.map((sector) => (
-                <option key={sector.id} value={sector.id}>
-                  {sector.name}
-                </option>
-              ))}
-            </select>
-            {errors.sectorId ? (
-              <p className="mt-1.5 text-body-sm text-red-600">{errors.sectorId}</p>
-            ) : null}
+        <section className="admin-form-panel">
+          <div className="admin-form-panel__head">
+            <h2 className="admin-form-panel__title">Description</h2>
           </div>
-
-          <div>
-            <Label htmlFor="project-client">Client / Maître d’ouvrage</Label>
-            <Input
-              id="project-client"
-              value={form.client}
-              onChange={(event) => updateField('client', event.target.value)}
+          <div className="admin-form-panel__body">
+            <label htmlFor="project-description" className="admin-field__label admin-field__label--required">
+              Contenu
+            </label>
+            <textarea
+              id="project-description"
+              className="admin-field__textarea"
+              value={form.description}
+              onChange={(event) => updateField('description', event.target.value)}
+              rows={8}
             />
+            {errors.description ? <p className="admin-field__error">{errors.description}</p> : null}
           </div>
+        </section>
 
-          <div>
-            <Label htmlFor="project-location" required>
-              Localisation
-            </Label>
-            <Input
-              id="project-location"
-              value={form.location}
-              onChange={(event) => updateField('location', event.target.value)}
-              error={errors.location}
-            />
+        <section className="admin-form-panel">
+          <div className="admin-form-panel__head">
+            <h2 className="admin-form-panel__title">Médias</h2>
+            <p className="admin-form-panel__lead">Image principale et galerie photos.</p>
           </div>
+          <div className="admin-form-panel__body">
+            <div className="admin-media-layout">
+              <div className="admin-media-layout__main">
+                <ImageUploadField
+                  label="Image principale"
+                  required
+                  value={form.mainImageUrl}
+                  accessToken={accessToken}
+                  onChange={(url) => updateField('mainImageUrl', url)}
+                  error={errors.mainImageUrl}
+                />
+              </div>
 
-          <div>
-            <Label htmlFor="project-year">Année</Label>
-            <Input
-              id="project-year"
-              type="number"
-              min={1900}
-              max={currentYear + 1}
-              value={form.year}
-              onChange={(event) => updateField('year', event.target.value)}
-              error={errors.year}
-            />
+              <div className="admin-media-layout__gallery">
+                <GalleryPhotosField
+                  photos={photos}
+                  accessToken={accessToken}
+                  onChange={handlePhotoChange}
+                  errors={errors.photos}
+                />
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div>
-            <Label htmlFor="project-amount">Montant (MAD)</Label>
-            <Input
-              id="project-amount"
-              inputMode="decimal"
-              value={form.amount}
-              onChange={(event) => updateField('amount', event.target.value)}
-              error={errors.amount}
-            />
-            <label className="mt-3 flex items-center gap-3 text-body text-neutral-800">
+        <section className="admin-form-panel">
+          <div className="admin-form-panel__head">
+            <h2 className="admin-form-panel__title">Publication</h2>
+          </div>
+          <div className="admin-form-panel__body">
+            <label className="admin-checkbox-row">
               <input
                 type="checkbox"
-                checked={form.showAmount}
-                onChange={(event) => updateField('showAmount', event.target.checked)}
-                className="h-5 w-5 rounded border-neutral-300"
+                checked={form.isPublished}
+                onChange={(event) => updateField('isPublished', event.target.checked)}
               />
-              Afficher le montant sur le site public
+              Publier ce projet sur le site (visible par les visiteurs)
             </label>
           </div>
         </section>
 
-        <section>
-          <Label htmlFor="project-description" required>
-            Description
-          </Label>
-          <Textarea
-            id="project-description"
-            value={form.description}
-            onChange={(event) => updateField('description', event.target.value)}
-            error={errors.description}
-            rows={8}
-          />
-        </section>
-
-        <section>
-          <ImageUploadField
-            label="Image principale"
-            required
-            value={form.mainImageUrl}
-            accessToken={accessToken}
-            onChange={(url) => updateField('mainImageUrl', url)}
-            error={errors.mainImageUrl}
-          />
-        </section>
-
-        <section>
-          <GalleryPhotosField
-            photos={photos}
-            accessToken={accessToken}
-            onChange={handlePhotoChange}
-            errors={errors.photos}
-          />
-        </section>
-
-        <section>
-          <label className="flex items-center gap-3 rounded-button border border-neutral-200 bg-neutral-50 px-4 py-4 text-body text-neutral-800">
-            <input
-              type="checkbox"
-              checked={form.isPublished}
-              onChange={(event) => updateField('isPublished', event.target.checked)}
-              className="h-5 w-5 rounded border-neutral-300"
-            />
-            Publier ce projet sur le site (visible par les visiteurs)
-          </label>
-        </section>
-
-        <div className="flex flex-col gap-3 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="admin-form-actions">
           {mode === 'edit' ? (
-            <Button
+            <button
               type="button"
-              variant="danger"
-              size="lg"
+              className="admin-btn admin-btn--danger"
               onClick={() => setShowDeleteModal(true)}
             >
               Supprimer ce projet
-            </Button>
+            </button>
           ) : (
             <div />
           )}
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => router.push('/admin/projects')}
-            >
+          <div className="admin-form-actions__end">
+            <button type="button" className="admin-btn admin-btn--secondary" onClick={handleCancel}>
               Annuler
-            </Button>
-            <Button type="submit" size="lg" disabled={isSaving}>
+            </button>
+            <button type="submit" className="admin-btn admin-btn--primary" disabled={isSaving}>
               {isSaving ? 'Enregistrement…' : 'Enregistrer le projet'}
-            </Button>
+            </button>
           </div>
         </div>
       </form>

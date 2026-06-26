@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
-import { AboutContainer, AboutLabel, AboutSection } from './AboutLayout';
+import { AboutContainer, AboutSection } from './AboutLayout';
 import { fadeUpView } from './aboutMotion';
 
 export function AboutStats() {
@@ -12,9 +12,6 @@ export function AboutStats() {
   return (
     <AboutSection tone="sand" className="about-v2-section--band" aria-label="Chiffres clés ENOTEB">
       <AboutContainer compact>
-        <motion.div {...fadeUpView(0, reduced)} className="mb-6 sm:mb-7">
-          <AboutLabel>{stats.overline}</AboutLabel>
-        </motion.div>
         <ul className="about-v2-stats__list" role="list">
           {stats.items.map((stat, index) => (
             <motion.li

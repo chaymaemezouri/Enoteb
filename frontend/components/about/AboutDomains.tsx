@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 import { aboutContent } from '@/config/about';
 import { cn } from '@/lib/cn';
-import { AboutContainer, AboutLabel, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
+import { AboutContainer, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
 import { fadeUpView, HOME_EASE } from './aboutMotion';
 
 type Domain = (typeof aboutContent.domains.items)[number];
@@ -24,7 +24,7 @@ function PanelContent({ item }: { item: Domain }) {
         {item.bullets.map((b) => (
           <li
             key={b}
-            className="text-sm leading-relaxed text-[rgba(248,245,238,0.72)] before:mr-2 before:text-[#FF6A1A] before:content-['—']"
+            className="text-sm leading-relaxed text-[rgba(248,245,238,0.72)]"
           >
             {b}
           </li>
@@ -58,18 +58,20 @@ export function AboutDomains() {
   const current = domains.items[active] ?? domains.items[0];
 
   return (
-    <AboutSection tone="sand" aria-label={domains.overline}>
+    <AboutSection tone="sand" aria-labelledby="about-domains-title">
       <AboutContainer>
         <motion.div {...fadeUpView(0, reduced)} className="mb-10 max-w-2xl">
-          <AboutLabel>{domains.overline}</AboutLabel>
-          <AboutTitle className="mt-5 text-[clamp(1.625rem,3vw,2.25rem)]">
+          <AboutTitle
+            id="about-domains-title"
+            className="text-[clamp(1.625rem,3vw,2.25rem)]"
+          >
             {domains.title}
           </AboutTitle>
           <AboutLead className="mt-4">{domains.intro}</AboutLead>
         </motion.div>
 
         <div className="about-v2-domains__shell">
-          <div className="hidden lg:grid lg:grid-cols-[0.34fr_0.66fr] lg:min-h-[26rem]">
+          <div className="about-v2-domains__layout hidden lg:grid lg:grid-cols-[0.34fr_0.66fr]">
             <nav
               className="about-v2-domains__nav flex flex-col justify-center border-r border-[rgba(24,33,43,0.08)] p-3"
               role="tablist"

@@ -1,5 +1,5 @@
 import { IsKebabSlug } from '../../../common/validators/is-kebab-slug.decorator';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto';
 
 export class ListProjectsQueryDto extends PaginationQueryDto {
@@ -7,4 +7,9 @@ export class ListProjectsQueryDto extends PaginationQueryDto {
   @IsString()
   @IsKebabSlug()
   sector?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  q?: string;
 }

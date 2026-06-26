@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { AboutAccentMark } from '@/components/about/AboutLayout';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { sectorsPageContent } from '@/config/sectors';
 import { fadeUpView, SECTORS_SHELL, staggerItem } from './sectorsMotion';
@@ -41,7 +40,6 @@ export function SectorsApproach() {
               role="listitem"
               className="sectors-approach__card"
             >
-              <AboutAccentMark className="about-v2-accent-mark--on-dark" />
               <h3 className="sectors-approach__card-title">{item.title}</h3>
               <p className="sectors-approach__card-text">{item.description}</p>
             </motion.article>

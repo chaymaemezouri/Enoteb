@@ -3,9 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
 import {
-  AboutAccentMark,
   AboutContainer,
-  AboutLabel,
   AboutLead,
   AboutSection,
   AboutTitle,
@@ -20,10 +18,7 @@ export function AboutEngagements() {
     <AboutSection tone="sandSoft" aria-labelledby="about-engage-title">
       <AboutContainer>
         <motion.div {...fadeUpView(0, reduced)} className="max-w-2xl">
-          <AboutLabel>
-            <span id="about-engage-title">{engagements.overline}</span>
-          </AboutLabel>
-          <AboutTitle className="mt-5">{engagements.title}</AboutTitle>
+          <AboutTitle id="about-engage-title">{engagements.title}</AboutTitle>
           <AboutLead className="mt-4">{engagements.intro}</AboutLead>
         </motion.div>
 
@@ -36,10 +31,8 @@ export function AboutEngagements() {
                 role="listitem"
                 className="about-v2-engage__card group"
               >
-                <AboutAccentMark />
                 <h3 className="about-v2-engage__card-title">{item.title}</h3>
                 <p className="about-v2-engage__card-text">{item.description}</p>
-                <span className="about-v2-engage__rule" aria-hidden />
               </motion.article>
             ))}
           </div>

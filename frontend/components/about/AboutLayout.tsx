@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
-export const ABOUT_SHELL = 'home-shell mx-auto w-full max-w-[85rem]';
+export const ABOUT_SHELL = 'home-shell mx-auto w-full max-w-[72rem] 2xl:max-w-[76rem]';
 
 type Tone = 'dark' | 'sand' | 'sandSoft' | 'deep';
 
@@ -100,8 +100,7 @@ export function AboutLabel({
   center?: boolean;
 }) {
   return (
-    <div className={cn('section-label-row', center && 'section-label-row--center', className)}>
-      <span className="section-label-line" aria-hidden />
+    <div className={cn(center && 'flex justify-center', className)}>
       <span className="section-label">{children}</span>
     </div>
   );
@@ -173,7 +172,6 @@ export function AboutIndexRow({
 }) {
   return (
     <article className={cn('about-v2-row group', className)}>
-      <AboutAccentMark />
       <div className="min-w-0 flex-1">
         <h3
           className={cn(
@@ -192,7 +190,6 @@ export function AboutIndexRow({
           {children}
         </p>
       </div>
-      <span className="about-v2-row__line" aria-hidden />
     </article>
   );
 }

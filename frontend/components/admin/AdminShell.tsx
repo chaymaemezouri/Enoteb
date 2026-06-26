@@ -1,71 +1,205 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FolderKanban, Layers, LogOut } from 'lucide-react';
-import { Logo } from '@/components/layout/Logo';
+import {
+  ExternalLink,
+  FolderKanban,
+  Inbox,
+  LayoutDashboard,
+  Layers,
+  LogOut,
+  Menu,
+  Settings,
+  X,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/Button';
+import { adminApi } from '@/lib/admin-api';
+import { resolveAdminAvatarUrl } from '@/lib/admin-utils';
+import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/cn';
 
 const navItems = [
-  { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+  { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, exact: true },
+  { href: '/admin/demandes', label: 'Demandes', icon: Inbox },
   { href: '/admin/projects', label: 'Projets', icon: FolderKanban },
   { href: '/admin/sectors', label: 'Secteurs', icon: Layers },
+  { href: '/admin/settings', label: 'Compte', icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, profile, isAuthenticated } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadDemandes, setUnreadDemandes] = useState(0);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadUnread() {
+      try {
+        const dashboard = await adminApi.getDashboard();
+        if (!cancelled) {
+          setUnreadDemandes(dashboard.unreadContactCount);
+        }
+      } catch {
+        if (!cancelled) {
+          setUnreadDemandes(0);
+        }
+      }
+    }
+
+    void loadUnread();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen) {
+      return;
+    }
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [sidebarOpen]);
 
   return (
-    <div className="min-h-screen bg-neutral-100">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-4">
-            <Link href="/admin/dashboard" className="link-focus shrink-0">
-              <Logo size="sm" />
+    <div className="admin-app">
+      <div className="admin-app__grid" aria-hidden />
+
+      <header className="admin-topbar">
+        <div className="admin-topbar__backdrop" aria-hidden />
+        <div className="admin-topbar__inner">
+          <div className="admin-topbar__start">
+            <button
+              type="button"
+              className="admin-topbar__menu-btn link-focus"
+              aria-expanded={sidebarOpen}
+              aria-controls="admin-sidebar"
+              onClick={() => setSidebarOpen((open) => !open)}
+            >
+              {sidebarOpen ? (
+                <X className="h-5 w-5" aria-hidden />
+              ) : (
+                <Menu className="h-5 w-5" aria-hidden />
+              )}
+              <span className="sr-only">Menu administration</span>
+            </button>
+
+            <Link href="/admin/dashboard" className="admin-topbar__brand link-focus">
+              <Image
+                src={siteConfig.logo.src}
+                alt={`${siteConfig.name} — logo`}
+                width={156}
+                height={52}
+                className="admin-topbar__logo"
+                priority
+              />
+              <span className="admin-topbar__badge">Admin</span>
             </Link>
-            <div>
-              <p className="text-body-sm font-medium text-neutral-500">Espace administration</p>
-              <h1 className="sr-only">ENOTEB — Administration</h1>
-            </div>
           </div>
-          <Button type="button" variant="outline" size="md" onClick={() => void logout()}>
-            <LogOut className="h-4 w-4" aria-hidden />
-            Se déconnecter
-          </Button>
+
+          <div className="admin-topbar__actions">
+            <Link href="/" className="admin-topbar__link link-focus">
+              <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>Site public</span>
+            </Link>
+            <button
+              type="button"
+              className="admin-topbar__link admin-topbar__link--logout link-focus"
+              onClick={() => void logout()}
+            >
+              <LogOut className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="admin-topbar__logout-text">Déconnexion</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
-        <nav
-          aria-label="Menu administration"
-          className="flex shrink-0 flex-row gap-2 overflow-x-auto lg:w-56 lg:flex-col"
+      <div className="admin-app__layout">
+        <button
+          type="button"
+          className={cn('admin-app__overlay', sidebarOpen && 'admin-app__overlay--visible')}
+          aria-label="Fermer le menu"
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        <aside
+          id="admin-sidebar"
+          className={cn('admin-app__sidebar', sidebarOpen && 'admin-app__sidebar--open')}
         >
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
+          <nav aria-label="Menu administration" className="admin-app__nav">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = item.exact
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
+              const showBadge = item.href === '/admin/demandes' && unreadDemandes > 0;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'inline-flex min-h-12 items-center gap-3 rounded-button px-4 text-body font-medium transition-colors',
-                  active
-                    ? 'bg-accent text-accent-foreground'
-                    : 'bg-white text-neutral-800 hover:bg-neutral-50',
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn('admin-app__nav-link', active && 'admin-app__nav-link--active')}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="admin-app__nav-link-text">{item.label}</span>
+                  {showBadge ? (
+                    <span className="admin-app__nav-badge" aria-label={`${unreadDemandes} non lues`}>
+                      {unreadDemandes}
+                    </span>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="admin-app__sidebar-foot">
+            {profile ? (
+              <div className="admin-app__user-card">
+                {profile.avatarUrl ? (
+                  <span className="admin-app__user-avatar admin-app__user-avatar--image">
+                    <Image
+                      src={resolveAdminAvatarUrl(profile.avatarUrl)!}
+                      alt=""
+                      width={26}
+                      height={26}
+                      className="admin-app__user-avatar-img"
+                      unoptimized
+                    />
+                  </span>
+                ) : (
+                  <span className="admin-app__user-avatar" aria-hidden>
+                    {profile.name.charAt(0).toUpperCase()}
+                  </span>
                 )}
-              >
-                <Icon className="h-5 w-5" aria-hidden />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <div className="admin-app__user-info">
+                  <p className="admin-app__user-name">{profile.name}</p>
+                  <p className="admin-app__user-email">{profile.email}</p>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </aside>
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="admin-app__main">{children}</main>
       </div>
     </div>
   );

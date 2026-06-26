@@ -46,9 +46,8 @@ function ResourceBand({
           {points.map((point) => (
             <li
               key={point}
-              className="flex items-center gap-2 text-sm font-medium text-[rgba(248,245,238,0.8)]"
+              className="text-sm font-medium text-[rgba(248,245,238,0.8)]"
             >
-              <span className="h-px w-3 shrink-0 bg-[#FF6A1A]" aria-hidden />
               {point}
             </li>
           ))}

@@ -24,7 +24,7 @@ export default () => ({
 
   upload: {
     dir: process.env.UPLOAD_DIR,
-    maxFileSize: Number(process.env.MAX_FILE_SIZE ?? 5 * 1024 * 1024),
+    maxFileSize: Number(process.env.MAX_FILE_SIZE ?? 20 * 1024 * 1024),
     imageMaxWidth: Number(process.env.UPLOAD_IMAGE_MAX_WIDTH ?? 1920),
     imageMaxHeight: Number(process.env.UPLOAD_IMAGE_MAX_HEIGHT ?? 1920),
     thumbnailWidth: Number(process.env.UPLOAD_THUMBNAIL_WIDTH ?? 640),

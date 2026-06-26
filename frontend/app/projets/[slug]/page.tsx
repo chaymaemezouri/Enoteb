@@ -3,25 +3,25 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ProjectDetailView } from '@/components/projects/ProjectDetailView';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { BreadcrumbJsonLd, ProjectJsonLd } from '@/components/seo';
 import { projectsPageContent } from '@/config/projects';
-import { PROJECTS_CONTAINER } from '@/components/projects/projectsMotion';
+import { PROJECTS_SHELL } from '@/components/projects/projectsMotion';
 import { api, ApiClientError } from '@/lib/api';
 import { splitProjectTitle } from '@/lib/projectDetail';
+import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
 import { createPageMetadata } from '@/lib/seo';
 import { truncateText } from '@/lib/utils';
-import { Container } from '@/components/ui/Container';
 import type { Project } from '@/types';
 
-export const revalidate = 3600;
-export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
 interface ProjectPageProps {
   params: { slug: string };
 }
 
 async function getProject(slug: string): Promise<Project> {
-  return api.getProjectBySlug(slug, { revalidate: 3600 });
+  return api.getProjectBySlug(slug, { revalidate: 0 });
 }
 
 export async function generateStaticParams() {
@@ -98,29 +98,24 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         ]}
       />
 
-      <section className="bg-[#F5F2EC] py-8 sm:py-10 lg:py-12" data-header-theme="light">
-        <Container fluid className={PROJECTS_CONTAINER}>
-          <div className="mb-6 flex flex-wrap items-center gap-4">
-            <Link
-              href="/projets"
-              className="link-focus inline-flex items-center gap-2 text-[0.8125rem] font-medium text-[#6B7078] transition-colors hover:text-[#FF6B1A] focus-visible:ring-[#FF6B1A]"
-            >
+      <div className="projects-page">
+        <section className="project-detail-page" data-header-theme="light">
+          <div className={`project-detail-page__top ${PROJECTS_SHELL}`}>
+            <Link href="/projets" className="project-detail-page__back">
               <ArrowLeft className="h-4 w-4" aria-hidden />
               {detail.backLabel}
             </Link>
-            {project.sector ? (
-              <Link
-                href={`/secteurs/${project.sector.slug}`}
-                className="link-focus text-[0.8125rem] font-medium text-[#6B7078] transition-colors hover:text-[#FF6B1A] focus-visible:ring-[#FF6B1A]"
-              >
-                {project.sector.name}
-              </Link>
-            ) : null}
           </div>
 
-          <ProjectDetailView project={project} titlePrimary={primary} titleAccent={accent} />
-        </Container>
-      </section>
+          <div className={`project-detail-page__stage ${PROJECTS_SHELL}`}>
+            <ProjectDetailView project={project} titlePrimary={primary} titleAccent={accent} />
+          </div>
+        </section>
+
+        <div style={{ backgroundColor: FOOTER_SECTION_BG }} data-header-theme="dark">
+          <SiteFooter />
+        </div>
+      </div>
     </>
   );
 }

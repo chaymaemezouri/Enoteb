@@ -98,6 +98,7 @@ export default function RootLayout({
     pathname === '/secteurs' ||
     pathname.startsWith('/secteurs/') ||
     pathname === '/projets' ||
+    pathname.startsWith('/projets/') ||
     pathname === '/contact';
 
   return (

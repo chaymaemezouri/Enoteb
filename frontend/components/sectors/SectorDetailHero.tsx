@@ -14,7 +14,7 @@ export function SectorDetailHero({ sector }: SectorDetailHeroProps) {
   const { sectorHero } = sectorsPageContent;
   const reduced = useReducedMotion() ?? false;
   const copy = sectorHero[sector.slug];
-  const overline = copy?.overline ?? 'Secteur';
+  const overline = copy?.overline ?? `Secteur ${sector.name}`;
   const titleSuffix = copy?.titleSuffix ?? 'Projets & réalisations';
   const description = sector.description?.trim() || '';
 

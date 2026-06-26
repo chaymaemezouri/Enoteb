@@ -11,6 +11,7 @@ model AdminUser {
   email         String         @unique
   passwordHash  String
   name          String
+  avatarUrl     String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   lastLoginAt   DateTime?
@@ -52,6 +53,7 @@ model Project {
   sectorId     String
   client       String?
   location     String
+  address      String?
   amount       Decimal?       @db.Decimal(15, 2)
   showAmount   Boolean        @default(false)
   year         Int?
@@ -78,4 +80,18 @@ model ProjectPhoto {
 
   @@index([projectId])
   @@index([projectId, order])
+}
+
+model ContactRequest {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead, createdAt])
+  @@index([createdAt])
 }

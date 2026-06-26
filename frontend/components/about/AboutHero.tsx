@@ -19,12 +19,13 @@ export function AboutHero() {
   const y = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [0, 40]);
   const scale = useTransform(scrollYProgress, [0, 1], reduced ? [1, 1] : [1, 1.05]);
 
-  const accentIndex = hero.titleLines[1]?.indexOf(hero.titleAccent) ?? -1;
+  const titleLineOne = hero.titleLines[0] ?? '';
+  const titleLineTwo = hero.titleLines[1] ?? '';
 
   return (
     <section
       ref={ref}
-      className="about-v2-hero relative flex min-h-[min(84vh,780px)] flex-col justify-end overflow-hidden bg-[#071018] pt-28 sm:min-h-[min(88vh,840px)] lg:min-h-[min(90vh,880px)]"
+      className="about-v2-hero relative flex min-h-[min(84vh,780px)] flex-col overflow-hidden bg-[#071018] pt-28 sm:min-h-[min(88vh,840px)] sm:pt-32 lg:min-h-[min(90vh,880px)] lg:pt-36"
       data-header-theme="dark"
     >
       <motion.div
@@ -45,41 +46,21 @@ export function AboutHero() {
 
       <div className="about-v2-hero__shade absolute inset-0 z-[1]" aria-hidden />
       <div className="about-v2-hero__veil absolute inset-0 z-[1]" aria-hidden />
-      <div className="about-v2-hero__bottom-fade absolute inset-x-0 bottom-0 z-[2]" aria-hidden />
 
       <div
-        className={`about-v2-hero__container relative z-10 flex flex-1 flex-col justify-end ${ABOUT_SHELL} px-6 pb-12 sm:px-6 sm:pb-14 lg:px-8 lg:pb-16`}
+        className={`about-v2-hero__container relative z-10 flex flex-1 flex-col justify-center ${ABOUT_SHELL} px-6 sm:px-6 lg:px-8`}
       >
-        <div className="about-v2-hero__grid pb-2 pt-16 sm:pt-20 lg:pt-24">
-          <div className="about-v2-hero__content min-w-0">
-            <span className="about-v2-hero__accent-bar" aria-hidden />
-
-            <motion.p
-              initial={reduced ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE }}
-              className="section-label"
-            >
-              {hero.overline}
-            </motion.p>
-
+        <div className="about-v2-hero__stage">
+          <div className="about-v2-hero__content">
             <motion.h1
               initial={reduced ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-              className="enoteb-title enoteb-title--hero hero-title-serif enoteb-title--on-dark about-v2-hero__title mt-5 sm:mt-6"
+              className="enoteb-title enoteb-title--hero hero-title-serif enoteb-title--on-dark about-v2-hero__title"
             >
-              <span className="about-v2-hero__title-line block">{hero.titleLines[0]}</span>
-              <span className="about-v2-hero__title-line mt-1 block sm:mt-1.5">
-                {accentIndex >= 0 ? (
-                  <>
-                    {hero.titleLines[1]!.slice(0, accentIndex)}
-                    <span className="text-[#FF6A1A]">{hero.titleAccent}</span>
-                    {hero.titleLines[1]!.slice(accentIndex + hero.titleAccent.length)}
-                  </>
-                ) : (
-                  hero.titleLines[1]
-                )}
+              <span className="about-v2-hero__title-line">{titleLineOne}</span>
+              <span className="about-v2-hero__title-line about-v2-hero__title-line--second">
+                {titleLineTwo}
               </span>
             </motion.h1>
 
@@ -98,7 +79,10 @@ export function AboutHero() {
               transition={{ duration: 0.8, delay: 0.34, ease: EASE }}
               className="about-v2-hero__actions mt-8 flex flex-wrap items-center gap-4 sm:mt-9"
             >
-              <Link href="#notre-histoire" className="about-v2-hero__cta btn-orange-glass link-focus rounded-none group">
+              <Link
+                href="#notre-histoire"
+                className="about-v2-hero__cta btn-orange-solid link-focus rounded-none group text-white focus-visible:ring-[#e85f14]"
+              >
                 <span>Notre histoire</span>
                 <ArrowUpRight
                   className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -110,19 +94,6 @@ export function AboutHero() {
               </Link>
             </motion.div>
           </div>
-
-          <motion.aside
-            initial={reduced ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.28, ease: EASE }}
-            className="about-v2-hero__aside hidden lg:block"
-          >
-            <p className="about-v2-hero__aside-label">Expertise terrain</p>
-            <p className="about-v2-hero__aside-text">
-              BTP, aménagement et construction industrielle au service des marchés publics et privés.
-            </p>
-            <p className="about-v2-hero__aside-meta">Laâyoune · Maroc</p>
-          </motion.aside>
         </div>
       </div>
     </section>

@@ -22,6 +22,11 @@ export class ContactDto {
   @MaxLength(30)
   phone?: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  company?: string;
+
   @IsString()
   @IsNotEmpty()
   @MinLength(10)

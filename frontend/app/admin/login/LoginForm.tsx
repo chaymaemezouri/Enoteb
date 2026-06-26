@@ -1,13 +1,23 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { siteConfig } from '@/config/site';
 import { formatAdminError } from '@/lib/admin-utils';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { Logo } from '@/components/layout/Logo';
+
+function AdminLoginShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="admin-login-page">
+      <div className="admin-login-page__sand" aria-hidden />
+      <div className="admin-login-page__grid" aria-hidden />
+      <div className="admin-login-page__inner">{children}</div>
+    </div>
+  );
+}
 
 export function AdminLoginForm() {
   const { login, isLoading, isAuthenticated } = useAuth();
@@ -49,9 +59,9 @@ export function AdminLoginForm() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-100 px-4">
-        <p className="text-body text-neutral-700">Vérification de la session…</p>
-      </div>
+      <AdminLoginShell>
+        <p className="admin-login-page__loading">Vérification de la session…</p>
+      </AdminLoginShell>
     );
   }
 
@@ -60,58 +70,86 @@ export function AdminLoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-100 px-4 py-10">
-      <div className="w-full max-w-md rounded-card border border-neutral-200 bg-white p-8 shadow-sm">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <Logo size="lg" className="mb-4" />
-          <p className="text-body-sm font-medium text-neutral-500">Espace sécurisé</p>
-          <h1 className="mt-1 text-title text-neutral-900">Connexion</h1>
-          <p className="mt-2 text-body text-neutral-600">
-            Utilisez vos identifiants pour accéder à l’administration du site.
-          </p>
-        </div>
+    <AdminLoginShell>
+      <div className="admin-login-page__shell">
+        <aside className="admin-login-page__brand">
+          <span className="admin-login-page__brand-accent" aria-hidden />
+          <Link href="/" className="link-focus inline-flex w-fit" aria-label={`${siteConfig.name} — Accueil`}>
+            <Image
+              src={siteConfig.logo.src}
+              alt=""
+              width={144}
+              height={48}
+              className="admin-login-page__brand-logo"
+              priority
+            />
+          </Link>
+          <div>
+            <p className="admin-login-page__brand-label">Espace sécurisé</p>
+            <h1 className="admin-login-page__brand-title mt-3">Administration ENOTEB</h1>
+            <p className="admin-login-page__brand-text mt-3">
+              Gérez les projets, secteurs et contenus du site public depuis un espace dédié.
+            </p>
+          </div>
+        </aside>
 
-        <form onSubmit={(event) => void handleSubmit(event)} className="space-y-5">
-          {error ? (
-            <div
-              role="alert"
-              className="rounded-button border border-red-200 bg-red-50 px-4 py-3 text-body text-red-700"
-            >
-              {error}
+        <div className="admin-login-page__form-wrap">
+          <div>
+            <p className="admin-login-page__brand-label">Connexion</p>
+            <h2 className="admin-login-page__form-title mt-2">Identifiants</h2>
+            <p className="admin-login-page__form-lead">
+              Utilisez votre compte administrateur pour continuer.
+            </p>
+          </div>
+
+          <form onSubmit={(event) => void handleSubmit(event)} className="admin-login-page__form">
+            {error ? (
+              <div role="alert" className="admin-login-page__alert">
+                {error}
+              </div>
+            ) : null}
+
+            <div className="admin-login-page__field">
+              <label htmlFor="admin-email" className="admin-login-page__label admin-login-page__label-required">
+                Adresse email
+              </label>
+              <input
+                id="admin-email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="admin-login-page__input"
+                placeholder="admin@enoteb.local"
+              />
             </div>
-          ) : null}
 
-          <div>
-            <Label htmlFor="admin-email" required>
-              Adresse email
-            </Label>
-            <Input
-              id="admin-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
+            <div className="admin-login-page__field">
+              <label htmlFor="admin-password" className="admin-login-page__label admin-login-page__label-required">
+                Mot de passe
+              </label>
+              <input
+                id="admin-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="admin-login-page__input"
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="admin-password" required>
-              Mot de passe
-            </Label>
-            <Input
-              id="admin-password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </div>
-
-          <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Connexion en cours…' : 'Se connecter'}
-          </Button>
-        </form>
+            <button type="submit" className="admin-login-page__submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Connexion en cours…' : 'Se connecter'}
+              {!isSubmitting ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+
+      <Link href="/" className="admin-login-page__back link-focus">
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+        Retour au site
+      </Link>
+    </AdminLoginShell>
   );
 }

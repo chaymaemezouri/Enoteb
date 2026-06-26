@@ -1,11 +1,14 @@
 'use client';
 
+import Link from 'next/link';
 import {
+  ArrowRight,
   Building2,
   ClipboardList,
   Compass,
   Factory,
   Layers,
+  MapPin,
   PenLine,
   ShieldCheck,
   Sparkles,
@@ -14,10 +17,11 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { projectsPageContent } from '@/config/projects';
+import { getWhatsAppUrl } from '@/lib/contact';
+import { formatAmount, formatYear } from '@/lib/format';
 import { getProjectHighlights } from '@/lib/projectDetail';
 import type { Project } from '@/types';
 import { buildGalleryImages, ProjectDetailGallery } from './ProjectDetailGallery';
-import { ProjectDetailSidebar } from './ProjectDetailSidebar';
 
 const HIGHLIGHT_ICONS: Record<string, LucideIcon> = {
   building: Building2,
@@ -42,55 +46,134 @@ export function ProjectDetailView({ project, titlePrimary, titleAccent }: Projec
   const { detail } = projectsPageContent;
   const galleryImages = buildGalleryImages(project.mainImageUrl, project.photos, project.name);
   const highlights = getProjectHighlights(project.sector?.slug);
+  const showAmount = project.showAmount && project.amount;
+  const yearLabel = formatYear(project.year);
+  const addressLine = project.address?.trim() || null;
+  const mapQuery = addressLine || project.location;
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
+  const whatsappUrl = getWhatsAppUrl(
+    `Bonjour, je souhaite des informations sur le projet « ${project.name} ».`,
+  );
+
+  const keyFigures = highlights.map((item) => ({
+    icon: HIGHLIGHT_ICONS[item.icon] ?? Factory,
+    label: item.title,
+    value: item.description,
+  }));
+
+  const displayTitle = titleAccent ? `${titlePrimary} ${titleAccent}` : titlePrimary;
+
+  const metaItems = [
+    project.sector ? { label: detail.sectorLabel, value: project.sector.name } : null,
+    project.client ? { label: detail.clientLabel, value: project.client } : null,
+    yearLabel ? { label: detail.yearLabel, value: yearLabel } : null,
+    { label: detail.locationLabel, value: project.location },
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return (
-    <div>
-      <header className="max-w-4xl">
-        <h1 className="font-sans text-[clamp(1.75rem,4vw,2.75rem)] font-bold uppercase leading-[1.05] tracking-[-0.02em] text-[#252A30]">
-          {titlePrimary}
-          {titleAccent ? <span className="mt-1 block text-[#FF6B1A]">{titleAccent}</span> : null}
-        </h1>
-      </header>
-
-      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,380px)] lg:gap-12">
-        <div>
-          <ProjectDetailGallery images={galleryImages} projectName={project.name} />
-
-          <section className="mt-10">
-            <div className="flex items-center gap-3">
-              <span className="h-6 w-px shrink-0 bg-[#FF6B1A]" aria-hidden />
-              <h2 className="text-[0.8125rem] font-bold uppercase tracking-[0.14em] text-[#252A30]">
-                {detail.descriptionHeading}
-              </h2>
-            </div>
-            <div className="mt-5 whitespace-pre-line text-[0.9375rem] leading-[1.75] text-[#6B7078]">
-              {project.description}
-            </div>
-          </section>
-
-          <section className="mt-10 grid gap-6 sm:grid-cols-2">
-            {highlights.map((item) => {
-              const Icon = HIGHLIGHT_ICONS[item.icon] ?? Factory;
-              return (
-                <div key={item.title} className="flex gap-3">
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center text-[#FF6B1A]">
-                    <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                  </span>
-                  <div>
-                    <h3 className="text-[0.75rem] font-bold uppercase tracking-[0.1em] text-[#252A30]">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-[#6B7078]">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </section>
+    <div className="project-detail">
+      <div className="project-detail__layout">
+        <div className="project-detail__media">
+          <ProjectDetailGallery
+            images={galleryImages}
+            projectName={project.name}
+            sectorName={project.sector?.name}
+          />
         </div>
 
-        <ProjectDetailSidebar project={project} />
+        <div className="project-detail__panel">
+          <header className="project-detail__head">
+            <h1 className="project-detail__title">{displayTitle}</h1>
+
+            <p className="project-detail__loc">
+              <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+              <span>
+                {project.location}
+                {addressLine ? ` · ${addressLine}` : ''}
+              </span>
+            </p>
+          </header>
+
+          <div className="project-detail__divider" aria-hidden />
+
+          <section className="project-detail__section">
+            <h2 className="project-detail__label">{detail.aboutHeading}</h2>
+            <p className="project-detail__text">{project.description}</p>
+          </section>
+
+          {showAmount ? (
+            <section className="project-detail__amount" aria-labelledby="project-amount-label">
+              <h2 id="project-amount-label" className="project-detail__label">
+                {detail.amountLabel}
+              </h2>
+              <p className="project-detail__amount-value">{formatAmount(project.amount!)}</p>
+            </section>
+          ) : null}
+
+          {metaItems.length > 0 ? (
+            <dl className="project-detail__meta">
+              {metaItems.map((item) => (
+                <div key={item.label} className="project-detail__meta-item">
+                  <dt className="project-detail__meta-label">{item.label}</dt>
+                  <dd className="project-detail__meta-value">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
+
+          {keyFigures.length > 0 ? (
+            <section className="project-detail__section">
+              <h2 className="project-detail__label">{detail.keyFiguresHeading}</h2>
+              <ul className="project-detail__highlights">
+                {keyFigures.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.label} className="project-detail__highlight">
+                      <span className="project-detail__highlight-icon" aria-hidden>
+                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                      </span>
+                      <div>
+                        <p className="project-detail__highlight-title">{item.label}</p>
+                        <p className="project-detail__highlight-text">{item.value}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
+
+          <footer className="project-detail__footer">
+            <div className="project-detail__actions">
+              <Link href="/contact" className="project-detail__btn project-detail__btn--primary">
+                {detail.requestQuoteLabel}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-detail__btn project-detail__btn--secondary"
+              >
+                <MapPin className="h-4 w-4" aria-hidden />
+                {detail.viewOnMapLabel}
+              </a>
+            </div>
+
+            <p className="project-detail__footnote">{detail.similarProject}</p>
+
+            {whatsappUrl ? (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-detail__whatsapp"
+              >
+                {detail.whatsappLabel}
+              </a>
+            ) : null}
+          </footer>
+        </div>
       </div>
     </div>
   );

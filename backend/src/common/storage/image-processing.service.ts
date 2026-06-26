@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import sharp from 'sharp';
 import { AllowedImageMime, IMAGE_MIME_EXTENSIONS } from '../constants';
 import { detectImageMimeFromBuffer } from '../utils/image-mime.util';
+import { loadSharp } from '../utils/sharp.util';
 
 export interface ProcessedImage {
   mainBuffer: Buffer;
@@ -34,6 +34,7 @@ export class ImageProcessingService {
     }
 
     try {
+      const sharp = loadSharp();
       const pipeline = sharp(buffer, { failOn: 'none' }).rotate();
 
       const mainBuffer = await pipeline

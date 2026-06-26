@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { DEFAULT_SECTOR_IMAGE, getSectorCatalogImage } from '@/lib/utils';
+import { DEFAULT_SECTOR_IMAGE, resolveSectorCoverImage } from '@/lib/utils';
 import type { Sector } from '@/types';
 import { fadeUpView } from './sectorsMotion';
 
@@ -17,7 +17,7 @@ interface SectorsGridCardProps {
 
 export function SectorsGridCard({ sector, variant, delay = 0 }: SectorsGridCardProps) {
   const reduced = useReducedMotion() ?? false;
-  const catalogSrc = getSectorCatalogImage(sector.slug);
+  const catalogSrc = resolveSectorCoverImage(sector.imageUrl, sector.slug);
   const [imageSrc, setImageSrc] = useState(catalogSrc);
   const [usedFallback, setUsedFallback] = useState(false);
 

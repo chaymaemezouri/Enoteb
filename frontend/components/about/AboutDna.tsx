@@ -3,9 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { aboutContent } from '@/config/about';
 import {
-  AboutAccentMark,
   AboutContainer,
-  AboutLabel,
   AboutLead,
   AboutSection,
   AboutTitle,
@@ -20,10 +18,11 @@ export function AboutDna() {
     <AboutSection tone="deep" aria-labelledby="about-dna-title">
       <AboutContainer className="about-v2-editorial">
         <motion.header {...fadeUpView(0, reduced)} className="about-v2-editorial__head max-w-2xl">
-          <AboutLabel>
-            <span id="about-dna-title">{dna.overline}</span>
-          </AboutLabel>
-          <AboutTitle light className="mt-5 text-[clamp(1.75rem,3.2vw,2.375rem)] leading-[1.12]">
+          <AboutTitle
+            light
+            id="about-dna-title"
+            className="text-[clamp(1.75rem,3.2vw,2.375rem)] leading-[1.12]"
+          >
             Un savoir-faire construit sur{' '}
             <span className="text-[#FF6A1A]">l&apos;exigence</span>
           </AboutTitle>
@@ -41,7 +40,6 @@ export function AboutDna() {
                 role="listitem"
                 className="about-v2-trio__col"
               >
-                <AboutAccentMark className="about-v2-accent-mark--on-dark" />
                 <h3 className="about-v2-trio__title">{line.title}</h3>
                 <p className="about-v2-trio__text">{line.description}</p>
               </motion.article>

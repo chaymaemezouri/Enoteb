@@ -16,8 +16,9 @@ export class UploadService {
     }
 
     if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      const maxMb = Math.round(MAX_IMAGE_SIZE_BYTES / (1024 * 1024));
       throw new PayloadTooLargeException(
-        'Le fichier dépasse la taille maximale de 5 Mo',
+        `Le fichier dépasse la taille maximale de ${maxMb} Mo`,
       );
     }
 

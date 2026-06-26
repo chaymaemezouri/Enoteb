@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/cn';
 
 interface ConfirmModalProps {
   open: boolean;
@@ -56,7 +54,7 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="admin-modal-backdrop"
       role="presentation"
       onClick={onCancel}
     >
@@ -64,33 +62,31 @@ export function ConfirmModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
-        className={cn('w-full max-w-md rounded-card bg-white p-6 shadow-xl')}
+        className="admin-modal"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 id="confirm-modal-title" className="text-subtitle font-semibold text-neutral-900">
+        <h2 id="confirm-modal-title" className="admin-modal__title">
           {title}
         </h2>
-        <p className="mt-3 text-body text-neutral-700">{message}</p>
-        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button
+        <p className="admin-modal__message">{message}</p>
+        <div className="admin-modal__actions">
+          <button
             ref={cancelRef}
             type="button"
-            variant="outline"
-            size="lg"
+            className="admin-btn admin-btn--secondary"
             onClick={onCancel}
             disabled={isLoading}
           >
             {cancelLabel}
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant={variant === 'danger' ? 'danger' : 'primary'}
-            size="lg"
+            className={variant === 'danger' ? 'admin-btn admin-btn--danger' : 'admin-btn admin-btn--primary'}
             onClick={onConfirm}
             disabled={isLoading}
           >
             {isLoading ? 'Veuillez patienter…' : confirmLabel}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

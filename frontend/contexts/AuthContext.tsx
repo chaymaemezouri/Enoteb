@@ -12,8 +12,9 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import { setAccessTokenGetter } from '@/lib/admin-api';
-import { loginRequest, logoutRequest, refreshRequest } from '@/lib/auth-api';
+import { loginRequest, logoutRequest, meRequest, refreshRequest } from '@/lib/auth-api';
 import { formatAdminError } from '@/lib/admin-utils';
+import type { AdminProfile } from '@/types/admin';
 
 const ADMIN_SESSION_COOKIE = 'enoteb_admin_session';
 
@@ -32,10 +33,12 @@ function setAdminSessionHint(active: boolean): void {
 
 interface AuthContextValue {
   accessToken: string | null;
+  profile: AdminProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -43,12 +46,22 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const tokenRef = useRef<string | null>(null);
 
   const syncToken = useCallback((token: string | null) => {
     tokenRef.current = token;
     setAccessToken(token);
+  }, []);
+
+  const loadProfile = useCallback(async (token: string) => {
+    try {
+      const adminProfile = await meRequest(token);
+      setProfile(adminProfile);
+    } catch {
+      setProfile(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -64,10 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           syncToken(response.accessToken);
           setAdminSessionHint(true);
+          await loadProfile(response.accessToken);
         }
       } catch {
         if (!cancelled) {
           syncToken(null);
+          setProfile(null);
           setAdminSessionHint(false);
         }
       } finally {
@@ -82,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [syncToken]);
+  }, [syncToken, loadProfile]);
 
   useEffect(() => {
     if (!isLoading && !accessToken) {
@@ -95,15 +110,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await loginRequest(email, password);
       syncToken(response.accessToken);
       setAdminSessionHint(true);
+      await loadProfile(response.accessToken);
     },
-    [syncToken],
+    [syncToken, loadProfile],
   );
+
+  const refreshProfile = useCallback(async () => {
+    if (!tokenRef.current) {
+      return;
+    }
+
+    await loadProfile(tokenRef.current);
+  }, [loadProfile]);
 
   const logout = useCallback(async () => {
     try {
       await logoutRequest();
     } finally {
       syncToken(null);
+      setProfile(null);
       setAdminSessionHint(false);
       router.replace('/admin/login');
     }
@@ -112,12 +137,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       accessToken,
+      profile,
       isAuthenticated: Boolean(accessToken),
       isLoading,
       login,
       logout,
+      refreshProfile,
     }),
-    [accessToken, isLoading, login, logout],
+    [accessToken, profile, isLoading, login, logout, refreshProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

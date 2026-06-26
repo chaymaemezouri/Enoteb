@@ -18,6 +18,16 @@ const contactFormSchema = z.object({
     .email('Adresse email invalide')
     .max(254, '254 caractères maximum'),
   company: z.string().max(120, '120 caractères maximum').optional().or(z.literal('')),
+  phone: z
+    .string()
+    .trim()
+    .max(30, '30 caractères maximum')
+    .optional()
+    .or(z.literal(''))
+    .refine(
+      (value) => !value || /^[\d\s+().-]+$/.test(value),
+      'Numéro de téléphone invalide',
+    ),
   message: z
     .string()
     .trim()
@@ -46,6 +56,7 @@ export function ContactForm() {
       name: '',
       email: '',
       company: '',
+      phone: '',
       message: '',
       website: '',
     },
@@ -55,16 +66,13 @@ export function ContactForm() {
     setStatus('idle');
     setStatusMessage('');
 
-    const companyLine = values.company?.trim()
-      ? `Entreprise : ${values.company.trim()}\n\n`
-      : '';
-    const fullMessage = `${companyLine}${values.message}`;
-
     try {
       const response = await api.sendContact({
         name: values.name,
         email: values.email,
-        message: fullMessage,
+        company: values.company?.trim() || undefined,
+        phone: values.phone?.trim() || undefined,
+        message: values.message,
         website: values.website,
       });
 
@@ -143,20 +151,39 @@ export function ContactForm() {
           </div>
         </div>
 
-        <div className="contact-form__field">
-          <label htmlFor="company" className="contact-form__label">
-            {form.companyLabel}
-          </label>
-          <input
-            id="company"
-            type="text"
-            autoComplete="organization"
-            placeholder={form.companyPlaceholder}
-            disabled={isSubmitting}
-            className={cn('contact-form__input', errors.company && 'contact-form__input--error')}
-            {...register('company')}
-          />
-          {errors.company ? <p className="contact-form__error">{errors.company.message}</p> : null}
+        <div className="contact-form__grid">
+          <div className="contact-form__field">
+            <label htmlFor="company" className="contact-form__label">
+              {form.companyLabel}
+            </label>
+            <input
+              id="company"
+              type="text"
+              autoComplete="organization"
+              placeholder={form.companyPlaceholder}
+              disabled={isSubmitting}
+              className={cn('contact-form__input', errors.company && 'contact-form__input--error')}
+              {...register('company')}
+            />
+            {errors.company ? <p className="contact-form__error">{errors.company.message}</p> : null}
+          </div>
+
+          <div className="contact-form__field">
+            <label htmlFor="phone" className="contact-form__label">
+              {form.phoneLabel}
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              placeholder={form.phonePlaceholder}
+              disabled={isSubmitting}
+              className={cn('contact-form__input', errors.phone && 'contact-form__input--error')}
+              {...register('phone')}
+            />
+            {errors.phone ? <p className="contact-form__error">{errors.phone.message}</p> : null}
+          </div>
         </div>
 
         <div className="contact-form__field">

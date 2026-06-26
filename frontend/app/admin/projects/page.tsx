@@ -1,21 +1,37 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
-import { AdminAuthGate, AdminShell, ConfirmModal } from '@/components/admin';
-import { Button } from '@/components/ui/Button';
-import { ButtonLink } from '@/components/ui/ButtonLink';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { ExternalLink, Eye, EyeOff, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import {
+  AdminAuthGate,
+  AdminIconButton,
+  AdminPageHeader,
+  AdminPagination,
+  AdminShell,
+  ConfirmModal,
+  useAdminToast,
+} from '@/components/admin';
 import { adminApi } from '@/lib/admin-api';
 import { formatAdminDate, formatAdminError } from '@/lib/admin-utils';
 import type { AdminProjectListItem } from '@/types/admin';
 
+const PAGE_SIZE = 10;
+
+type StatusFilter = 'all' | 'published' | 'draft';
+
 export default function AdminProjectsPage() {
+  const { showToast } = useAdminToast();
   const [projects, setProjects] = useState<AdminProjectListItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingDelete, setPendingDelete] = useState<AdminProjectListItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [page, setPage] = useState(1);
 
   async function loadProjects() {
     setIsLoading(true);
@@ -25,7 +41,9 @@ export default function AdminProjectsPage() {
       const list = await adminApi.listProjects();
       setProjects(list);
     } catch (loadError) {
-      setError(formatAdminError(loadError));
+      const message = formatAdminError(loadError);
+      setError(message);
+      showToast(message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -34,6 +52,50 @@ export default function AdminProjectsPage() {
   useEffect(() => {
     void loadProjects();
   }, []);
+
+  const sectors = useMemo(() => {
+    const map = new Map<string, string>();
+    projects.forEach((project) => {
+      if (project.sector) {
+        map.set(project.sector.id, project.sector.name);
+      }
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [projects]);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return projects.filter((project) => {
+      if (statusFilter === 'published' && !project.isPublished) {
+        return false;
+      }
+      if (statusFilter === 'draft' && project.isPublished) {
+        return false;
+      }
+      if (sectorFilter !== 'all' && project.sector?.id !== sectorFilter) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+
+      return (
+        project.name.toLowerCase().includes(query) ||
+        project.location.toLowerCase().includes(query) ||
+        (project.sector?.name.toLowerCase().includes(query) ?? false)
+      );
+    });
+  }, [projects, search, sectorFilter, statusFilter]);
+
+  const paginated = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, sectorFilter, statusFilter]);
 
   async function handleTogglePublish(project: AdminProjectListItem) {
     setBusyId(project.id);
@@ -44,8 +106,14 @@ export default function AdminProjectsPage() {
         isPublished: !project.isPublished,
       });
       await loadProjects();
+      showToast(
+        project.isPublished ? 'Projet dépublié.' : 'Projet publié sur le site.',
+        'success',
+      );
     } catch (toggleError) {
-      setError(formatAdminError(toggleError));
+      const message = formatAdminError(toggleError);
+      setError(message);
+      showToast(message, 'error');
     } finally {
       setBusyId(null);
     }
@@ -63,187 +131,211 @@ export default function AdminProjectsPage() {
       await adminApi.deleteProject(pendingDelete.id);
       setPendingDelete(null);
       await loadProjects();
+      showToast('Projet supprimé.', 'success');
     } catch (deleteError) {
-      setError(formatAdminError(deleteError));
+      const message = formatAdminError(deleteError);
+      setError(message);
+      showToast(message, 'error');
       setPendingDelete(null);
     } finally {
       setIsDeleting(false);
     }
   }
 
+  function renderActions(project: AdminProjectListItem) {
+    return (
+      <div className="admin-action-group">
+        <AdminIconButton
+          href={`/admin/projects/${project.id}/edit`}
+          label="Modifier"
+          variant="secondary"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </AdminIconButton>
+        {project.isPublished ? (
+          <AdminIconButton
+            href={`/projets/${project.slug}`}
+            label="Voir sur le site"
+            variant="ghost"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </AdminIconButton>
+        ) : null}
+        <AdminIconButton
+          label={project.isPublished ? 'Dépublier' : 'Publier'}
+          variant="ghost"
+          disabled={busyId === project.id}
+          onClick={() => void handleTogglePublish(project)}
+        >
+          {project.isPublished ? (
+            <EyeOff className="h-3.5 w-3.5" />
+          ) : (
+            <Eye className="h-3.5 w-3.5" />
+          )}
+        </AdminIconButton>
+        <AdminIconButton
+          label="Supprimer"
+          variant="danger"
+          onClick={() => setPendingDelete(project)}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </AdminIconButton>
+      </div>
+    );
+  }
+
   return (
     <AdminAuthGate>
       <AdminShell>
-        <div className="space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-title text-neutral-900">Projets</h2>
-              <p className="mt-1 text-body text-neutral-600">
-                Gérez tous les projets, publiés ou en brouillon.
-              </p>
-            </div>
+        <AdminPageHeader
+          label="Projets"
+          title="Réalisations"
+          lead="Gérez tous les projets, publiés ou en brouillon."
+          actions={
+            <Link href="/admin/projects/new" className="admin-btn admin-btn--primary admin-btn--sm">
+              <Plus className="h-3.5 w-3.5" aria-hidden />
+              Ajouter
+            </Link>
+          }
+        />
 
-            <ButtonLink href="/admin/projects/new" size="lg">
-              <Plus className="h-5 w-5" aria-hidden />
-              Ajouter un projet
-            </ButtonLink>
+        {error ? (
+          <div role="alert" className="admin-alert">
+            {error}
+          </div>
+        ) : null}
+
+        <div className="admin-toolbar">
+          <div className="admin-toolbar__search">
+            <Search className="admin-toolbar__search-icon h-4 w-4" aria-hidden />
+            <input
+              type="search"
+              className="admin-toolbar__input"
+              placeholder="Rechercher par nom, lieu ou secteur…"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
           </div>
 
-          {error ? (
-            <div
-              role="alert"
-              className="rounded-button border border-red-200 bg-red-50 px-4 py-3 text-body text-red-700"
-            >
-              {error}
-            </div>
-          ) : null}
+          <select
+            className="admin-toolbar__select"
+            value={sectorFilter}
+            onChange={(event) => setSectorFilter(event.target.value)}
+            aria-label="Filtrer par secteur"
+          >
+            <option value="all">Tous les secteurs</option>
+            {sectors.map((sector) => (
+              <option key={sector.id} value={sector.id}>
+                {sector.name}
+              </option>
+            ))}
+          </select>
 
-          <div className="overflow-hidden rounded-card border border-neutral-200 bg-white">
-            {isLoading ? (
-              <p className="p-6 text-body text-neutral-700">Chargement des projets…</p>
-            ) : projects.length === 0 ? (
-              <p className="p-6 text-body text-neutral-600">
-                Aucun projet enregistré pour le moment.
-              </p>
-            ) : (
-              <>
-                <div className="space-y-4 p-4 md:hidden">
-                  {projects.map((project) => (
-                    <article
-                      key={project.id}
-                      className="rounded-card border border-neutral-200 bg-white p-4"
-                    >
-                      <div className="flex flex-col gap-3">
-                        <div>
-                          <h3 className="text-subtitle font-semibold text-neutral-900">
-                            {project.name}
-                          </h3>
-                          <p className="mt-1 text-body-sm text-neutral-600">
-                            {project.sector?.name ?? '—'} · {project.location}
-                          </p>
-                          <p className="mt-1 text-body-sm text-neutral-500">
-                            Modifié le {formatAdminDate(project.updatedAt)}
-                          </p>
-                        </div>
-                        <span
-                          className={
-                            project.isPublished
-                              ? 'w-fit rounded-full bg-green-100 px-3 py-1 text-body-sm font-medium text-green-800'
-                              : 'w-fit rounded-full bg-neutral-100 px-3 py-1 text-body-sm font-medium text-neutral-700'
-                          }
-                        >
-                          {project.isPublished ? 'Publié' : 'Brouillon'}
-                        </span>
-                        <div className="flex flex-col gap-2">
-                          <ButtonLink
-                            href={`/admin/projects/${project.id}/edit`}
-                            variant="outline"
-                            size="lg"
-                          >
-                            Modifier
-                          </ButtonLink>
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="lg"
-                            disabled={busyId === project.id}
-                            onClick={() => void handleTogglePublish(project)}
-                          >
-                            {busyId === project.id
-                              ? 'Mise à jour…'
-                              : project.isPublished
-                                ? 'Dépublier'
-                                : 'Publier'}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="danger"
-                            size="lg"
-                            onClick={() => setPendingDelete(project)}
-                          >
-                            Supprimer
-                          </Button>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+          <select
+            className="admin-toolbar__select"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+            aria-label="Filtrer par statut"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="published">Publiés</option>
+            <option value="draft">Brouillons</option>
+          </select>
 
-                <div className="hidden overflow-x-auto md:block">
-                  <table className="min-w-full text-left text-body">
-                    <thead className="border-b border-neutral-200 bg-neutral-50 text-body-sm font-semibold text-neutral-700">
-                      <tr>
-                        <th className="px-4 py-3">Nom</th>
-                        <th className="px-4 py-3">Secteur</th>
-                        <th className="px-4 py-3">Localisation</th>
-                        <th className="px-4 py-3">Statut</th>
-                        <th className="px-4 py-3">Dernière modification</th>
-                        <th className="px-4 py-3">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-200">
-                      {projects.map((project) => (
-                        <tr key={project.id}>
-                          <td className="px-4 py-4 font-medium text-neutral-900">{project.name}</td>
-                          <td className="px-4 py-4 text-neutral-700">
-                            {project.sector?.name ?? '—'}
-                          </td>
-                          <td className="px-4 py-4 text-neutral-700">{project.location}</td>
-                          <td className="px-4 py-4">
-                            <span
-                              className={
-                                project.isPublished
-                                  ? 'rounded-full bg-green-100 px-3 py-1 text-body-sm font-medium text-green-800'
-                                  : 'rounded-full bg-neutral-100 px-3 py-1 text-body-sm font-medium text-neutral-700'
-                              }
-                            >
-                              {project.isPublished ? 'Publié' : 'Brouillon'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 text-neutral-700">
-                            {formatAdminDate(project.updatedAt)}
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex min-w-[220px] flex-col gap-2">
-                              <ButtonLink
-                                href={`/admin/projects/${project.id}/edit`}
-                                variant="outline"
-                                size="sm"
-                              >
-                                Modifier
-                              </ButtonLink>
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                size="sm"
-                                disabled={busyId === project.id}
-                                onClick={() => void handleTogglePublish(project)}
-                              >
-                                {busyId === project.id
-                                  ? 'Mise à jour…'
-                                  : project.isPublished
-                                    ? 'Dépublier'
-                                    : 'Publier'}
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="danger"
-                                size="sm"
-                                onClick={() => setPendingDelete(project)}
-                              >
-                                Supprimer
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-          </div>
+          <p className="admin-toolbar__meta">
+            {filtered.length} projet{filtered.length > 1 ? 's' : ''}
+          </p>
         </div>
+
+        {isLoading ? (
+          <p className="admin-loading-text">Chargement des projets…</p>
+        ) : filtered.length === 0 ? (
+          <div className="admin-panel">
+            <p className="admin-panel__empty">
+              {projects.length === 0
+                ? 'Aucun projet enregistré pour le moment.'
+                : 'Aucun projet ne correspond à votre recherche.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="admin-cards">
+              {paginated.map((project) => (
+                <article key={project.id} className="admin-card">
+                  <h3 className="admin-card__title">{project.name}</h3>
+                  <p className="admin-card__meta">
+                    {project.sector?.name ?? '—'} · {project.location}
+                  </p>
+                  <p className="admin-card__meta">
+                    Modifié le {formatAdminDate(project.updatedAt)}
+                  </p>
+                  <div className="admin-card__row">
+                    <span
+                      className={
+                        project.isPublished
+                          ? 'admin-badge admin-badge--published'
+                          : 'admin-badge admin-badge--draft'
+                      }
+                    >
+                      {project.isPublished ? 'Publié' : 'Brouillon'}
+                    </span>
+                  </div>
+                  <div className="admin-card__actions">{renderActions(project)}</div>
+                </article>
+              ))}
+            </div>
+
+            <div className="admin-desktop-only">
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Secteur</th>
+                      <th>Localisation</th>
+                      <th>Statut</th>
+                      <th>Modification</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map((project) => (
+                      <tr key={project.id}>
+                        <td className="admin-table__name">{project.name}</td>
+                        <td className="admin-table__muted">{project.sector?.name ?? '—'}</td>
+                        <td className="admin-table__muted">{project.location}</td>
+                        <td>
+                          <span
+                            className={
+                              project.isPublished
+                                ? 'admin-badge admin-badge--published'
+                                : 'admin-badge admin-badge--draft'
+                            }
+                          >
+                            {project.isPublished ? 'Publié' : 'Brouillon'}
+                          </span>
+                        </td>
+                        <td className="admin-table__muted">
+                          {formatAdminDate(project.updatedAt)}
+                        </td>
+                        <td>{renderActions(project)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <AdminPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              total={filtered.length}
+              onPageChange={setPage}
+            />
+          </>
+        )}
 
         <ConfirmModal
           open={Boolean(pendingDelete)}

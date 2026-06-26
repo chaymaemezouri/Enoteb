@@ -70,7 +70,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     ...fetchOptions,
     headers,
     credentials: 'include',
-    ...(revalidate !== undefined ? { next: { revalidate } } : {}),
+    ...(revalidate === 0 ? { cache: 'no-store' as RequestCache } : {}),
+    ...(revalidate !== undefined && revalidate !== 0
+      ? { next: { revalidate: revalidate === false ? 0 : revalidate } }
+      : {}),
   });
 
   if (!response.ok) {
@@ -119,6 +122,7 @@ export const api = {
       sector?: string;
       page?: number;
       limit?: number;
+      q?: string;
     },
     options?: Pick<RequestOptions, 'revalidate'>,
   ) => request<PaginatedResponse<ProjectSummary>>(withQuery('/projects', params), options),
