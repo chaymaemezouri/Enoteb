@@ -2,19 +2,17 @@
 
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
-import { HomeCtaBlock } from './HomeCtaBlock';
-import { PartnersSection } from './PartnersSection';
+import { OrangeCtaBanner } from './OrangeCtaBanner';
 
 export function CtaFooterSection() {
   return (
     <div
-      className="relative"
+      className="cta-footer-suite relative overflow-hidden"
       style={{ backgroundColor: FOOTER_SECTION_BG }}
       data-header-theme="dark"
     >
-      <PartnersSection placement="cta" />
-      <HomeCtaBlock />
-      <SiteFooter />
+      <OrangeCtaBanner />
+      <SiteFooter variant="suite" />
     </div>
   );
 }

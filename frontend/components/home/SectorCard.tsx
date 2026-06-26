@@ -1,13 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { homeContent } from '@/config/home';
-import { Container } from '@/components/ui/Container';
-import { SectionTitle } from '@/components/ui/SectionTitle';
 import { cn } from '@/lib/cn';
 import { resolveThumbnailUrl, truncateText } from '@/lib/utils';
 import type { Sector } from '@/types';
-import { FadeIn } from './FadeIn';
 
 interface SectorCardProps {
   sector: Sector;

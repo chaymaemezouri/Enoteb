@@ -1,10 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { sectorsPageContent } from '@/config/sectors';
-import { Container } from '@/components/ui/Container';
-import { fadeUpView, SECTORS_CONTAINER } from './sectorsMotion';
+import { fadeUpView, SECTORS_SHELL } from './sectorsMotion';
 
 export function SectorsHero() {
   const { hero } = sectorsPageContent;
@@ -12,48 +11,36 @@ export function SectorsHero() {
 
   return (
     <section
-      className="relative min-h-[min(68vh,580px)] overflow-hidden bg-[#111820] sm:min-h-[min(72vh,640px)]"
-      data-header-theme="dark"
+      className="sectors-page-hero relative overflow-hidden bg-[#F3F0E8] pt-28 sm:pt-32"
+      data-header-theme="light"
     >
-      <Image
-        src={hero.imageSrc}
-        alt=""
-        fill
-        className="object-cover brightness-[0.42] contrast-[1.06]"
-        sizes="100vw"
-        priority
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#111820]/94 via-[#111820]/62 to-[#111820]/35"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#111820]/75 via-transparent to-[#111820]/25"
-        aria-hidden
-      />
+      <div className="about-v2-sand-grid pointer-events-none absolute inset-0 opacity-50" aria-hidden />
 
-      <Container
-        fluid
-        className={`relative z-10 flex min-h-[min(68vh,580px)] items-end pb-12 pt-28 sm:min-h-[min(72vh,640px)] sm:pb-16 sm:pt-32 ${SECTORS_CONTAINER}`}
-      >
-        <motion.div {...fadeUpView(0, reduced)} className="max-w-2xl">
-          <div className="flex items-start gap-4">
-            <span className="mt-2 h-12 w-px shrink-0 bg-[#FF6B1A]" aria-hidden />
-            <div>
-              <h1 className="font-display text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.02] tracking-[-0.03em] text-[#F5F1EA]">
-                {hero.titleLine1}
-                <span className="mt-1 block text-[#FF6B1A]">{hero.titleLine2}</span>
-              </h1>
-              <p className="mt-5 max-w-xl text-[0.9375rem] leading-relaxed text-[#F5F1EA]/82 sm:text-base">
-                {hero.description}
-              </p>
-              <p className="mt-3 max-w-xl text-[0.875rem] leading-relaxed text-[#F5F1EA]/62 sm:text-[0.9375rem]">
-                {hero.descriptionSecondary}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </Container>
+      <div className={`relative ${SECTORS_SHELL} pb-10 sm:pb-12 lg:pb-14`}>
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+          <motion.div {...fadeUpView(0, reduced)} className="max-w-2xl">
+            <SectionLabel>{hero.overline}</SectionLabel>
+
+            <h1 className="enoteb-title enoteb-title--hero enoteb-title--on-light mt-5 sm:mt-6">
+              <span className="block">{hero.titleLine1}</span>
+              <span className="mt-1 block text-[#FF6A1A] sm:mt-1.5">{hero.titleLine2}</span>
+            </h1>
+
+            <p className="enoteb-lead enoteb-lead--on-light mt-5 sm:mt-6">{hero.description}</p>
+          </motion.div>
+
+          <motion.div
+            {...fadeUpView(0.08, reduced)}
+            className="sectors-page-hero__aside shrink-0"
+            aria-hidden
+          >
+            <p className="sectors-page-hero__count">05</p>
+            <p className="sectors-page-hero__count-label">secteurs</p>
+          </motion.div>
+        </div>
+
+        <div className="sectors-page-hero__rule" aria-hidden />
+      </div>
     </section>
   );
 }

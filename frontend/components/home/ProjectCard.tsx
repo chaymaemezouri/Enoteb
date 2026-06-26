@@ -36,7 +36,7 @@ export function ProjectCard({ project, variant = 'default', index = 0 }: Project
         />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between p-6 sm:p-7">
-          <span className="font-display text-[3rem] font-light leading-none text-white/15 sm:text-[3.5rem]">
+          <span className="font-sans text-[3rem] font-light leading-none text-white/15 sm:text-[3.5rem]">
             {String(index + 1).padStart(2, '0')}
           </span>
           <span className="flex h-11 w-11 items-center justify-center border border-white/20 bg-white/5 text-white backdrop-blur-sm transition-all duration-300 group-hover:border-[#F36A21] group-hover:bg-[#F36A21]">
@@ -58,9 +58,7 @@ export function ProjectCard({ project, variant = 'default', index = 0 }: Project
           >
             {project.name}
           </h3>
-          {project.client ? (
-            <p className="mt-1 text-sm text-white/50">{project.client}</p>
-          ) : null}
+          {project.client ? <p className="mt-1 text-sm text-white/50">{project.client}</p> : null}
           <p className="mt-3 flex items-center gap-1.5 text-sm text-white/40">
             <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
             {project.location}

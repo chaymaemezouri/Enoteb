@@ -37,7 +37,7 @@ export function StatsSection() {
               <AnimatedCounter
                 value={item.value}
                 suffix={item.suffix}
-                className="font-display text-[clamp(2rem,4vw,2.75rem)] font-bold leading-none tracking-[-0.03em] text-[#f7f5f0]"
+                className="font-sans text-[clamp(2rem,4vw,2.75rem)] font-bold leading-none tracking-[-0.03em] text-[#f7f5f0]"
               />
               <p className="mt-3 text-[0.625rem] font-semibold uppercase leading-snug tracking-[0.14em] text-white/45">
                 {item.label}

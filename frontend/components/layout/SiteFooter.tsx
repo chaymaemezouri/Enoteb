@@ -1,12 +1,14 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
+import { FacebookIcon, LinkedinIcon } from '@/components/icons/SocialIcons';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/cn';
 import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
 
 const linkBase =
-  'link-focus text-[0.8125rem] transition-colors duration-300 hover:text-[#FF6A1A] focus-visible:ring-[#FF6A1A]';
+  'site-footer__link link-focus text-[0.8125rem] text-white/[0.56] transition-colors duration-300 hover:text-[#F8F5EE] focus-visible:ring-[#FF6A1A]';
 
 type FooterLink = { label: string; href: string };
 
@@ -15,7 +17,7 @@ function FooterLinks({ links }: { links: readonly FooterLink[] }) {
     <ul className="site-footer__links">
       {links.map((link) => (
         <li key={link.href}>
-          <Link href={link.href} className={cn(linkBase, 'text-white/[0.56]')}>
+          <Link href={link.href} className={linkBase}>
             {link.label}
           </Link>
         </li>
@@ -24,13 +26,57 @@ function FooterLinks({ links }: { links: readonly FooterLink[] }) {
   );
 }
 
-export function SiteFooter({ className }: { className?: string }) {
+function FooterSocial({ className }: { className?: string }) {
+  const { social } = siteConfig;
+
+  if (!social.linkedin && !social.facebook) return null;
+
+  return (
+    <div className={cn('site-footer__social', className)}>
+      {social.linkedin ? (
+        <a
+          href={social.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="site-footer__social-btn link-focus"
+          aria-label="LinkedIn ENOTEB"
+        >
+          <LinkedinIcon className="h-4 w-4" />
+        </a>
+      ) : null}
+      {social.facebook ? (
+        <a
+          href={social.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="site-footer__social-btn link-focus"
+          aria-label="Facebook ENOTEB"
+        >
+          <FacebookIcon className="h-4 w-4" />
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
+export function SiteFooter({
+  className,
+  variant = 'default',
+}: {
+  className?: string;
+  variant?: 'default' | 'suite';
+}) {
   const year = new Date().getFullYear();
-  const { footer, contact } = siteConfig;
+  const { footer, logo, tagline } = siteConfig;
 
   return (
     <footer
-      className={cn('site-footer relative overflow-hidden border-t border-white/[0.06]', className)}
+      className={cn(
+        'site-footer relative overflow-hidden',
+        variant === 'default' && 'border-t border-white/[0.06]',
+        variant === 'suite' && 'site-footer--suite',
+        className,
+      )}
       style={{ backgroundColor: FOOTER_SECTION_BG }}
       data-hide-navbar-logo
     >
@@ -40,8 +86,23 @@ export function SiteFooter({ className }: { className?: string }) {
         </p>
       </div>
 
-      <div className="site-footer__inner relative z-10 w-full px-5 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12 lg:px-[7%] lg:pb-16 lg:pt-14">
-        <div className="pl-5 sm:pl-6">
+      <div className="site-footer__inner home-shell relative z-10 w-full py-10 sm:py-11 lg:py-12">
+        <div className="site-footer__top">
+          <div className="site-footer__brand">
+            <Link href="/" className="site-footer__brand-mark link-focus inline-flex">
+              <Image
+                src={logo.src}
+                alt={siteConfig.name}
+                width={120}
+                height={48}
+                className="h-9 w-auto object-contain opacity-90 sm:h-10"
+              />
+            </Link>
+            <p className="site-footer__brand-tagline">{tagline}</p>
+            <p className="site-footer__brand-about">{footer.about}</p>
+            <FooterSocial className="mt-5" />
+          </div>
+
           <div className="site-footer__main">
             <nav className="site-footer__col" aria-label="Services">
               <p className="site-footer__label">{footer.servicesTitle}</p>
@@ -57,30 +118,16 @@ export function SiteFooter({ className }: { className?: string }) {
               <p className="site-footer__label">{footer.legalTitle}</p>
               <FooterLinks links={footer.legal} />
             </nav>
-
-            <div className="site-footer__col site-footer__contact">
-              <p className="site-footer__label">{footer.contactTitle}</p>
-              <address className="site-footer__contact-body not-italic">
-                <p className="text-[0.8125rem] leading-relaxed text-white/[0.5]">{contact.address}</p>
-                {contact.email ? (
-                  <a
-                    href={`mailto:${contact.email}`}
-                    className={cn(linkBase, 'mt-2 inline-block text-white/[0.56]')}
-                  >
-                    {contact.email}
-                  </a>
-                ) : null}
-              </address>
-            </div>
           </div>
+        </div>
 
-          <div className="site-footer__watermark-spacer" aria-hidden />
-
-          <div className="site-footer__bottom">
-            <span className="site-footer__rule" aria-hidden />
+        <div className="site-footer__bottom">
+          <span className="site-footer__rule" aria-hidden />
+          <div className="site-footer__bottom-row">
             <p className="site-footer__copyright">
               © {year} {siteConfig.name}. Tous droits réservés.
             </p>
+            <FooterSocial className="site-footer__social--inline lg:hidden" />
           </div>
         </div>
       </div>

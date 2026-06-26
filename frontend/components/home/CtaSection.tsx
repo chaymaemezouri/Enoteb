@@ -37,13 +37,11 @@ export function CtaSection() {
 
           <div className="relative flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center">
             <div className="max-w-xl">
-              <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-[#F36A21]">
-                {cta.overline}
-              </p>
-              <h2 className="font-display mt-4 text-[clamp(1.75rem,3vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.025em] text-[#f7f5f0]">
+              <p className="section-label">{cta.overline}</p>
+              <h2 className="enoteb-title enoteb-title--section enoteb-title--on-dark mt-4">
                 {cta.title}
               </h2>
-              <p className="mt-4 text-base text-white/50">{cta.description}</p>
+              <p className="enoteb-lead enoteb-lead--on-dark mt-4">{cta.description}</p>
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">

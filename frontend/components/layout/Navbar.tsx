@@ -11,6 +11,7 @@ import { cn } from '@/lib/cn';
 
 const TOP_NAV = siteConfig.nav.slice(3);
 const DROPDOWN_NAV = siteConfig.nav.slice(1, 3);
+const CONTACT_HREF = '/contact';
 
 function isNavActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -22,17 +23,14 @@ function NavLink({
   pathname,
   onClick,
   linkRef,
-  variant,
 }: {
   href: string;
   label: string;
   pathname: string;
   onClick?: () => void;
   linkRef?: Ref<HTMLAnchorElement>;
-  variant: 'hero' | 'light';
 }) {
   const isActive = isNavActive(pathname, href);
-  const isHero = variant === 'hero';
 
   return (
     <Link
@@ -40,15 +38,36 @@ function NavLink({
       href={href}
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
+      className="link-focus nav-link whitespace-nowrap"
+    >
+      {label}
+    </Link>
+  );
+}
+
+function NavCta({
+  href,
+  label,
+  pathname,
+  onClick,
+  variant,
+}: {
+  href: string;
+  label: string;
+  pathname: string;
+  onClick?: () => void;
+  variant: 'hero' | 'light';
+}) {
+  const isActive = isNavActive(pathname, href);
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'link-focus nav-link relative whitespace-nowrap px-0 py-1 text-[0.8125rem] font-medium tracking-wide transition-colors duration-300',
-        isHero
-          ? isActive
-            ? '!text-white'
-            : '!text-white/85 hover:!text-white'
-          : isActive
-            ? 'text-[#18212B]'
-            : 'text-[#18212B]/58 hover:text-[#18212B]',
+        'nav-cta link-focus rounded-none inline-flex items-center justify-center',
+        variant === 'hero' ? 'btn-orange-glass' : 'nav-cta--light',
       )}
     >
       {label}
@@ -67,8 +86,6 @@ function NavDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isHero = variant === 'hero';
-  const isActive = DROPDOWN_NAV.some((item) => isNavActive(pathname, item.href));
 
   useEffect(() => {
     if (!open) return;
@@ -97,16 +114,7 @@ function NavDropdown({
     <div ref={containerRef} className={cn('relative', className)}>
       <button
         type="button"
-        className={cn(
-          'link-focus nav-link inline-flex items-center gap-1.5 whitespace-nowrap px-0 py-1 text-[0.8125rem] font-medium tracking-wide transition-colors duration-300',
-          isHero
-            ? isActive || open
-              ? '!text-white'
-              : '!text-white/85 hover:!text-white'
-            : isActive || open
-              ? 'text-[#18212B]'
-              : 'text-[#18212B]/58 hover:text-[#18212B]',
-        )}
+        className="link-focus nav-link"
         aria-expanded={open}
         aria-haspopup="true"
         aria-controls="navbar-dropdown-menu"
@@ -114,10 +122,7 @@ function NavDropdown({
       >
         À propos
         <ChevronDown
-          className={cn(
-            'h-3 w-3 opacity-70 transition-transform duration-200',
-            open && 'rotate-180',
-          )}
+          className={cn('h-3 w-3 opacity-70 transition-transform duration-200', open && 'rotate-180')}
           aria-hidden
         />
       </button>
@@ -127,10 +132,8 @@ function NavDropdown({
           id="navbar-dropdown-menu"
           role="menu"
           className={cn(
-            'absolute right-0 top-[calc(100%+0.65rem)] z-50 min-w-[12.5rem] border py-1.5 backdrop-blur-xl',
-            isHero
-              ? 'border-white/10 bg-[#171a20]/90'
-              : 'border-[#252A30]/8 bg-white/95 shadow-lg shadow-black/5',
+            'navbar-dropdown__panel',
+            variant === 'hero' ? 'navbar-dropdown__panel--dark' : 'navbar-dropdown__panel--light',
           )}
         >
           {DROPDOWN_NAV.map((item) => {
@@ -142,16 +145,7 @@ function NavDropdown({
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 aria-current={itemActive ? 'page' : undefined}
-                className={cn(
-                  'link-focus block px-4 py-2.5 text-[0.6875rem] font-medium uppercase tracking-[0.16em] transition-colors',
-                  isHero
-                    ? itemActive
-                      ? 'text-white'
-                      : 'text-white/70 hover:bg-white/5 hover:text-white'
-                    : itemActive
-                      ? 'text-[#18212B]'
-                      : 'text-[#18212B]/65 hover:bg-[#18212B]/5 hover:text-[#18212B]',
-                )}
+                className="navbar-dropdown__item link-focus"
               >
                 {item.label}
               </Link>
@@ -164,8 +158,6 @@ function NavDropdown({
 }
 
 function BrandLogo({ variant }: { variant: 'hero' | 'light' }) {
-  const isHero = variant === 'hero';
-
   return (
     <Link
       href="/"
@@ -178,8 +170,8 @@ function BrandLogo({ variant }: { variant: 'hero' | 'light' }) {
         width={156}
         height={52}
         className={cn(
-          'h-10 w-auto max-w-[132px] object-contain sm:h-11 sm:max-w-[148px]',
-          !isHero && 'brightness-0 opacity-90',
+          'site-navbar__brand-logo',
+          variant === 'light' && 'site-navbar__brand-logo--light',
         )}
         priority
       />
@@ -189,14 +181,34 @@ function BrandLogo({ variant }: { variant: 'hero' | 'light' }) {
 }
 
 function getNavShellClass(showNavGlass: boolean, navVariant: 'hero' | 'light') {
+  if (!showNavGlass) {
+    return 'navbar-shell';
+  }
+
   return cn(
-    'flex items-center gap-6 sm:gap-8',
-    showNavGlass &&
-      'rounded-full border px-5 py-2 backdrop-blur-md transition-[background-color,border-color] duration-300 sm:px-6',
-    showNavGlass &&
-      (navVariant === 'light'
-        ? 'border-[#18212B]/10 bg-[#F6F2EA]/88 shadow-sm shadow-[#18212B]/5'
-        : 'border-white/[0.08] bg-[#0B1117]/[0.28]'),
+    'navbar-shell navbar-shell--glass',
+    navVariant === 'light' ? 'navbar-shell--glass-light' : 'navbar-shell--glass-dark',
+  );
+}
+
+function renderNavItems(pathname: string, variant: 'hero' | 'light') {
+  return (
+    <>
+      <NavDropdown pathname={pathname} variant={variant} />
+      {TOP_NAV.map((item) =>
+        item.href === CONTACT_HREF ? (
+          <NavCta
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            pathname={pathname}
+            variant={variant}
+          />
+        ) : (
+          <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
+        ),
+      )}
+    </>
   );
 }
 
@@ -207,7 +219,8 @@ export function Navbar() {
     pathname === '/' ||
     pathname === '/qui-sommes-nous' ||
     pathname === '/secteurs' ||
-    pathname === '/projets';
+    pathname === '/projets' ||
+    pathname === '/contact';
   const { theme: headerTheme, scrolled, hideLogo } = useHeaderTheme(isCinematicPage);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [compactNav, setCompactNav] = useState(true);
@@ -307,39 +320,33 @@ export function Navbar() {
   const showMenuButton = showHamburger && (!hideLogo || isMobile);
   const hideNavChromeDesktop = hideLogo && !isMobile;
 
-  const menuButtonClass = cn(
-    'link-focus inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors',
-    navVariant === 'hero'
-      ? 'border-white/20 bg-white/[0.04] text-white hover:border-white/35 hover:bg-white/[0.08]'
-      : 'border-[#18212B]/12 bg-[#F6F2EA]/80 text-[#18212B] hover:border-[#FF6A1A]/35 hover:bg-[#F6F2EA] hover:text-[#FF6A1A]',
-  );
-
   return (
     <header
       className={cn(
-        'pointer-events-none fixed left-0 right-0 top-0 z-40 px-5 py-5 sm:px-8 sm:py-6',
-        navOnDark && 'navbar-on-dark',
-        isHome ? 'lg:px-10' : 'lg:pl-[calc(3.5rem+1.5rem)] lg:pr-14 xl:pl-[calc(4rem+2rem)]',
+        'site-navbar',
+        navOnDark ? 'site-navbar--dark' : 'site-navbar--light',
+        scrolled && 'site-navbar--scrolled',
+        isHome && 'lg:px-10',
+        !isHome && 'lg:pl-[calc(3.5rem+1.5rem)] lg:pr-14 xl:pl-[calc(4rem+2rem)]',
         hideNavChromeDesktop && 'md:pointer-events-none md:invisible md:opacity-0',
       )}
       data-nav-theme={navOnDark ? 'dark' : 'light'}
     >
+      <div className="site-navbar__backdrop" aria-hidden />
+
       <div
         ref={rowRef}
-        className={cn(
-          'pointer-events-auto flex w-full items-center gap-4',
-          hideLogo ? 'justify-end' : 'justify-between',
-        )}
+        className={cn('site-navbar__inner', hideLogo ? 'justify-end' : 'justify-between')}
       >
         {!hideLogo ? (
-          <div ref={brandRef} className="flex min-w-0 shrink-0 items-center">
+          <div ref={brandRef} className="site-navbar__brand">
             <BrandLogo variant={navVariant} />
           </div>
         ) : (
           <div ref={brandRef} className="sr-only" aria-hidden />
         )}
 
-        <div className="flex min-w-0 items-center justify-end gap-3">
+        <div className="site-navbar__actions">
           <div
             ref={navSizerRef}
             className={cn(
@@ -348,16 +355,7 @@ export function Navbar() {
             )}
             aria-hidden
           >
-            <NavDropdown pathname={pathname} variant={navVariant} />
-            {TOP_NAV.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                pathname={pathname}
-                variant={navVariant}
-              />
-            ))}
+            {renderNavItems(pathname, navVariant)}
           </div>
 
           {!showHamburger ? (
@@ -365,16 +363,7 @@ export function Navbar() {
               className={getNavShellClass(showNavGlass, navVariant)}
               aria-label="Navigation principale"
             >
-              <NavDropdown pathname={pathname} variant={navVariant} />
-              {TOP_NAV.map((item) => (
-                <NavLink
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  pathname={pathname}
-                  variant={navVariant}
-                />
-              ))}
+              {renderNavItems(pathname, navVariant)}
             </nav>
           ) : null}
 
@@ -383,7 +372,10 @@ export function Navbar() {
               <button
                 ref={menuButtonRef}
                 type="button"
-                className={menuButtonClass}
+                className={cn(
+                  'navbar-menu-btn link-focus',
+                  navVariant === 'light' && 'navbar-menu-btn--light',
+                )}
                 aria-expanded={mobileOpen}
                 aria-controls="navbar-mobile-menu"
                 aria-haspopup="true"
@@ -402,10 +394,8 @@ export function Navbar() {
                   id="navbar-mobile-menu"
                   role="menu"
                   className={cn(
-                    'pointer-events-auto absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[12rem] border py-1.5 backdrop-blur-xl',
-                    navVariant === 'hero'
-                      ? 'border-white/10 bg-[#171a20]/95 shadow-lg shadow-black/25'
-                      : 'border-[#252A30]/8 bg-white/95 shadow-lg shadow-black/5',
+                    'navbar-mobile-panel',
+                    navVariant === 'hero' ? 'navbar-mobile-panel--dark' : 'navbar-mobile-panel--light',
                   )}
                 >
                   <nav aria-label="Navigation mobile">
@@ -417,16 +407,7 @@ export function Navbar() {
                         role="menuitem"
                         onClick={closeMobileMenu}
                         aria-current={isNavActive(pathname, item.href) ? 'page' : undefined}
-                        className={cn(
-                          'link-focus block px-4 py-2.5 text-[0.6875rem] font-medium uppercase tracking-[0.16em] transition-colors',
-                          navVariant === 'hero'
-                            ? isNavActive(pathname, item.href)
-                              ? 'text-white'
-                              : 'text-white/70 hover:bg-white/5 hover:text-white'
-                            : isNavActive(pathname, item.href)
-                              ? 'text-[#18212B]'
-                              : 'text-[#18212B]/65 hover:bg-[#18212B]/5 hover:text-[#18212B]',
-                        )}
+                        className="navbar-mobile-panel__item link-focus"
                       >
                         {item.label}
                       </Link>

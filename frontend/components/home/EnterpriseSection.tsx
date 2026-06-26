@@ -50,7 +50,7 @@ export function EnterpriseSection() {
         <div className="enterprise-section__image-overlay" />
       </div>
 
-      <div className="enterprise-section__inner relative z-10 mx-auto w-full max-w-[1280px] px-[7%]">
+      <div className="enterprise-section__inner relative z-10 w-full">
         <div className="enterprise-section__grid">
           <div className="enterprise-section__copy">
             <motion.div {...fadeUpView(0, reduced)}>

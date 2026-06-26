@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ProjectsApproach, ProjectsHero, ProjectsListing } from '@/components/projects';
-import { SectorsFooter } from '@/components/sectors';
+import { CtaFooterSection } from '@/components/home';
 import { BreadcrumbJsonLd } from '@/components/seo';
 import { projectsPageContent } from '@/config/projects';
 import { api } from '@/lib/api';
@@ -9,7 +9,7 @@ import type { PaginatedResponse, ProjectSummary, Sector } from '@/types';
 
 export const revalidate = 3600;
 
-const PROJECTS_PER_PAGE = 12;
+const PROJECTS_PER_PAGE = 8;
 
 interface ProjectsPageProps {
   searchParams: { sector?: string; page?: string };
@@ -49,9 +49,13 @@ export async function generateMetadata({ searchParams }: ProjectsPageProps): Pro
     const sector = sectors.find((item) => item.slug === sectorSlug);
 
     if (sector) {
+      const sectorCopy = projectsPageContent.sectorHero[sector.slug];
       return createPageMetadata({
         title: `Projets — ${sector.name}`,
-        description: `Réalisations ENOTEB dans le secteur ${sector.name}.`,
+        description:
+          sector.description?.trim() ||
+          sectorCopy?.description ||
+          `Réalisations ENOTEB dans le secteur ${sector.name}.`,
         path: `/projets?sector=${sector.slug}`,
         image: sector.imageUrl,
       });
@@ -68,12 +72,11 @@ export async function generateMetadata({ searchParams }: ProjectsPageProps): Pro
 }
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
-  const sector = searchParams.sector;
+  const sectorSlug = searchParams.sector;
   const page = Math.max(1, Number.parseInt(searchParams.page ?? '1', 10) || 1);
 
-  const { sectors, projects } = await getProjectsPageData(sector, page);
-  const activeSector = sectors.find((item) => item.slug === sector);
-  const sectorNames = sectors.map((item) => item.name);
+  const { sectors, projects } = await getProjectsPageData(sectorSlug, page);
+  const activeSector = sectors.find((item) => item.slug === sectorSlug);
 
   return (
     <>
@@ -86,10 +89,10 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             : []),
         ]}
       />
-      <ProjectsHero sectorName={activeSector?.name} />
-      <ProjectsListing sectors={sectors} projects={projects} activeSector={sector} />
+      <ProjectsHero sector={activeSector} />
+      <ProjectsListing sectors={sectors} projects={projects} activeSector={activeSector} />
       <ProjectsApproach />
-      <SectorsFooter sectorNames={sectorNames} />
+      <CtaFooterSection />
     </>
   );
 }

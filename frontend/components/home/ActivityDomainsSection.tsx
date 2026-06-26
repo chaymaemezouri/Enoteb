@@ -98,7 +98,7 @@ function DomainCard({
 
       <span
         className={cn(
-          'pointer-events-none absolute right-3 top-3 z-[1] select-none font-display font-bold leading-none tracking-[-0.05em]',
+          'pointer-events-none absolute right-3 top-3 z-[1] select-none font-sans font-bold leading-none tracking-[-0.05em]',
           isActive
             ? 'text-[4.5rem] text-white/[0.07] lg:text-[5.5rem]'
             : 'text-[3.5rem] text-white/[0.05] lg:text-[4.5rem]',
@@ -108,7 +108,10 @@ function DomainCard({
         {number}
       </span>
 
-      <span className="pointer-events-none absolute left-0 top-0 z-10 h-7 w-px bg-[#FF6A1A]" aria-hidden />
+      <span
+        className="pointer-events-none absolute left-0 top-0 z-10 h-7 w-px bg-[#FF6A1A]"
+        aria-hidden
+      />
       <span
         className={cn(
           'pointer-events-none absolute left-0 top-0 z-10 h-px bg-[#FF6A1A] transition-all duration-500',
@@ -191,7 +194,7 @@ export function ActivityDomainsSection() {
   return (
     <section
       id="domaines-activites"
-      className="activity-domains-section relative scroll-mt-28 overflow-x-hidden px-5 pb-10 pt-[90px] md:px-[7%] md:pb-20 md:pt-[130px] lg:pt-[140px]"
+      className="activity-domains-section relative scroll-mt-28 overflow-x-hidden pb-10 pt-16 home-shell sm:pt-20 md:pb-20 md:pt-28 lg:pt-32"
       style={{ backgroundColor: BG_SECTION }}
       data-header-theme="light"
       aria-labelledby="activity-domains-heading"
@@ -210,12 +213,7 @@ export function ActivityDomainsSection() {
           <motion.div {...fadeUpView(0, reduced)}>
             <div className="flex items-center justify-center gap-3">
               <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
-              <p
-                className="text-[0.625rem] font-semibold uppercase tracking-[0.34em]"
-                style={{ color: NAVY }}
-              >
-                {activityDomains.overline}
-              </p>
+              <p className="section-label">{activityDomains.overline}</p>
               <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
             </div>
           </motion.div>
@@ -223,16 +221,14 @@ export function ActivityDomainsSection() {
           <motion.h2
             {...fadeUpView(0.08, reduced)}
             id="activity-domains-heading"
-            className="mx-auto mt-5 max-w-[850px] font-display text-[clamp(1.75rem,4.5vw,2.375rem)] font-bold leading-[1.12] tracking-[-0.03em]"
-            style={{ color: NAVY }}
+            className="enoteb-title enoteb-title--section enoteb-title--on-light mx-auto mt-5 max-w-[850px]"
           >
             {activityDomains.title}
           </motion.h2>
 
           <motion.p
             {...fadeUpView(0.16, reduced)}
-            className="mx-auto mt-4 max-w-[720px] text-[0.9375rem] leading-[1.6] sm:text-base"
-            style={{ color: MUTED }}
+            className="enoteb-lead enoteb-lead--on-light mx-auto mt-4 max-w-[720px]"
           >
             {activityDomains.description}
           </motion.p>
@@ -261,7 +257,7 @@ export function ActivityDomainsSection() {
             ))}
           </div>
 
-          <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2 snap-x snap-mandatory scrollbar-none md:hidden">
+          <div className="-mx-[clamp(1.25rem,4vw,2rem)] flex gap-3 overflow-x-auto px-[clamp(1.25rem,4vw,2rem)] pb-2 snap-x snap-mandatory scrollbar-none md:hidden">
             {activityDomains.items.map((item, index) => (
               <DomainCard
                 key={item.title}

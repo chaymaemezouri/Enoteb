@@ -51,10 +51,8 @@ export function SectorsPreview({ sectors }: SectorsPreviewProps) {
       <Container>
         <div className="mb-12 flex flex-col gap-6 sm:mb-14 sm:flex-row sm:items-end sm:justify-between lg:mb-16">
           <div>
-            <p className="text-[0.8125rem] font-bold uppercase tracking-[0.1em] text-[#F36A21]">
-              {content.overline}
-            </p>
-            <h2 className="font-display mt-3 max-w-xl text-[clamp(1.75rem,3vw,2.5rem)] font-bold leading-[1.12] tracking-[-0.02em] text-[#2f3136]">
+            <p className="section-label">{content.overline}</p>
+            <h2 className="enoteb-title enoteb-title--section enoteb-title--on-light mt-3 max-w-xl">
               {content.title}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-600 sm:text-base">
@@ -88,7 +86,7 @@ export function SectorsPreview({ sectors }: SectorsPreviewProps) {
                       style={{ width: `${100 / visibleCount}%` }}
                     >
                       <article className="flex h-full flex-col">
-                        <span className="font-display text-[clamp(3rem,7vw,4.25rem)] font-light leading-none text-[#2f3136]/15">
+                        <span className="font-sans text-[clamp(3rem,7vw,4.25rem)] font-light leading-none text-[#2f3136]/15">
                           {index + 1}
                         </span>
 

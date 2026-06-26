@@ -84,7 +84,7 @@ export function WhyUsSection() {
 
   return (
     <section
-      className="relative scroll-mt-28 overflow-x-hidden px-5 py-16 md:px-[7%] md:py-28 lg:py-32"
+      className="relative scroll-mt-28 overflow-x-hidden py-14 home-shell sm:py-20 md:py-28 lg:py-32"
       style={{ backgroundColor: BG_SECTION }}
       data-header-theme="light"
       aria-labelledby="why-us-heading"
@@ -102,32 +102,27 @@ export function WhyUsSection() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-[1280px]">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[42%_58%] lg:items-start lg:gap-20">
-          {/* Colonne gauche — éditoriale */}
-          <div className="min-w-0 lg:max-w-[500px]">
+      <div className="why-us-section__inner relative w-full">
+        <div className="why-us-section__grid">
+          <div className="why-us-section__copy min-w-0">
             <motion.div {...fadeUpView(0, reduced)}>
               <div className="flex items-center gap-2.5">
-                <span className="h-px w-7 bg-[rgba(255,106,26,0.7)]" aria-hidden />
-                <p className="text-[0.625rem] font-semibold uppercase tracking-[0.34em] text-[#FF6A1A]">
-                  {whyUs.overline}
-                </p>
+                <span className="section-label-line" aria-hidden />
+                <p className="section-label">{whyUs.overline}</p>
               </div>
             </motion.div>
 
             <motion.h2
               {...fadeUpView(0.08, reduced)}
               id="why-us-heading"
-              className="mt-5 max-w-[480px] font-display text-[clamp(2.125rem,5.5vw,2.625rem)] font-bold leading-[1.1] tracking-[-0.03em] lg:text-[clamp(2.5rem,2.4vw,2.875rem)]"
-              style={{ color: NAVY }}
+              className="why-us-section__title enoteb-title enoteb-title--section enoteb-title--on-light mt-5"
             >
               {whyUs.title}
             </motion.h2>
 
             <motion.p
               {...fadeUpView(0.16, reduced)}
-              className="mt-4 max-w-[460px] text-[17px] leading-[1.7] lg:text-lg"
-              style={{ color: MUTED }}
+              className="why-us-section__text enoteb-lead enoteb-lead--on-light mt-4"
             >
               {whyUs.description}
             </motion.p>
@@ -143,8 +138,7 @@ export function WhyUsSection() {
             </motion.div>
           </div>
 
-          {/* Colonne droite — timeline */}
-          <div className="relative min-w-0 lg:pl-6">
+          <div className="why-us-section__timeline relative min-w-0">
             <span
               className="pointer-events-none absolute bottom-3 left-0 top-3 hidden w-px lg:block"
               style={{ backgroundColor: TIMELINE_COLOR }}

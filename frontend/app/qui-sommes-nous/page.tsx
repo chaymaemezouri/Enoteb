@@ -1,43 +1,42 @@
 import type { Metadata } from 'next';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import {
-  AboutClients,
-  AboutCtaBanner,
+  AboutDna,
   AboutDomains,
   AboutEngagements,
-  AboutEquipment,
-  AboutExperience,
   AboutFoundations,
   AboutHero,
-  AboutHumanCapital,
-  AboutIntro,
-  AboutLegal,
-  AboutOrgChart,
+  AboutPartners,
+  AboutPillars,
+  AboutResources,
+  AboutStats,
 } from '@/components/about';
 import { aboutContent } from '@/config/about';
+import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
 import { createPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = createPageMetadata({
   title: aboutContent.meta.title,
   description: aboutContent.meta.description,
   path: '/qui-sommes-nous',
-  image: aboutContent.entreprise.imageSrc,
+  image: aboutContent.hero.imageSrc,
 });
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="about-page about-v2">
       <AboutHero />
-      <AboutIntro />
-      <AboutDomains />
-      <AboutHumanCapital />
-      <AboutEquipment />
+      <AboutStats />
       <AboutFoundations />
+      <AboutDna />
+      <AboutPillars />
+      <AboutDomains />
+      <AboutResources />
       <AboutEngagements />
-      <AboutClients />
-      <AboutOrgChart />
-      <AboutExperience />
-      <AboutLegal />
-      <AboutCtaBanner />
-    </>
+      <AboutPartners />
+      <div style={{ backgroundColor: FOOTER_SECTION_BG }} data-header-theme="dark">
+        <SiteFooter />
+      </div>
+    </div>
   );
 }

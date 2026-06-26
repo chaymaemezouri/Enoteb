@@ -9,6 +9,8 @@ export const siteConfig = {
     { label: 'Contact', href: '/contact' },
   ],
   footer: {
+    about:
+      'Entreprise marocaine de BTP et construction industrielle — études, réalisation et coordination tous corps d’état.',
     servicesTitle: 'Services',
     services: [
       { label: 'Construction', href: '/secteurs/construction' },
@@ -32,7 +34,8 @@ export const siteConfig = {
   },
   contact: {
     email: 'm.elfilali@enoteb.com',
-    phone: undefined as string | undefined,
+    /** Ex. +212 6 00 00 00 00 */
+    phone: '',
     address: 'Laâyoune, Maroc',
     addressLines: ['Hay El Wahda 02, Av. Rass El Khaima, rue 29 n° 37', 'Laâyoune', 'MA'],
   },
@@ -46,20 +49,31 @@ export const siteConfig = {
     directorEmail: 'm.elfilali@enoteb.com',
   },
   maps: {
-    embedUrl:
-      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.2!2d-13.2!3d27.15!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDA5JzAwLjAiTiAxM8KwMTInMDAuMCJX!5e0!3m2!1sfr!2sma!4v1700000000000!5m2!1sfr!2sma',
+    locationQuery:
+      'Hay El Wahda 02, Av. Rass El Khaima, rue 29 n° 37, Laâyoune, Maroc',
+    zoom: 17,
   },
   social: {
     linkedin: 'https://www.linkedin.com/company/enoteb',
     facebook: 'https://www.facebook.com/enoteb',
   },
   whatsapp: {
+    /** Format international sans +, ex. 212600000000 */
     number: '',
     defaultMessage: 'Bonjour, je souhaite obtenir des informations sur vos services ENOTEB.',
   },
   url: 'https://enoteb.ma',
   logo: {
     src: '/images/logo_enoteb.png',
+  },
+  orangeCta: {
+    overline: 'Contact',
+    title: 'Prêt à démarrer votre projet ?',
+    description: 'Nos experts sont à votre disposition pour étudier vos besoins.',
+    buttonLabel: 'Contactez-nous',
+    href: '/contact',
+    secondaryLabel: 'Voir nos réalisations',
+    secondaryHref: '/projets',
   },
   seo: {
     defaultDescription:

@@ -6,4 +6,6 @@ export {
   staggerItem,
 } from '@/components/home/homeMotion';
 
-export const PROJECTS_CONTAINER = 'relative lg:pl-[calc(2.75rem+2rem)] xl:pl-[calc(3rem+2.5rem)]';
+export const PROJECTS_SHELL = 'home-shell w-full';
+/** @deprecated Utiliser PROJECTS_SHELL */
+export const PROJECTS_CONTAINER = PROJECTS_SHELL;

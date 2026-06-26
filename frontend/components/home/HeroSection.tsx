@@ -95,7 +95,7 @@ function HeroStatsBar({ reduced }: { reduced: boolean }) {
               value={item.value}
               suffix={item.suffix}
               immediate
-              className="hero-title-serif text-[clamp(1.5rem,2.5vw,2rem)] font-medium leading-none tracking-[0.04em] text-[#f5f2ed]"
+              className="font-sans text-[clamp(1.5rem,2.5vw,2rem)] font-medium leading-none tracking-[0.04em] text-[#f5f2ed]"
             />
             <p className="hero-stat-label mt-2 text-[0.5625rem] font-medium uppercase leading-snug tracking-[0.12em] sm:text-[0.625rem]">
               {item.label}
@@ -113,7 +113,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative h-[100svh] min-h-[620px] overflow-hidden bg-[#111820]"
+      className="relative h-[100svh] min-h-[540px] overflow-hidden bg-[#111820] sm:min-h-[600px] lg:min-h-[620px]"
       data-header-theme="dark"
     >
       <HeroVideoBackground
@@ -123,25 +123,22 @@ export function HeroSection() {
       />
       <HeroOverlays />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-[6%] pb-4 pt-24 sm:pb-5 sm:pt-28">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-5 pb-4 pt-20 sm:px-8 sm:pb-5 sm:pt-24 lg:px-10">
         <div className="flex flex-1 flex-col items-center justify-center pb-6 text-center sm:pb-8">
-          <motion.p
-            {...fadeUp(0, reduced, 0.85)}
-            className="text-[0.625rem] font-semibold uppercase tracking-[0.32em] text-[#f5f2ed]/70"
-          >
+          <motion.p {...fadeUp(0, reduced, 0.85)} className="section-label">
             ENOTEB
           </motion.p>
 
           <motion.h1
             {...fadeUp(0.08, reduced, 1)}
-            className="hero-title-serif mt-4 max-w-[14ch] text-[clamp(2.25rem,5.5vw,4.25rem)] font-medium uppercase leading-[1.06] tracking-[0.04em] text-[#f5f2ed] sm:mt-5"
+            className="enoteb-title enoteb-title--hero hero-title-serif enoteb-title--on-dark mt-4 max-w-[16ch] sm:mt-5"
           >
             {hero.title}
           </motion.h1>
 
           <motion.p
             {...fadeUp(0.18, reduced, 1)}
-            className="hero-subtitle mt-5 max-w-2xl text-[0.9375rem] font-medium leading-relaxed sm:text-[1rem]"
+            className="enoteb-lead enoteb-lead--on-dark hero-subtitle mt-5 max-w-2xl"
           >
             {hero.subtitle}
           </motion.p>
@@ -152,7 +149,7 @@ export function HeroSection() {
           >
             <Link
               href="/projets"
-              className="link-focus group inline-flex w-fit items-center justify-center gap-2 rounded-none bg-[#ff6b2c] px-5 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_-10px_rgba(255,107,44,0.55)] transition-all duration-500 ease-out hover:-translate-y-px hover:brightness-105 hover:shadow-[0_10px_28px_-8px_rgba(255,107,44,0.58)] focus-visible:ring-[#ff6b2c]"
+              className="btn-orange-glass link-focus group inline-flex w-fit items-center justify-center gap-2 rounded-none px-5 py-2.5 text-sm font-medium focus-visible:ring-[#ff6a1a]"
             >
               {hero.primaryCta}
               <ArrowUpRight

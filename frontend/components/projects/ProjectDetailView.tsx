@@ -46,7 +46,7 @@ export function ProjectDetailView({ project, titlePrimary, titleAccent }: Projec
   return (
     <div>
       <header className="max-w-4xl">
-        <h1 className="font-display text-[clamp(1.75rem,4vw,2.75rem)] font-bold uppercase leading-[1.05] tracking-[-0.02em] text-[#252A30]">
+        <h1 className="font-sans text-[clamp(1.75rem,4vw,2.75rem)] font-bold uppercase leading-[1.05] tracking-[-0.02em] text-[#252A30]">
           {titlePrimary}
           {titleAccent ? <span className="mt-1 block text-[#FF6B1A]">{titleAccent}</span> : null}
         </h1>

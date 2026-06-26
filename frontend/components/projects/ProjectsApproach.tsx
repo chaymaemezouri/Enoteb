@@ -1,91 +1,91 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, CalendarRange, KeyRound, ShieldCheck } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { projectsPageContent } from '@/config/projects';
-import { Container } from '@/components/ui/Container';
-import { fadeUpView, PROJECTS_CONTAINER, staggerItem } from './projectsMotion';
-
-const ICONS: Record<(typeof projectsPageContent.approach.items)[number]['icon'], LucideIcon> = {
-  calendar: CalendarRange,
-  shield: ShieldCheck,
-  key: KeyRound,
-};
+import { fadeUpView, PROJECTS_SHELL, staggerItem } from './projectsMotion';
 
 export function ProjectsApproach() {
   const { approach } = projectsPageContent;
   const reduced = useReducedMotion() ?? false;
 
   return (
-    <section className="bg-[#111820] py-14 sm:py-16 lg:py-20" data-header-theme="dark">
-      <Container fluid className={PROJECTS_CONTAINER}>
+    <section
+      className="relative overflow-x-hidden py-20 sm:py-20 md:py-24 lg:py-28"
+      style={{ backgroundColor: '#08111A' }}
+      data-header-theme="dark"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_100%_0%,rgba(255,106,26,0.07),transparent_55%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(255,106,26,0.22)] to-transparent"
+        aria-hidden
+      />
+
+      <div className={`relative ${PROJECTS_SHELL}`}>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] lg:items-start lg:gap-12 xl:gap-16">
           <div>
             <motion.div {...fadeUpView(0, reduced)}>
-              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.22em] text-[#FF6B1A]">
-                {approach.overline}
-              </p>
-              <h2 className="section-title section-title--dark mt-3 max-w-md">
+              <div className="flex items-center gap-2.5">
+                <span className="h-px w-7 shrink-0 bg-[#FF6A1A]/80" aria-hidden />
+                <p className="text-[0.625rem] font-semibold uppercase tracking-[0.32em] text-[#FF6A1A]">
+                  {approach.overline}
+                </p>
+              </div>
+              <h2 className="mt-4 font-sans text-[clamp(1.5rem,3vw,2.125rem)] font-bold leading-[1.12] tracking-[-0.03em] text-[#F8F5EE]">
                 <span className="block">{approach.titleLine1}</span>
-                <span className="block text-[#FF6B1A]">{approach.titleLine2}</span>
+                <span className="mt-1 block text-[#FF6A1A]">{approach.titleLine2}</span>
               </h2>
             </motion.div>
 
-            <ul className="mt-8 space-y-7 sm:mt-10 sm:space-y-8">
-              {approach.items.map((item, index) => {
-                const Icon = ICONS[item.icon];
-                return (
-                  <motion.li
-                    key={item.title}
-                    {...staggerItem(index, reduced)}
-                    className="flex gap-4 sm:gap-5"
-                  >
-                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center border border-[#FF6B1A]/35 text-[#FF6B1A]">
-                      <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            <ul className="mt-8 space-y-0 sm:mt-10">
+              {approach.items.map((item, index) => (
+                <motion.li
+                  key={item.title}
+                  {...staggerItem(index, reduced)}
+                  className="border-b border-white/[0.08] py-5 last:border-b-0"
+                >
+                  <div className="flex gap-4">
+                    <span className="shrink-0 text-[0.625rem] font-semibold tabular-nums tracking-[0.14em] text-[#FF6A1A]">
+                      {String(index + 1).padStart(2, '0')}
                     </span>
                     <div>
-                      <h3 className="text-[0.9375rem] font-bold uppercase tracking-[0.08em] text-[#F5F1EA]">
+                      <h3 className="text-[0.9375rem] font-semibold tracking-[-0.01em] text-[#F8F5EE]">
                         {item.title}
                       </h3>
-                      <p className="mt-2 max-w-lg text-[0.875rem] leading-relaxed text-[#F5F1EA]/62 sm:text-[0.9375rem]">
+                      <p className="mt-2 max-w-lg text-[0.875rem] leading-relaxed text-[rgba(248,245,238,0.58)] sm:text-[0.9375rem]">
                         {item.description}
                       </p>
                     </div>
-                  </motion.li>
-                );
-              })}
+                  </div>
+                </motion.li>
+              ))}
             </ul>
           </div>
 
           <motion.aside
             {...fadeUpView(0.15, reduced)}
-            className="relative overflow-hidden bg-[#E8E4DC] p-6 sm:p-7 lg:p-8"
+            className="border border-white/[0.08] bg-[#071018] p-6 sm:p-7 lg:p-8"
           >
-            <div
-              className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 text-[#111820]/[0.04]"
-              aria-hidden
-            >
-              <KeyRound className="h-full w-full" strokeWidth={0.75} />
-            </div>
-
-            <h3 className="relative text-[clamp(1.125rem,1.8vw,1.375rem)] font-bold leading-snug tracking-[-0.02em] text-[#252A30]">
+            <h3 className="text-[clamp(1.0625rem,1.8vw,1.25rem)] font-bold leading-snug tracking-[-0.02em] text-[#F8F5EE]">
               {approach.ctaBox.title}
             </h3>
-            <p className="relative mt-3 text-[0.875rem] leading-relaxed text-[#6B7078] sm:text-[0.9375rem]">
+            <p className="mt-3 text-[0.875rem] leading-relaxed text-[rgba(248,245,238,0.58)] sm:text-[0.9375rem]">
               {approach.ctaBox.description}
             </p>
             <Link
               href={approach.ctaBox.href}
-              className="link-focus relative mt-6 inline-flex items-center gap-2 bg-[#111820] px-5 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors duration-300 hover:bg-[#0B1117] focus-visible:ring-[#FF6B1A]"
+              className="btn-orange-glass link-focus rounded-none mt-6 inline-flex items-center gap-2 px-5 py-3.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] focus-visible:ring-[#FF6A1A]"
             >
               {approach.ctaBox.buttonLabel}
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </motion.aside>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

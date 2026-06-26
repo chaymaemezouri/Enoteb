@@ -36,7 +36,7 @@ const sectors = [
       'Charpente, structures lourdes, citernes, réservoirs, tuyauterie et installations pour l’industrie pétrolière, gazière et manufacturière.',
     order: 3,
     imageUrl:
-      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80',
   },
   {
     name: 'Pharmaceutique',
@@ -45,7 +45,7 @@ const sectors = [
       'Aménagement de zones stériles, salles blanches, laboratoires et environnements contrôlés pour l’industrie pharmaceutique.',
     order: 4,
     imageUrl:
-      'https://images.unsplash.com/photo-1579154204751-5661f58597a0?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
   },
   {
     name: 'Énergie',
@@ -54,7 +54,7 @@ const sectors = [
       'Postes de transformation, pipelines, stations de dépotage et infrastructures énergétiques.',
     order: 5,
     imageUrl:
-      'https://images.unsplash.com/photo-1473341304170-f89fa6ea8405?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80',
   },
 ] as const;
 

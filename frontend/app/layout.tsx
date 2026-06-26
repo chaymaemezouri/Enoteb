@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
+import { Fraunces, Plus_Jakarta_Sans } from 'next/font/google';
 import { Footer, Header, Sidebar, SkipLink, WhatsAppButton } from '@/components/layout';
 import { siteConfig } from '@/config/site';
 import { ACTIVE_PALETTE } from '@/config/theme';
@@ -15,9 +15,9 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ['400', '500', '600', '700'],
 });
 
-const playfair = Playfair_Display({
+const fraunces = Fraunces({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-serif',
+  variable: '--font-fraunces',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
 });
@@ -94,11 +94,15 @@ export default function RootLayout({
   const isAdmin = pathname.startsWith('/admin');
   const isHome = pathname === '/' || pathname === '';
   const isFullBleedHero =
-    pathname === '/qui-sommes-nous' || pathname === '/secteurs' || pathname === '/projets';
+    pathname === '/qui-sommes-nous' ||
+    pathname === '/secteurs' ||
+    pathname.startsWith('/secteurs/') ||
+    pathname === '/projets' ||
+    pathname === '/contact';
 
   return (
     <html lang="fr" data-palette={ACTIVE_PALETTE}>
-      <body className={`${plusJakarta.variable} ${playfair.variable} font-sans`}>
+      <body className={`${plusJakarta.variable} ${fraunces.variable} font-sans`}>
         {isAdmin ? (
           children
         ) : (
@@ -114,7 +118,7 @@ export default function RootLayout({
             >
               {children}
             </main>
-            {!isHome ? <Sidebar /> : null}
+            {!isHome && !isFullBleedHero ? <Sidebar /> : null}
             {!isHome && !isFullBleedHero ? <Footer /> : null}
             <WhatsAppButton />
           </>

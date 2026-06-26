@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { SectorsApproach, SectorsFooter, SectorsGrid, SectorsHero } from '@/components/sectors';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+import { SectorsApproach, SectorsGrid, SectorsHero } from '@/components/sectors';
 import { BreadcrumbJsonLd } from '@/components/seo';
 import { sectorsPageContent } from '@/config/sectors';
 import { api } from '@/lib/api';
+import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
 import { createPageMetadata } from '@/lib/seo';
 import type { Sector } from '@/types';
 
@@ -24,10 +26,9 @@ async function getSectors(): Promise<Sector[]> {
 
 export default async function SectorsPage() {
   const sectors = await getSectors();
-  const sectorNames = sectors.map((sector) => sector.name);
 
   return (
-    <>
+    <div className="sectors-page">
       <BreadcrumbJsonLd
         items={[
           { name: 'Accueil', path: '/' },
@@ -37,7 +38,9 @@ export default async function SectorsPage() {
       <SectorsHero />
       <SectorsGrid sectors={sectors} />
       <SectorsApproach />
-      <SectorsFooter sectorNames={sectorNames} />
-    </>
+      <div style={{ backgroundColor: FOOTER_SECTION_BG }} data-header-theme="dark">
+        <SiteFooter />
+      </div>
+    </div>
   );
 }

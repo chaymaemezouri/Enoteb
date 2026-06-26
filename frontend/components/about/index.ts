@@ -1,11 +1,18 @@
 export { AboutHero } from './AboutHero';
-export { AboutIntro } from './AboutIntro';
+export { AboutStats } from './AboutStats';
+export { AboutDna } from './AboutDna';
+export { AboutPillars } from './AboutPillars';
 export { AboutDomains } from './AboutDomains';
-export { AboutHumanCapital, AboutEquipment } from './AboutSplitSections';
+export { AboutResources } from './AboutResources';
 export { AboutFoundations } from './AboutFoundations';
 export { AboutEngagements } from './AboutEngagements';
-export { AboutClients } from './AboutClients';
-export { AboutOrgChart } from './AboutOrgChart';
-export { AboutExperience } from './AboutExperience';
-export { AboutLegal } from './AboutLegal';
-export { AboutCtaBanner } from './AboutCtaBanner';
+export { AboutPartners } from './AboutPartners';
+export {
+  AboutAccentMark,
+  AboutContainer,
+  AboutIndexRow,
+  AboutLabel,
+  AboutLead,
+  AboutSection,
+  AboutTitle,
+} from './AboutLayout';

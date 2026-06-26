@@ -5,7 +5,8 @@ export const projectsPageContent = {
       'Découvrez les réalisations ENOTEB : construction, industrie, pharmaceutique, aménagement et énergies au Maroc.',
   },
   hero: {
-    titleLine1: 'Nos Réalisations',
+    overline: 'Projets',
+    titleLine1: 'Nos réalisations',
     titleLine2: 'Projets',
     description:
       'Des chantiers livrés avec rigueur, qualité et respect des délais pour les plus grands comptes nationaux.',
@@ -13,10 +14,50 @@ export const projectsPageContent = {
       'OCP, Hikma, SPIE, ONEE et d’autres partenaires de confiance nous font confiance sur leurs ouvrages les plus exigeants.',
     imageSrc:
       'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=85',
+    imageAlt: 'Chantier de construction et ingénierie industrielle',
+    imageFallback: '/images/screen.png',
   },
+  sectorHero: {
+    construction: {
+      overline: 'Secteur construction',
+      titleSuffix: 'Réalisations',
+      description:
+        'Gros œuvre, coordination tous corps d’état et ouvrages de bâtiment livrés avec rigueur pour les marchés publics et privés.',
+    },
+    amenagement: {
+      overline: 'Secteur aménagement',
+      titleSuffix: 'Réalisations',
+      description:
+        'Conception, agencement et finitions premium pour espaces tertiaires, industriels et institutionnels.',
+    },
+    industrie: {
+      overline: 'Secteur industrie',
+      titleSuffix: 'Réalisations',
+      description:
+        'Charpente, structures lourdes, réservoirs et installations pour l’industrie et l’énergie au Maroc.',
+    },
+    pharmaceutique: {
+      overline: 'Secteur pharmaceutique',
+      titleSuffix: 'Réalisations',
+      description:
+        'Environnements contrôlés, salles blanches et ouvrages conformes aux exigences de l’industrie pharma.',
+    },
+    'energie-renouvelable': {
+      overline: 'Secteur énergie',
+      titleSuffix: 'Réalisations',
+      description:
+        'Infrastructures énergétiques, postes, pipelines et ouvrages techniques pour les grands opérateurs.',
+    },
+  } as Record<string, { overline: string; titleSuffix: string; description: string }>,
   listing: {
+    subtitle: 'Parcourez nos chantiers livrés au Maroc, par secteur d’activité.',
+    refineTitle: 'Filtrer',
+    sectorLabel: 'Secteur',
+    allSectorsLabel: 'Tous les secteurs',
     filterLabel: 'Filtrer par secteur',
-    allLabel: 'Tous les projets',
+    allLabel: 'Tous',
+    resultsLabel: 'projet',
+    resultsLabelPlural: 'projets',
     emptyTitle: 'Aucun projet trouvé',
     emptyAll:
       'Nos projets seront bientôt disponibles. Revenez prochainement ou contactez-nous pour en savoir plus.',

@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ProjectCard } from '@/components/home/ProjectCard';
 import { FadeIn } from '@/components/home/FadeIn';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+import { SectorDetailHero } from '@/components/sectors/SectorDetailHero';
 import { BreadcrumbJsonLd } from '@/components/seo';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { api, ApiClientError } from '@/lib/api';
+import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
 import { createPageMetadata } from '@/lib/seo';
-import { resolveImageUrl, truncateText } from '@/lib/utils';
-import { Container } from '@/components/ui/Container';
-import { SectionTitle } from '@/components/ui/SectionTitle';
+import { truncateText } from '@/lib/utils';
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -67,7 +68,7 @@ export default async function SectorDetailPage({ params }: SectorPageProps) {
   const projectList = projects.data;
 
   return (
-    <>
+    <div className="sectors-page">
       <BreadcrumbJsonLd
         items={[
           { name: 'Accueil', path: '/' },
@@ -75,46 +76,35 @@ export default async function SectorDetailPage({ params }: SectorPageProps) {
           { name: sectorData.name, path: `/secteurs/${sectorData.slug}` },
         ]}
       />
-      <section className="relative overflow-hidden bg-neutral-900 text-white">
-        <div className="absolute inset-0" aria-hidden>
-          <Image
-            src={resolveImageUrl(sectorData.imageUrl)}
-            alt={`Chantier représentatif du secteur ${sectorData.name}`}
-            fill
-            className="object-cover opacity-40"
-            priority
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-neutral-950/70" />
-        </div>
 
-        <Container className="relative py-section-sm lg:py-section">
-          <FadeIn className="max-w-3xl">
-            <p className="text-overline text-accent-300">Secteur</p>
-            <h1 className="mt-3 text-h1 text-balance text-white sm:text-display">
-              {sectorData.name}
-            </h1>
-            <p className="mt-6 text-subtitle-lg text-neutral-200">{sectorData.description}</p>
-          </FadeIn>
-        </Container>
-      </section>
+      <SectorDetailHero sector={sectorData} />
 
-      <section className="py-section-sm lg:py-section">
-        <Container>
+      <section
+        className="bg-[#F3F0E8] py-16 sm:py-20 lg:py-24"
+        data-header-theme="light"
+        aria-labelledby="sector-projects-title"
+      >
+        <div className="home-shell w-full">
           <FadeIn>
-            <SectionTitle
-              overline="Réalisations"
-              title={`Projets en ${sectorData.name.toLowerCase()}`}
-              description={
-                projectList.length > 0
-                  ? `${projects.meta.total} projet${projects.meta.total > 1 ? 's' : ''} publié${projects.meta.total > 1 ? 's' : ''} dans ce secteur.`
-                  : undefined
-              }
-            />
+            <div className="max-w-2xl">
+              <SectionLabel>Réalisations</SectionLabel>
+              <h2
+                id="sector-projects-title"
+                className="enoteb-title enoteb-title--section enoteb-title--on-light mt-4 sm:mt-5"
+              >
+                Projets en {sectorData.name.toLowerCase()}
+              </h2>
+              {projectList.length > 0 ? (
+                <p className="enoteb-lead enoteb-lead--on-light mt-3 sm:mt-4">
+                  {projects.meta.total} projet{projects.meta.total > 1 ? 's' : ''} publié
+                  {projects.meta.total > 1 ? 's' : ''} dans ce secteur.
+                </p>
+              ) : null}
+            </div>
           </FadeIn>
 
           {projectList.length > 0 ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {projectList.map((project, index) => (
                 <FadeIn key={project.id} delay={index * 0.06}>
                   <ProjectCard project={project} />
@@ -129,8 +119,12 @@ export default async function SectorDetailPage({ params }: SectorPageProps) {
               />
             </FadeIn>
           )}
-        </Container>
+        </div>
       </section>
-    </>
+
+      <div style={{ backgroundColor: FOOTER_SECTION_BG }} data-header-theme="dark">
+        <SiteFooter />
+      </div>
+    </div>
   );
 }

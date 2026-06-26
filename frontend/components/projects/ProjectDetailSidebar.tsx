@@ -118,16 +118,14 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
           {detail.mapLabel}
         </p>
         <p className="mt-1 px-4 text-xs text-[#6B7078]/80">{project.location}</p>
-        {siteConfig.maps.embedUrl ? (
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location + ', Maroc')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-focus mt-3 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#FF6B1A] hover:underline"
-          >
-            Ouvrir dans Maps
-          </a>
-        ) : null}
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location + ', Maroc')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-focus mt-3 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#FF6B1A] hover:underline"
+        >
+          Ouvrir dans Maps
+        </a>
       </div>
     </aside>
   );

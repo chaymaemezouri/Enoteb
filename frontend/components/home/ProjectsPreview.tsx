@@ -90,11 +90,7 @@ function ProjectShowcaseImage({
       fill
       unoptimized={project.mainImageUrl.startsWith('/uploads/')}
       className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
-      sizes={
-        isFeatured
-          ? '(max-width: 1024px) 100vw, 58vw'
-          : '(max-width: 1024px) 100vw, 34vw'
-      }
+      sizes={isFeatured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 1024px) 100vw, 34vw'}
       onError={() => setFailed(true)}
     />
   );
@@ -114,9 +110,7 @@ function ProjectShowcaseCard({
   const isFeatured = variant === 'featured';
   const number = String(index + 1).padStart(2, '0');
   const locationYear = formatLocationYear(project.location, project.year);
-  const ariaParts = [project.name, locationYear, sectorCategory(project.sector)].filter(
-    Boolean,
-  );
+  const ariaParts = [project.name, locationYear, sectorCategory(project.sector)].filter(Boolean);
 
   return (
     <motion.article
@@ -149,7 +143,7 @@ function ProjectShowcaseCard({
 
           <span
             className={cn(
-              'pointer-events-none absolute right-3 top-3 select-none font-display font-bold leading-none tracking-[-0.05em] text-white/[0.06]',
+              'pointer-events-none absolute right-3 top-3 select-none font-sans font-bold leading-none tracking-[-0.05em] text-white/[0.06]',
               isFeatured ? 'text-[5rem] lg:text-[6rem]' : 'text-[3.5rem] lg:text-[4rem]',
             )}
             aria-hidden
@@ -157,8 +151,14 @@ function ProjectShowcaseCard({
             {number}
           </span>
 
-          <span className="pointer-events-none absolute left-0 top-0 z-10 h-7 w-px bg-[#FF6A1A]" aria-hidden />
-          <span className="pointer-events-none absolute left-0 top-0 z-10 h-px w-7 bg-[#FF6A1A]" aria-hidden />
+          <span
+            className="pointer-events-none absolute left-0 top-0 z-10 h-7 w-px bg-[#FF6A1A]"
+            aria-hidden
+          />
+          <span
+            className="pointer-events-none absolute left-0 top-0 z-10 h-px w-7 bg-[#FF6A1A]"
+            aria-hidden
+          />
 
           <div
             className={cn(
@@ -214,7 +214,7 @@ export function ProjectsPreview({ projects }: ProjectsPreviewProps) {
 
   return (
     <section
-      className="relative scroll-mt-28 overflow-x-hidden px-5 pb-16 pt-14 md:px-[7%] md:pb-[130px] md:pt-20 lg:pt-24"
+      className="relative scroll-mt-28 overflow-x-hidden py-14 home-shell sm:py-16 md:pb-28 md:pt-20 lg:pb-32 lg:pt-24"
       style={{ backgroundColor: BG_WARM }}
       data-header-theme="light"
       aria-labelledby="projects-heading"
@@ -228,17 +228,12 @@ export function ProjectsPreview({ projects }: ProjectsPreviewProps) {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-[1280px]">
+      <div className="relative w-full">
         <div className="mx-auto max-w-[850px] text-center">
           <motion.div {...fadeUpView(0, reduced)}>
             <div className="flex items-center justify-center gap-3">
               <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
-              <p
-                className="text-[0.625rem] font-semibold uppercase tracking-[0.34em]"
-                style={{ color: NAVY }}
-              >
-                {content.overline}
-              </p>
+              <p className="section-label">{content.overline}</p>
               <span className="h-px w-8 bg-[#FF6A1A]" aria-hidden />
             </div>
           </motion.div>
@@ -246,16 +241,14 @@ export function ProjectsPreview({ projects }: ProjectsPreviewProps) {
           <motion.h2
             {...fadeUpView(0.08, reduced)}
             id="projects-heading"
-            className="mt-5 font-display text-[clamp(1.75rem,4.5vw,2.375rem)] font-bold leading-[1.12] tracking-[-0.03em]"
-            style={{ color: NAVY }}
+            className="enoteb-title enoteb-title--section enoteb-title--on-light mt-5"
           >
             {content.title}
           </motion.h2>
 
           <motion.p
             {...fadeUpView(0.16, reduced)}
-            className="mx-auto mt-4 max-w-[720px] text-[0.9375rem] leading-[1.6] sm:text-base"
-            style={{ color: MUTED }}
+            className="enoteb-lead enoteb-lead--on-light mx-auto mt-4 max-w-[720px]"
           >
             {content.description}
           </motion.p>

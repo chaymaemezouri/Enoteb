@@ -37,6 +37,7 @@ export default async function HomePage() {
     <>
       <OrganizationJsonLd />
       <HeroSection />
+      <PartnersSection placement="cta" />
       <EnterpriseSection />
       <ActivityDomainsSection />
       <ProjectsPreview projects={projects} />

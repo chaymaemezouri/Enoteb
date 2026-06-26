@@ -8,20 +8,9 @@ interface SectionLabelProps {
   id?: string;
 }
 
-export function SectionLabel({
-  children,
-  centered = false,
-  className,
-  id,
-}: SectionLabelProps) {
+export function SectionLabel({ children, centered = false, className, id }: SectionLabelProps) {
   return (
-    <div
-      className={cn(
-        'section-label-row',
-        centered && 'section-label-row--center',
-        className,
-      )}
-    >
+    <div className={cn('section-label-row', centered && 'section-label-row--center', className)}>
       <span
         className={cn('section-label-line', centered && 'section-label-line--sm')}
         aria-hidden
@@ -29,9 +18,7 @@ export function SectionLabel({
       <p className="section-label" id={id}>
         {children}
       </p>
-      {centered ? (
-        <span className="section-label-line section-label-line--sm" aria-hidden />
-      ) : null}
+      {centered ? <span className="section-label-line section-label-line--sm" aria-hidden /> : null}
     </div>
   );
 }

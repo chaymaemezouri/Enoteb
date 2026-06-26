@@ -17,9 +17,7 @@ const contactLinks = [
   },
   {
     id: 'phone',
-    href: siteConfig.contact.phone
-      ? getPhoneTelHref(siteConfig.contact.phone)
-      : '/contact',
+    href: siteConfig.contact.phone ? getPhoneTelHref(siteConfig.contact.phone) : '/contact',
     label: siteConfig.contact.phone
       ? `Appeler le ${siteConfig.contact.phone}`
       : 'Nous contacter par téléphone',
@@ -75,12 +73,7 @@ export function Sidebar() {
           {contactLinks.map((link) => {
             const Icon = link.icon;
             return (
-              <a
-                key={link.id}
-                href={link.href}
-                aria-label={link.label}
-                className={circleClass}
-              >
+              <a key={link.id} href={link.href} aria-label={link.label} className={circleClass}>
                 <Icon className={iconClass} strokeWidth={1.75} aria-hidden />
               </a>
             );
