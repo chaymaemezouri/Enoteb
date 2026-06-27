@@ -121,16 +121,16 @@ export declare class ProjectsController {
     }>;
     remove(id: string): Promise<void>;
     addPhoto(id: string, dto: AddProjectPhotoDto): Promise<{
-        id: string;
         url: string;
+        id: string;
         altText: string;
         order: number;
         projectId: string;
     }>;
     removePhoto(id: string, photoId: string): Promise<void>;
     updatePhoto(id: string, photoId: string, dto: UpdateProjectPhotoDto): Promise<{
-        id: string;
         url: string;
+        id: string;
         altText: string;
         order: number;
         projectId: string;

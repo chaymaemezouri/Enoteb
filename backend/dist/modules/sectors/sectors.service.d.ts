@@ -20,8 +20,8 @@ export declare class SectorsService {
     private readonly fileStorage;
     constructor(prisma: PrismaService, fileStorage: FileStorageService);
     findAll(): Prisma.PrismaPromise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -41,8 +41,8 @@ export declare class SectorsService {
         projects: PaginatedResult<ProjectSummary>;
     }>;
     create(dto: CreateSectorDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -51,8 +51,8 @@ export declare class SectorsService {
         imageUrl: string | null;
     }>;
     update(id: string, dto: UpdateSectorDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -61,8 +61,8 @@ export declare class SectorsService {
         imageUrl: string | null;
     }>;
     remove(id: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;

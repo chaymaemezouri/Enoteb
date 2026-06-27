@@ -16,13 +16,16 @@ const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const crypto_1 = require("crypto");
 const bcrypt = require("bcrypt");
+const mail_service_1 = require("../../common/mail/mail.service");
+const mail_utils_1 = require("../../common/mail/mail.utils");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const constants_1 = require("./constants");
 let AuthService = AuthService_1 = class AuthService {
-    constructor(prisma, jwtService, config) {
+    constructor(prisma, jwtService, config, mailService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
         this.config = config;
+        this.mailService = mailService;
         this.logger = new common_1.Logger(AuthService_1.name);
     }
     async login(email, password) {
@@ -106,6 +109,28 @@ let AuthService = AuthService_1 = class AuthService {
             where: { id: adminId },
             data: { passwordHash },
         });
+        const changedAt = new Date();
+        await this.mailService.sendMail(admin.email, 'Alerte sécurité - Mot de passe modifié', this.buildPasswordChangedAlertHtml(admin.email, changedAt));
+    }
+    buildPasswordChangedAlertHtml(email, changedAt) {
+        const formattedDate = (0, mail_utils_1.formatFrenchDateTime)(changedAt);
+        return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color: #18212b; line-height: 1.7; max-width: 640px;">
+        <p style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #071018;">
+          Alerte sécurité
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          Le mot de passe du compte administrateur <strong>${(0, mail_utils_1.escapeHtml)(email)}</strong>
+          vient d'être modifié.
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          <strong>Date et heure :</strong> ${(0, mail_utils_1.escapeHtml)(formattedDate)}
+        </p>
+        <p style="margin: 0; font-size: 14px; color: #68717d;">
+          Si vous n'êtes pas à l'origine de ce changement, contactez immédiatement l'administrateur système.
+        </p>
+      </div>
+    `;
     }
     async logout(refreshToken) {
         if (!refreshToken) {
@@ -173,6 +198,7 @@ exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        mail_service_1.MailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

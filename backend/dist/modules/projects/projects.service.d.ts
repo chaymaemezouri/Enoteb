@@ -44,16 +44,16 @@ export declare class ProjectsService {
     update(id: string, dto: UpdateProjectDto): Promise<SerializedProject>;
     remove(id: string): Promise<void>;
     addPhoto(projectId: string, dto: AddProjectPhotoDto): Promise<{
-        id: string;
         url: string;
+        id: string;
         altText: string;
         order: number;
         projectId: string;
     }>;
     removePhoto(projectId: string, photoId: string): Promise<void>;
     updatePhoto(projectId: string, photoId: string, dto: UpdateProjectPhotoDto): Promise<{
-        id: string;
         url: string;
+        id: string;
         altText: string;
         order: number;
         projectId: string;

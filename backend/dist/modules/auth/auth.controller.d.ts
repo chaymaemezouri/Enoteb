@@ -17,16 +17,16 @@ export declare class AuthController {
     }>;
     logout(req: Request, res: Response): Promise<void>;
     me(admin: AuthenticatedAdmin): Promise<{
+        name: string;
         id: string;
         email: string;
-        name: string;
         avatarUrl: string | null;
         lastLoginAt: Date | null;
     }>;
     updateProfile(admin: AuthenticatedAdmin, body: UpdateProfileDto): Promise<{
+        name: string;
         id: string;
         email: string;
-        name: string;
         avatarUrl: string | null;
         lastLoginAt: Date | null;
     }>;

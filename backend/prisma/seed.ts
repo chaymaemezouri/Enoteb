@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as bcrypt from 'bcrypt';
+import { ADMIN_EMAIL, LEGACY_ADMIN_EMAIL } from '../src/common/constants/admin.constants';
 import { createPrismaClient } from './client';
 
 const prisma = createPrismaClient();
@@ -295,18 +296,34 @@ async function main() {
 
   console.log('Création du compte administrateur…');
   const passwordHash = await bcrypt.hash(password, 12);
-  await prisma.adminUser.upsert({
-    where: { email: 'admin@enoteb.local' },
-    update: {
-      passwordHash,
-      name: 'Administrateur',
-    },
-    create: {
-      email: 'admin@enoteb.local',
-      passwordHash,
-      name: 'Administrateur',
-    },
+
+  const legacyAdmin = await prisma.adminUser.findUnique({
+    where: { email: LEGACY_ADMIN_EMAIL },
   });
+
+  if (legacyAdmin) {
+    await prisma.adminUser.update({
+      where: { id: legacyAdmin.id },
+      data: {
+        email: ADMIN_EMAIL,
+        passwordHash,
+        name: 'Administrateur',
+      },
+    });
+  } else {
+    await prisma.adminUser.upsert({
+      where: { email: ADMIN_EMAIL },
+      update: {
+        passwordHash,
+        name: 'Administrateur',
+      },
+      create: {
+        email: ADMIN_EMAIL,
+        passwordHash,
+        name: 'Administrateur',
+      },
+    });
+  }
 
   console.log('Suppression des projets d’exemple…');
   await prisma.project.deleteMany({

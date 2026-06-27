@@ -4,7 +4,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { escapeHtml } from '../../common/mail/mail.utils';
+import { MailService } from '../../common/mail/mail.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   CONTACT_FAILURE_MESSAGE,
@@ -17,8 +18,6 @@ export interface ContactResponse {
   message: string;
 }
 
-const PLACEHOLDER_SMTP_HOSTS = new Set(['smtp.example.com', 'example.com', 'localhost']);
-
 @Injectable()
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
@@ -26,6 +25,7 @@ export class ContactService {
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
   ) {}
 
   async sendContactMessage(dto: ContactDto): Promise<ContactResponse> {
@@ -55,7 +55,7 @@ export class ContactService {
       });
     }
 
-    if (!this.isSmtpConfigured()) {
+    if (!this.mailService.isConfigured()) {
       this.logger.warn(
         'SMTP non configuré — la demande est enregistrée et visible dans l’admin.',
       );
@@ -65,67 +65,33 @@ export class ContactService {
       };
     }
 
-    const smtp = this.config.get<{
-      host: string;
-      port: number;
-      user: string;
-      pass: string;
-    }>('smtp')!;
-
     const contactEmail = this.config.get<string>('contactEmail')!;
+    const clientEmail = dto.email.trim().toLowerCase();
+    const adminSubject = `Nouvelle demande de contact - ${dto.name.trim()}`;
+    const clientSubject = 'Nous avons bien reçu votre message - ENOTEB';
 
-    const transporter = nodemailer.createTransport({
-      host: smtp.host,
-      port: smtp.port,
-      secure: smtp.port === 465,
-      auth: {
-        user: smtp.user,
-        pass: smtp.pass,
-      },
+    const results = await Promise.allSettled([
+      this.mailService.sendMail(
+        contactEmail,
+        adminSubject,
+        this.buildAdminContactHtml(dto),
+        { replyTo: clientEmail },
+      ),
+      this.mailService.sendMail(
+        clientEmail,
+        clientSubject,
+        this.buildClientConfirmationHtml(dto.name.trim()),
+      ),
+    ]);
+
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const target = index === 0 ? contactEmail : clientEmail;
+        this.logger.error(
+          `Échec inattendu lors de l'envoi email de contact → ${target} : ${String(result.reason)}`,
+        );
+      }
     });
-
-    const phoneLine = dto.phone
-      ? `Téléphone : ${dto.phone}`
-      : 'Téléphone : non renseigné';
-
-    const companyLine = dto.company?.trim()
-      ? `Entreprise : ${dto.company.trim()}`
-      : 'Entreprise : non renseignée';
-
-    const text = [
-      `Nom : ${dto.name}`,
-      `Email : ${dto.email}`,
-      phoneLine,
-      companyLine,
-      '',
-      'Message :',
-      dto.message,
-    ].join('\n');
-
-    const html = `
-      <p><strong>Nom :</strong> ${escapeHtml(dto.name)}</p>
-      <p><strong>Email :</strong> ${escapeHtml(dto.email)}</p>
-      <p><strong>Téléphone :</strong> ${dto.phone ? escapeHtml(dto.phone) : 'non renseigné'}</p>
-      <p><strong>Entreprise :</strong> ${dto.company?.trim() ? escapeHtml(dto.company.trim()) : 'non renseignée'}</p>
-      <hr />
-      <p><strong>Message :</strong></p>
-      <p>${escapeHtml(dto.message).replace(/\n/g, '<br />')}</p>
-    `;
-
-    try {
-      await transporter.sendMail({
-        from: `"Formulaire eNoteb" <${smtp.user}>`,
-        to: contactEmail,
-        replyTo: dto.email,
-        subject: `[Contact eNoteb] Message de ${dto.name}`,
-        text,
-        html,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Échec d'envoi email (demande enregistrée en admin) : ${String(error)}`,
-      );
-    }
 
     return {
       success: true,
@@ -133,40 +99,66 @@ export class ContactService {
     };
   }
 
-  private isSmtpConfigured(): boolean {
-    const smtp = this.config.get<{
-      host?: string;
-      port?: number;
-      user?: string;
-      pass?: string;
-    }>('smtp');
+  private buildAdminContactHtml(dto: ContactDto): string {
+    const phone = dto.phone?.trim()
+      ? escapeHtml(dto.phone.trim())
+      : 'Non renseigné';
+    const company = dto.company?.trim()
+      ? escapeHtml(dto.company.trim())
+      : 'Non renseignée';
+    const message = escapeHtml(dto.message.trim()).replace(/\n/g, '<br />');
 
-    const host = smtp?.host?.trim().toLowerCase() ?? '';
-    const user = smtp?.user?.trim() ?? '';
-    const pass = smtp?.pass?.trim() ?? '';
-    const port = smtp?.port;
-
-    if (!host || !user || !pass || !port || Number.isNaN(port)) {
-      return false;
-    }
-
-    if (PLACEHOLDER_SMTP_HOSTS.has(host)) {
-      return false;
-    }
-
-    if (pass === 'change-me' || user.includes('example.com')) {
-      return false;
-    }
-
-    return true;
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color: #18212b; line-height: 1.6; max-width: 640px;">
+        <p style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #071018;">
+          Nouvelle demande de contact
+        </p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr>
+            <td style="padding: 8px 0; color: #68717d; width: 120px;">Nom</td>
+            <td style="padding: 8px 0;"><strong>${escapeHtml(dto.name.trim())}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #68717d;">Email</td>
+            <td style="padding: 8px 0;">${escapeHtml(dto.email.trim())}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #68717d;">Téléphone</td>
+            <td style="padding: 8px 0;">${phone}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #68717d;">Entreprise</td>
+            <td style="padding: 8px 0;">${company}</td>
+          </tr>
+        </table>
+        <hr style="border: none; border-top: 1px solid #e5e1d8; margin: 20px 0;" />
+        <p style="margin: 0 0 8px; font-size: 14px; color: #68717d;">Message</p>
+        <p style="margin: 0; font-size: 14px; white-space: pre-wrap;">${message}</p>
+      </div>
+    `;
   }
-}
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  private buildClientConfirmationHtml(name: string): string {
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color: #18212b; line-height: 1.7; max-width: 640px;">
+        <p style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #071018;">
+          Merci pour votre message
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          Bonjour ${escapeHtml(name)},
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          Nous avons bien reçu votre demande de contact. Notre équipe l'examinera dans les meilleurs délais
+          et vous répondra rapidement.
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          Si votre demande est urgente, vous pouvez également nous joindre par téléphone.
+        </p>
+        <p style="margin: 24px 0 0; font-size: 14px; color: #68717d;">
+          Cordialement,<br />
+          <strong style="color: #18212b;">L'équipe ENOTEB</strong>
+        </p>
+      </div>
+    `;
+  }
 }

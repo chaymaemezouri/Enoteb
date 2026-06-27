@@ -6,8 +6,8 @@ export declare class SectorsController {
     private readonly sectorsService;
     constructor(sectorsService: SectorsService);
     findAll(): import(".prisma/client").Prisma.PrismaPromise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -36,8 +36,8 @@ export declare class SectorsController {
         }>;
     }>;
     create(dto: CreateSectorDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -46,8 +46,8 @@ export declare class SectorsController {
         imageUrl: string | null;
     }>;
     update(id: string, dto: UpdateSectorDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;
@@ -56,8 +56,8 @@ export declare class SectorsController {
         imageUrl: string | null;
     }>;
     remove(id: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         order: number;

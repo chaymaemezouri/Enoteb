@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { MailService } from '../../common/mail/mail.service';
+import { escapeHtml, formatFrenchDateTime } from '../../common/mail/mail.utils';
 import { PrismaService } from '../../prisma/prisma.service';
 import { INVALID_CREDENTIALS_MESSAGE } from './constants';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
@@ -26,6 +28,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthTokens> {
@@ -145,6 +148,35 @@ export class AuthService {
       where: { id: adminId },
       data: { passwordHash },
     });
+
+    const changedAt = new Date();
+    await this.mailService.sendMail(
+      admin.email,
+      'Alerte sécurité - Mot de passe modifié',
+      this.buildPasswordChangedAlertHtml(admin.email, changedAt),
+    );
+  }
+
+  private buildPasswordChangedAlertHtml(email: string, changedAt: Date): string {
+    const formattedDate = formatFrenchDateTime(changedAt);
+
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color: #18212b; line-height: 1.7; max-width: 640px;">
+        <p style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #071018;">
+          Alerte sécurité
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          Le mot de passe du compte administrateur <strong>${escapeHtml(email)}</strong>
+          vient d'être modifié.
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px;">
+          <strong>Date et heure :</strong> ${escapeHtml(formattedDate)}
+        </p>
+        <p style="margin: 0; font-size: 14px; color: #68717d;">
+          Si vous n'êtes pas à l'origine de ce changement, contactez immédiatement l'administrateur système.
+        </p>
+      </div>
+    `;
   }
 
   async logout(refreshToken?: string): Promise<void> {

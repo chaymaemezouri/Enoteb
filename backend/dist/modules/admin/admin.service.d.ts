@@ -20,8 +20,8 @@ export declare class AdminService {
             isPublished: boolean;
             updatedAt: Date;
             sector: {
-                id: string;
                 name: string;
+                id: string;
                 slug: string;
             };
         }[];

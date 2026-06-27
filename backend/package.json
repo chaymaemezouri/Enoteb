@@ -24,7 +24,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "update:admin-email": "ts-node scripts/update-admin-email.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
