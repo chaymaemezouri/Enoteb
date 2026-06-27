@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { SectionLabel } from '@/components/ui/SectionLabel';
 import { siteConfig } from '@/config/site';
 import { fadeUpView } from './homeMotion';
 
@@ -24,11 +23,9 @@ export function OrangeCtaBanner() {
       >
         <div className="cta-banner__row">
           <div className="cta-banner__copy min-w-0">
-            <SectionLabel>{orangeCta.overline}</SectionLabel>
-
             <h2
               id="cta-banner-heading"
-              className="enoteb-title enoteb-title--section enoteb-title--on-dark cta-banner__title mt-4 sm:mt-5"
+              className="enoteb-title enoteb-title--section enoteb-title--on-dark cta-banner__title"
             >
               {orangeCta.title}
             </h2>
@@ -41,7 +38,7 @@ export function OrangeCtaBanner() {
           <div className="cta-banner__aside shrink-0">
             <Link
               href={orangeCta.href}
-              className="cta-banner__btn btn-orange-glass link-focus rounded-none group inline-flex items-center justify-center gap-2.5"
+              className="cta-banner__btn btn-orange-solid link-focus rounded-none group inline-flex items-center justify-center gap-2.5 text-white focus-visible:ring-[#e85f14]"
             >
               <span>{orangeCta.buttonLabel}</span>
               <span className="cta-banner__btn-icon" aria-hidden>

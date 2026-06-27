@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { api } from '@/lib/api';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import { absoluteUrl } from '@/lib/seo';
 
 export const revalidate = 3600;
@@ -47,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const sector of sectors) {
       entries.push({
-        url: absoluteUrl(`/secteurs/${sector.slug}`),
+        url: absoluteUrl(buildProjectsUrl({ sector: sector.slug })),
         lastModified: new Date(sector.updatedAt),
         changeFrequency: 'weekly',
         priority: 0.8,

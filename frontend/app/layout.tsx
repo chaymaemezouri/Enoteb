@@ -96,7 +96,6 @@ export default function RootLayout({
   const isFullBleedHero =
     pathname === '/qui-sommes-nous' ||
     pathname === '/secteurs' ||
-    pathname.startsWith('/secteurs/') ||
     pathname === '/projets' ||
     pathname.startsWith('/projets/') ||
     pathname === '/contact';

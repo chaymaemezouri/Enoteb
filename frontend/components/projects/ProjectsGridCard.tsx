@@ -98,8 +98,8 @@ export function ProjectsGridCard({ project, index, delay = 0 }: ProjectsGridCard
             {meta ? <p className="projects-grid-card__meta">{meta}</p> : null}
 
             <span className="projects-grid-card__cta">
-              Voir
-              <ArrowUpRight className="h-3 w-3" aria-hidden />
+              Voir le projet
+              <ArrowUpRight className="projects-grid-card__cta-icon h-3.5 w-3.5" aria-hidden />
             </span>
           </div>
         </div>

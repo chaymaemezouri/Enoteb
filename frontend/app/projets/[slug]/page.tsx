@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { BreadcrumbJsonLd, ProjectJsonLd } from '@/components/seo';
 import { projectsPageContent } from '@/config/projects';
 import { PROJECTS_SHELL } from '@/components/projects/projectsMotion';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import { api, ApiClientError } from '@/lib/api';
 import { splitProjectTitle } from '@/lib/projectDetail';
 import { FOOTER_SECTION_BG } from '@/lib/footer-theme';
@@ -90,7 +91,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             ? [
                 {
                   name: project.sector.name,
-                  path: `/secteurs/${project.sector.slug}`,
+                  path: buildProjectsUrl({ sector: project.sector.slug }),
                 },
               ]
             : []),

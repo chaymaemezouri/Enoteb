@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { SectionLabel } from '@/components/ui/SectionLabel';
 import { sectorsPageContent } from '@/config/sectors';
 import { fadeUpView, SECTORS_SHELL, staggerItem } from './sectorsMotion';
 
@@ -24,8 +23,7 @@ export function SectorsApproach() {
 
       <div className={`relative ${SECTORS_SHELL}`}>
         <motion.header {...fadeUpView(0, reduced)} className="max-w-2xl">
-          <SectionLabel>{approach.overline}</SectionLabel>
-          <h2 className="enoteb-title enoteb-title--section enoteb-title--on-dark mt-4 sm:mt-5">
+          <h2 className="enoteb-title enoteb-title--section enoteb-title--on-dark">
             <span className="block">{approach.titleLine1}</span>
             <span className="mt-1 block text-[#FF6A1A] sm:mt-1.5">{approach.titleLine2}</span>
           </h2>
@@ -53,7 +51,7 @@ export function SectorsApproach() {
           </div>
           <Link
             href={approach.ctaBox.href}
-            className="link-focus btn-orange-glass mt-5 inline-flex shrink-0 items-center gap-2 rounded-none px-5 py-3.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white sm:mt-0"
+            className="link-focus btn-orange-solid group mt-5 inline-flex shrink-0 items-center gap-2 rounded-none px-5 py-3.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white focus-visible:ring-[#e85f14] sm:mt-0"
           >
             {approach.ctaBox.buttonLabel}
             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />

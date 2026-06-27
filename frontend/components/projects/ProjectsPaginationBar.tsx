@@ -110,7 +110,7 @@ export function ProjectsPaginationBar({ meta, sector, q }: ProjectsPaginationBar
       </div>
 
       <p className="projects-pagination__meta">
-        Page {meta.page} sur {meta.totalPages}
+        Page <span className="projects-pagination__meta-current">{meta.page}</span> sur {meta.totalPages}
         <span className="projects-pagination__meta-dot" aria-hidden>
           ·
         </span>

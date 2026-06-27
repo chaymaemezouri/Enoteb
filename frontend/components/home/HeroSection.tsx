@@ -125,13 +125,9 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-5 pb-3 pt-20 sm:px-8 sm:pb-4 sm:pt-24 lg:px-10">
         <div className="flex flex-1 flex-col items-center justify-center pb-6 text-center sm:pb-8">
-          <motion.p {...fadeUp(0, reduced, 0.85)} className="section-label">
-            ENOTEB
-          </motion.p>
-
           <motion.h1
             {...fadeUp(0.08, reduced, 1)}
-            className="enoteb-title enoteb-title--hero hero-title-serif enoteb-title--on-dark mt-4 max-w-[16ch] sm:mt-5"
+            className="enoteb-title enoteb-title--hero hero-title-serif enoteb-title--on-dark max-w-[16ch]"
           >
             {hero.title}
           </motion.h1>

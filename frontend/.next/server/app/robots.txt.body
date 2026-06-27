@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Host: http://127.0.0.1:3001/
+Sitemap: http://127.0.0.1:3001/sitemap.xml

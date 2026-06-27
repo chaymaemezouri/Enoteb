@@ -104,7 +104,7 @@
   },
   domains: {
     overline: "Domaines d'activités",
-    title: "Entreprise générale — tous corps d'état",
+    title: "Entreprise générale, tous corps d'état",
     intro:
       "ENOTEB intervient en entreprise générale dans le cadre des marchés publics et privés et assure l'ensemble des corps d'état.",
     items: [
@@ -119,7 +119,7 @@
         ],
         imageSrc: '/images/image.png',
         imageAlt: 'Plans et conception de projet BTP',
-        href: '/secteurs/amenagement',
+        href: '/projets?sector=amenagement',
       },
       {
         title: 'Bâtiment & travaux publics',
@@ -132,7 +132,7 @@
         ],
         imageSrc: '/images/const2.png',
         imageAlt: 'Structure béton et chantier de bâtiment public',
-        href: '/secteurs/construction',
+        href: '/projets?sector=construction',
       },
       {
         title: 'Construction industrielle',
@@ -145,7 +145,7 @@
         ],
         imageSrc: '/images/const1.png',
         imageAlt: 'Structure métallique industrielle et tuyauterie',
-        href: '/secteurs/industrie',
+        href: '/projets?sector=industrie',
       },
     ],
   },
@@ -195,7 +195,8 @@
   },
   clients: {
     overline: 'Partenariats',
-    title: 'La confiance des grands comptes nationaux',
+    titleAccent: 'La confiance',
+    titleBody: 'des grands comptes nationaux',
     description:
       'ENOTEB est régulièrement sollicitée par de grands groupes nationaux pour des programmes de construction en TCE ou en lots séparés.',
   },

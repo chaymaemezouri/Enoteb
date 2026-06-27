@@ -22,6 +22,15 @@ function uploadPatternFromEnv() {
 }
 
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/secteurs/:slug',
+        destination: '/projets?sector=:slug',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

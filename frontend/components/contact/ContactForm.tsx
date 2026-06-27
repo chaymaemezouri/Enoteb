@@ -209,7 +209,7 @@ export function ContactForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="contact-form__submit btn-orange-glass link-focus rounded-none"
+            className="contact-form__submit btn-orange-solid link-focus rounded-none text-white focus-visible:ring-[#e85f14]"
           >
             {isSubmitting ? (
               <>

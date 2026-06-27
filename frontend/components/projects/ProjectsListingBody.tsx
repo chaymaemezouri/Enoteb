@@ -23,37 +23,35 @@ export function ProjectsListingBody({
 
   if (data.length === 0) {
     return (
-      <div className="projects-listing__main">
-        <div className="projects-empty">
-          <h2 className="enoteb-title enoteb-title--section enoteb-title--on-light text-[1.25rem]">
-            {listing.emptyTitle}
-          </h2>
-          <p className="enoteb-lead enoteb-lead--on-light mx-auto mt-4 max-w-md">
-            {hasSearch
-              ? listing.emptySearch
-              : activeSector
-                ? listing.emptySector
-                : listing.emptyAll}
-          </p>
-        </div>
+      <div className="projects-empty">
+        <h2 className="enoteb-title enoteb-title--section enoteb-title--on-light text-[1.25rem]">
+          {listing.emptyTitle}
+        </h2>
+        <p className="enoteb-lead enoteb-lead--on-light mx-auto mt-4 max-w-md">
+          {hasSearch
+            ? listing.emptySearch
+            : activeSector
+              ? listing.emptySector
+              : listing.emptyAll}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="projects-listing__main">
+    <>
       <div className="projects-grid">
         {data.map((project, index) => (
           <ProjectsGridCard
             key={project.id}
             project={project}
             index={pageOffset + index}
-            delay={0.04 + index * 0.04}
+            delay={0.04 + index * 0.05}
           />
         ))}
       </div>
 
       <ProjectsPaginationBar meta={meta} sector={activeSector?.slug} q={searchQuery} />
-    </div>
+    </>
   );
 }

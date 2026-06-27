@@ -12,20 +12,17 @@ interface ProjectsCatalogToolbarProps {
   sectors: Sector[];
   activeSector?: Sector;
   searchQuery?: string;
-  total: number;
 }
 
 export function ProjectsCatalogToolbar({
   sectors,
   activeSector,
   searchQuery,
-  total,
 }: ProjectsCatalogToolbarProps) {
   const { listing } = projectsPageContent;
   const panelId = useId();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const countLabel = total === 1 ? listing.resultsLabel : listing.resultsLabelPlural;
   const hasActiveFilter = Boolean(activeSector);
 
   useEffect(() => {
@@ -58,7 +55,7 @@ export function ProjectsCatalogToolbar({
 
   return (
     <div ref={toolbarRef} className="projects-toolbar">
-      <div className="projects-toolbar__row">
+      <div className="projects-toolbar__search-row">
         <ProjectsSearchBar activeSector={activeSector} initialQuery={searchQuery} />
 
         <button
@@ -70,6 +67,7 @@ export function ProjectsCatalogToolbar({
           )}
           aria-expanded={filtersOpen}
           aria-controls={panelId}
+          aria-haspopup="true"
           aria-label={listing.filtersToggleLabel}
           onClick={() => setFiltersOpen((open) => !open)}
         >
@@ -81,7 +79,12 @@ export function ProjectsCatalogToolbar({
       </div>
 
       {filtersOpen ? (
-        <div id={panelId} className="projects-toolbar__panel lg:hidden" role="dialog" aria-label={listing.filterLabel}>
+        <div
+          id={panelId}
+          className="projects-toolbar__panel lg:hidden"
+          role="dialog"
+          aria-label={listing.filterLabel}
+        >
           <p className="projects-filters__title projects-toolbar__panel-title">
             <span>{listing.filterLabel}</span>
           </p>
@@ -92,12 +95,6 @@ export function ProjectsCatalogToolbar({
             searchQuery={searchQuery}
             onNavigate={() => setFiltersOpen(false)}
           />
-
-          {total > 0 ? (
-            <p className="projects-toolbar__panel-count">
-              <span className="tabular-nums">{total}</span> {countLabel}
-            </p>
-          ) : null}
         </div>
       ) : null}
     </div>

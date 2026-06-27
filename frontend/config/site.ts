@@ -13,11 +13,11 @@ export const siteConfig = {
       'Entreprise marocaine de BTP et construction industrielle — études, réalisation et coordination tous corps d’état.',
     servicesTitle: 'Services',
     services: [
-      { label: 'Construction', href: '/secteurs/construction' },
-      { label: 'Aménagement', href: '/secteurs/amenagement' },
-      { label: 'Industrie', href: '/secteurs/industrie' },
-      { label: 'Pharmaceutique', href: '/secteurs/pharmaceutique' },
-      { label: 'Énergie', href: '/secteurs/energie-renouvelable' },
+      { label: 'Construction', href: '/projets?sector=construction' },
+      { label: 'Aménagement', href: '/projets?sector=amenagement' },
+      { label: 'Industrie', href: '/projets?sector=industrie' },
+      { label: 'Pharmaceutique', href: '/projets?sector=pharmaceutique' },
+      { label: 'Énergie', href: '/projets?sector=energie-renouvelable' },
     ],
     companyTitle: "L'entreprise",
     company: [

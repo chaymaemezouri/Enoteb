@@ -9,7 +9,7 @@ export const sectorsPageContent = {
     titleLine1: 'Nos secteurs',
     titleLine2: "d'activité",
     description:
-      'Des domaines d’intervention complémentaires — de la construction à l’industrie, de l’aménagement aux énergies.',
+      'Des domaines d’intervention complémentaires, de la construction à l’industrie, de l’aménagement aux énergies.',
   },
   grid: {
     overline: 'Nos domaines',

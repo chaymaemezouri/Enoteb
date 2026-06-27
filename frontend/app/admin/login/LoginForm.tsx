@@ -120,7 +120,7 @@ export function AdminLoginForm() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 className="admin-login-page__input"
-                placeholder="admin@enoteb.local"
+                placeholder={siteConfig.contact.email}
               />
             </div>
 

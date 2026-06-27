@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin, MessageCircle } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { projectsPageContent } from '@/config/projects';
-import { getWhatsAppUrl } from '@/lib/contact';
 import { formatAmount, formatYear } from '@/lib/format';
 import type { Project } from '@/types';
 
@@ -15,9 +14,6 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
   const { detail } = projectsPageContent;
   const showAmount = project.showAmount && project.amount;
   const yearLabel = formatYear(project.year);
-  const whatsappUrl = getWhatsAppUrl(
-    `Bonjour, je souhaite des informations sur le projet « ${project.name} ».`,
-  );
 
   return (
     <aside className="project-detail-sidebar">
@@ -89,20 +85,6 @@ export function ProjectDetailSidebar({ project }: ProjectDetailSidebarProps) {
       </div>
 
       <div className="project-detail-sidebar__actions">
-        <p>{detail.similarProject}</p>
-
-        {whatsappUrl ? (
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-focus flex w-full items-center justify-center gap-2 bg-[#25D366] px-4 py-3.5 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#1ebe57] focus-visible:ring-[#25D366]"
-          >
-            <MessageCircle className="h-4 w-4" aria-hidden />
-            {detail.whatsappLabel}
-          </a>
-        ) : null}
-
         <Link
           href="/contact"
           className="link-focus flex w-full items-center justify-center bg-[#111820] px-4 py-3.5 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#0B1117] focus-visible:ring-[#FF6B1A]"

@@ -12,6 +12,7 @@ interface ProjectsFiltersNavProps {
   searchQuery?: string;
   className?: string;
   linkClassName?: string;
+  variant?: 'sidebar' | 'chips';
   onNavigate?: () => void;
 }
 
@@ -21,18 +22,28 @@ export function ProjectsFiltersNav({
   searchQuery,
   className,
   linkClassName,
+  variant = 'sidebar',
   onNavigate,
 }: ProjectsFiltersNavProps) {
   const { listing } = projectsPageContent;
   const q = searchQuery?.trim() || undefined;
+  const isChips = variant === 'chips';
 
   return (
-    <nav className={cn('projects-filters__nav', className)}>
+    <nav
+      className={cn(
+        'projects-filters__nav',
+        isChips && 'projects-filters__nav--chips',
+        className,
+      )}
+      aria-label={listing.filterLabel}
+    >
       <Link
         href={buildProjectsUrl({ q })}
         onClick={onNavigate}
         className={cn(
           'projects-filters__link',
+          isChips && 'projects-filters__link--chip',
           linkClassName,
           !activeSector && 'projects-filters__link--active',
         )}
@@ -48,6 +59,7 @@ export function ProjectsFiltersNav({
           onClick={onNavigate}
           className={cn(
             'projects-filters__link',
+            isChips && 'projects-filters__link--chip',
             linkClassName,
             activeSector?.slug === sector.slug && 'projects-filters__link--active',
           )}

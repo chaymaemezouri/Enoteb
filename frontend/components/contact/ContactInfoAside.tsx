@@ -43,7 +43,6 @@ export function ContactInfoAside() {
   const { contact } = siteConfig;
   const socialLinks = getActiveSocialLinks();
   const phone = contact.phone?.trim() ?? '';
-  const whatsappNumber = siteConfig.whatsapp.number.trim();
   const whatsappUrl = getWhatsAppUrl();
 
   return (
@@ -72,7 +71,7 @@ export function ContactInfoAside() {
               rel="noopener noreferrer"
               className="contact-info-row__link"
             >
-              {phone || whatsappNumber}
+              {phone}
             </a>
           ) : (
             <span className="contact-info-row__placeholder">{info.whatsappPlaceholder}</span>

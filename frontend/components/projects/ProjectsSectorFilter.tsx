@@ -9,7 +9,6 @@ interface ProjectsFiltersSidebarProps {
   sectors: Sector[];
   activeSector?: Sector;
   searchQuery?: string;
-  total: number;
   className?: string;
 }
 
@@ -17,11 +16,9 @@ export function ProjectsFiltersSidebar({
   sectors,
   activeSector,
   searchQuery,
-  total,
   className,
 }: ProjectsFiltersSidebarProps) {
   const { listing } = projectsPageContent;
-  const countLabel = total === 1 ? listing.resultsLabel : listing.resultsLabelPlural;
 
   return (
     <aside className={cn('projects-filters', className)} aria-label={listing.filterLabel}>
@@ -30,12 +27,6 @@ export function ProjectsFiltersSidebar({
       </p>
 
       <ProjectsFiltersNav sectors={sectors} activeSector={activeSector} searchQuery={searchQuery} />
-
-      {total > 0 ? (
-        <p className="projects-filters__count">
-          <span className="tabular-nums">{total}</span> {countLabel}
-        </p>
-      ) : null}
     </aside>
   );
 }
@@ -53,7 +44,6 @@ export function ProjectsRefineFilter(
       sectors={props.sectors}
       activeSector={sector}
       searchQuery={props.searchQuery}
-      total={props.total}
       className={props.className}
     />
   );

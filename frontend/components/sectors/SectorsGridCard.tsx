@@ -6,6 +6,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { DEFAULT_SECTOR_IMAGE, resolveSectorCoverImage } from '@/lib/utils';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import type { Sector } from '@/types';
 import { fadeUpView } from './sectorsMotion';
 
@@ -27,7 +28,7 @@ export function SectorsGridCard({ sector, variant, delay = 0 }: SectorsGridCardP
       className="sectors-grid-card group relative min-h-[260px] overflow-hidden sm:min-h-[300px] lg:min-h-[320px]"
     >
       <Link
-        href={`/secteurs/${sector.slug}`}
+        href={buildProjectsUrl({ sector: sector.slug })}
         className="link-focus absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-[#FF6A1A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F0E8]"
         aria-label={`${sector.name} — voir les projets`}
       >

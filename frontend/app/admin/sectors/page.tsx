@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, Plus, Trash2 } from 'lucide-react';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import {
   AdminAuthGate,
   AdminPageHeader,
@@ -416,7 +417,7 @@ export default function AdminSectorsPage() {
               </div>
               {!isCreating && activeSector ? (
                 <a
-                  href={`/secteurs/${activeSector.slug}`}
+                  href={buildProjectsUrl({ sector: activeSector.slug })}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="admin-btn admin-btn--ghost admin-btn--sm"

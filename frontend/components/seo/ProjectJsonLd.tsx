@@ -1,4 +1,5 @@
 import { resolveImageUrl } from '@/lib/utils';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import { absoluteUrl } from '@/lib/seo';
 import type { Project } from '@/types';
 import { JsonLd } from './JsonLd';
@@ -30,7 +31,7 @@ export function ProjectJsonLd({ project }: ProjectJsonLdProps) {
           about: {
             '@type': 'Thing',
             name: project.sector.name,
-            url: absoluteUrl(`/secteurs/${project.sector.slug}`),
+            url: absoluteUrl(buildProjectsUrl({ sector: project.sector.slug })),
           },
         }
       : {}),

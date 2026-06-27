@@ -77,7 +77,7 @@ export function AboutContainer({
     <div
       className={cn(
         ABOUT_SHELL,
-        'about-v2-container relative px-5 sm:px-6 lg:px-8',
+        'about-v2-container relative min-w-0 px-5 sm:px-6 lg:px-8',
         compact && 'about-v2-container--compact',
         narrow && 'max-w-3xl',
         className,

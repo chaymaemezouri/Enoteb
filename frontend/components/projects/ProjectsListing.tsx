@@ -26,27 +26,27 @@ export function ProjectsListing({
       <div className={`relative ${PROJECTS_SHELL} projects-catalog__inner`}>
         <ProjectsHero sector={activeSector} />
 
-        <ProjectsCatalogToolbar
-          sectors={sectors}
-          activeSector={activeSector}
-          searchQuery={searchQuery}
-          total={projects.meta.total}
-        />
-
         <div className="projects-listing__layout">
           <ProjectsFiltersSidebar
             sectors={sectors}
             activeSector={activeSector}
             searchQuery={searchQuery}
-            total={projects.meta.total}
             className="projects-listing__sidebar hidden lg:block"
           />
 
-          <ProjectsListingBody
-            projects={projects}
-            activeSector={activeSector}
-            searchQuery={searchQuery}
-          />
+          <div className="projects-listing__main">
+            <ProjectsCatalogToolbar
+              sectors={sectors}
+              activeSector={activeSector}
+              searchQuery={searchQuery}
+            />
+
+            <ProjectsListingBody
+              projects={projects}
+              activeSector={activeSector}
+              searchQuery={searchQuery}
+            />
+          </div>
         </div>
       </div>
     </section>

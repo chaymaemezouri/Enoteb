@@ -105,21 +105,22 @@ function BrandLogo({ variant }: { variant: 'hero' | 'light' }) {
   return (
     <Link
       href="/"
-      className="link-focus flex shrink-0 items-center"
+      className="site-navbar__brand-link link-focus"
       aria-label={`${siteConfig.name} — Accueil`}
     >
-      <Image
-        src={siteConfig.logo.src}
-        alt=""
-        width={156}
-        height={52}
-        className={cn(
-          'site-navbar__brand-logo',
-          variant === 'light' && 'site-navbar__brand-logo--light',
-        )}
-        priority
-      />
-      <span className="sr-only">{siteConfig.name}</span>
+      <span className="site-navbar__brand-mark">
+        <Image
+          src={siteConfig.logo.src}
+          alt=""
+          width={156}
+          height={52}
+          className={cn(
+            'site-navbar__brand-logo',
+            variant === 'light' && 'site-navbar__brand-logo--light',
+          )}
+          priority
+        />
+      </span>
     </Link>
   );
 }

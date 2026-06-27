@@ -105,26 +105,22 @@ export function WhyUsSection() {
       <div className="why-us-section__inner relative w-full">
         <div className="why-us-section__grid">
           <div className="why-us-section__copy min-w-0">
-            <motion.div {...fadeUpView(0, reduced)}>
-              <p className="section-label">{whyUs.overline}</p>
-            </motion.div>
-
             <motion.h2
-              {...fadeUpView(0.08, reduced)}
+              {...fadeUpView(0, reduced)}
               id="why-us-heading"
-              className="why-us-section__title enoteb-title enoteb-title--section enoteb-title--on-light mt-5"
+              className="why-us-section__title enoteb-title enoteb-title--section enoteb-title--on-light"
             >
               {whyUs.title}
             </motion.h2>
 
             <motion.p
-              {...fadeUpView(0.16, reduced)}
+              {...fadeUpView(0.08, reduced)}
               className="why-us-section__text enoteb-lead enoteb-lead--on-light mt-4"
             >
               {whyUs.description}
             </motion.p>
 
-            <motion.div {...fadeUpView(0.24, reduced)} className="mt-7 lg:mt-8">
+            <motion.div {...fadeUpView(0.16, reduced)} className="mt-7 lg:mt-8">
               <Link
                 href={whyUs.ctaHref}
                 className="link-focus inline-flex items-center gap-2.5 rounded-none border border-[#18212B]/14 bg-[#F6F2EA] px-5 py-2.5 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#18212B] transition-colors duration-300 hover:border-[#FF6A1A]/50 hover:text-[#FF6A1A] focus-visible:ring-[#FF6A1A]"

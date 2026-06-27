@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { projectsPageContent } from '@/config/projects';
-import { getWhatsAppUrl } from '@/lib/contact';
 import { formatAmount, formatYear } from '@/lib/format';
 import { getProjectHighlights } from '@/lib/projectDetail';
 import type { Project } from '@/types';
@@ -51,9 +50,6 @@ export function ProjectDetailView({ project, titlePrimary, titleAccent }: Projec
   const addressLine = project.address?.trim() || null;
   const mapQuery = addressLine || project.location;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
-  const whatsappUrl = getWhatsAppUrl(
-    `Bonjour, je souhaite des informations sur le projet « ${project.name} ».`,
-  );
 
   const keyFigures = highlights.map((item) => ({
     icon: HIGHLIGHT_ICONS[item.icon] ?? Factory,
@@ -159,19 +155,6 @@ export function ProjectDetailView({ project, titlePrimary, titleAccent }: Projec
                 {detail.viewOnMapLabel}
               </a>
             </div>
-
-            <p className="project-detail__footnote">{detail.similarProject}</p>
-
-            {whatsappUrl ? (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="project-detail__whatsapp"
-              >
-                {detail.whatsappLabel}
-              </a>
-            ) : null}
           </footer>
         </div>
       </div>

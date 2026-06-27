@@ -5,17 +5,22 @@ export const projectsPageContent = {
       'Découvrez les réalisations ENOTEB : construction, industrie, pharmaceutique, aménagement et énergies au Maroc.',
   },
   hero: {
-    overline: 'Projets',
+    overline: 'Projets réalisés',
     titleLine1: 'Nos réalisations',
     titleLine2: 'terrain',
     description:
-      'Chantiers livrés avec rigueur pour les marchés publics et privés — construction, industrie et aménagement au Maroc.',
+      'Chantiers livrés avec rigueur pour les marchés publics et privés, construction, industrie et aménagement au Maroc.',
     descriptionSecondary:
       'OCP, Hikma, SPIE, ONEE et d’autres partenaires de confiance nous font confiance sur leurs ouvrages les plus exigeants.',
     imageSrc:
       'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=85',
     imageAlt: 'Chantier de construction et ingénierie industrielle',
     imageFallback: '/images/screen.png',
+    stats: [
+      { value: '100+', label: 'projets livrés' },
+      { value: '14+', label: "ans d'expérience" },
+      { value: '5', label: "secteurs d'activité" },
+    ],
   },
   sectorHero: {
     construction: {

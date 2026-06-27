@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { homeContent } from '@/config/home';
 import { aboutContent } from '@/config/about';
-import { AboutContainer, AboutLabel, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
+import { AboutContainer, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
 import { fadeUpView, staggerItem } from './aboutMotion';
 
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
@@ -30,11 +30,13 @@ export function AboutPartners() {
     <AboutSection tone="deep" aria-labelledby="about-partners-title">
       <AboutContainer>
         <motion.div {...fadeUpView(0, reduced)} className="max-w-2xl">
-          <AboutLabel light>
-            <span id="about-partners-title">{clients.overline}</span>
-          </AboutLabel>
-          <AboutTitle light className="mt-5 text-[clamp(1.375rem,2.4vw,1.875rem)]">
-            {clients.title}
+          <AboutTitle
+            light
+            id="about-partners-title"
+            className="text-[clamp(1.375rem,2.4vw,1.875rem)]"
+          >
+            <span className="text-[#FF6A1A]">{clients.titleAccent}</span>{' '}
+            {clients.titleBody}
           </AboutTitle>
           <AboutLead light className="mt-4 max-w-xl">
             {clients.description}

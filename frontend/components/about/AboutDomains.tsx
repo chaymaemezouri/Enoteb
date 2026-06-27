@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { aboutContent } from '@/config/about';
 import { cn } from '@/lib/cn';
 import { AboutContainer, AboutLead, AboutSection, AboutTitle } from './AboutLayout';
@@ -11,9 +11,14 @@ import { fadeUpView, HOME_EASE } from './aboutMotion';
 
 type Domain = (typeof aboutContent.domains.items)[number];
 
-function PanelContent({ item }: { item: Domain }) {
+function PanelContent({ item, compact = false }: { item: Domain; compact?: boolean }) {
   return (
-    <div className="relative z-10 p-6 sm:p-8 lg:p-10">
+    <div
+      className={cn(
+        'about-v2-domains__panel-content relative z-10',
+        compact ? 'p-5' : 'p-6 sm:p-8 lg:p-10',
+      )}
+    >
       <h3 className="text-xl font-semibold tracking-[-0.02em] text-[#F8F5EE] sm:text-2xl">
         {item.title}
       </h3>
@@ -34,18 +39,27 @@ function PanelContent({ item }: { item: Domain }) {
   );
 }
 
-function DomainPanel({ item }: { item: Domain }) {
+function DomainPanel({
+  item,
+  children,
+  compact = false,
+}: {
+  item: Domain;
+  children?: ReactNode;
+  compact?: boolean;
+}) {
   return (
-    <div className="about-v2-domains__panel">
+    <div className={cn('about-v2-domains__panel', compact && 'about-v2-domains__panel--compact')}>
       <div className="about-v2-domains__panel-bg">
         <Image
           src={item.imageSrc}
           alt=""
           fill
           className="object-cover brightness-[0.55]"
-          sizes="60vw"
+          sizes={compact ? '(max-width: 1023px) 100vw, 60vw' : '60vw'}
         />
       </div>
+      {children}
     </div>
   );
 }
@@ -59,15 +73,10 @@ export function AboutDomains() {
 
   return (
     <AboutSection tone="sand" aria-labelledby="about-domains-title">
-      <AboutContainer>
-        <motion.div {...fadeUpView(0, reduced)} className="mb-10 max-w-2xl">
-          <AboutTitle
-            id="about-domains-title"
-            className="text-[clamp(1.625rem,3vw,2.25rem)]"
-          >
-            {domains.title}
-          </AboutTitle>
-          <AboutLead className="mt-4">{domains.intro}</AboutLead>
+      <AboutContainer className="about-v2-domains__container">
+        <motion.div {...fadeUpView(0, reduced)} className="about-v2-domains__intro">
+          <AboutTitle id="about-domains-title">{domains.title}</AboutTitle>
+          <AboutLead className="about-v2-domains__intro-lead">{domains.intro}</AboutLead>
         </motion.div>
 
         <div className="about-v2-domains__shell">
@@ -120,30 +129,43 @@ export function AboutDomains() {
             {domains.items.map((item, index) => {
               const isOpen = openMobile === index;
               return (
-                <div
-                  key={item.title}
-                  className="border-t border-[rgba(24,33,43,0.1)] first:border-t-0"
-                >
+                <div key={item.title} className="about-v2-domains__mobile-item">
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left sm:px-5"
+                    className={cn(
+                      'about-v2-domains__mobile-trigger',
+                      isOpen && 'about-v2-domains__mobile-trigger--open',
+                    )}
                     onClick={() => setOpenMobile(isOpen ? null : index)}
                     aria-expanded={isOpen}
                   >
-                    <span className="text-sm font-semibold text-[#18212B]">{item.title}</span>
+                    <span className="about-v2-domains__mobile-trigger-label">{item.title}</span>
                     <ChevronDown
                       className={cn(
-                        'h-4 w-4 text-[#68717D] transition-transform',
-                        isOpen && 'rotate-180 text-[#FF6A1A]',
+                        'about-v2-domains__mobile-trigger-icon',
+                        isOpen && 'about-v2-domains__mobile-trigger-icon--open',
                       )}
+                      aria-hidden
                     />
                   </button>
-                  {isOpen ? (
-                    <div className="relative mb-4 min-h-[18rem] overflow-hidden">
-                      <DomainPanel item={item} />
-                      <PanelContent item={item} />
-                    </div>
-                  ) : null}
+                  <AnimatePresence initial={false}>
+                    {isOpen ? (
+                      <motion.div
+                        key={item.title}
+                        initial={reduced ? false : { height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={reduced ? undefined : { height: 0, opacity: 0 }}
+                        transition={{ duration: 0.35, ease: HOME_EASE }}
+                        className="about-v2-domains__mobile-panel-wrap overflow-hidden"
+                      >
+                        <div className="about-v2-domains__mobile-panel">
+                          <DomainPanel item={item} compact>
+                            <PanelContent item={item} compact />
+                          </DomainPanel>
+                        </div>
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
                 </div>
               );
             })}

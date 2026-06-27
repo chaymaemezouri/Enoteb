@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import { cn } from '@/lib/cn';
 import { resolveThumbnailUrl, truncateText } from '@/lib/utils';
 import type { Sector } from '@/types';
@@ -14,7 +15,7 @@ export function SectorCard({ sector, featured = false }: SectorCardProps) {
   const imageUrl = resolveThumbnailUrl(sector.imageUrl, sector.slug);
 
   return (
-    <Link href={`/secteurs/${sector.slug}`} className="card-link group block h-full">
+    <Link href={buildProjectsUrl({ sector: sector.slug })} className="card-link group block h-full">
       <article
         className={cn(
           'relative h-full min-h-[280px] overflow-hidden rounded-2xl ring-1 ring-neutral-200/60 transition duration-300 hover:shadow-2xl hover:ring-accent/30',

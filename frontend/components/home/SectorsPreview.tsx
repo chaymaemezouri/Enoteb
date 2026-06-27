@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { homeContent } from '@/config/home';
 import { Container } from '@/components/ui/Container';
+import { buildProjectsUrl } from '@/lib/projects-url';
 import { resolveThumbnailUrl, truncateText } from '@/lib/utils';
 import type { Sector } from '@/types';
 
@@ -91,7 +92,7 @@ export function SectorsPreview({ sectors }: SectorsPreviewProps) {
                         </span>
 
                         <Link
-                          href={`/secteurs/${sector.slug}`}
+                          href={buildProjectsUrl({ sector: sector.slug })}
                           className="link-focus group mt-5 flex flex-1 flex-col focus-visible:ring-[#F36A21]"
                         >
                           <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100 shadow-[0_8px_30px_rgb(47_49_54_/_0.08)] ring-1 ring-[#2f3136]/8">
