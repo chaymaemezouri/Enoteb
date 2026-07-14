@@ -2319,7 +2319,6 @@
 
   .hero-video-cinematic {
     transform: scale(1.06);
-    clip-path: inset(0 2.5% 3.5% 0);
     animation: hero-video-zoom 28s ease-in-out infinite alternate;
     will-change: transform;
   }

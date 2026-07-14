@@ -22,6 +22,10 @@ function uploadPatternFromEnv() {
 }
 
 const nextConfig = {
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
   async redirects() {
     return [
       {
@@ -32,6 +36,7 @@ const nextConfig = {
     ];
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

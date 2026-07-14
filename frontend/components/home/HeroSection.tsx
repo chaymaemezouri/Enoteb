@@ -12,29 +12,14 @@ const fadeUp = (delay: number, reduced: boolean, duration = 0.95) =>
   reduced
     ? {}
     : {
-        initial: { opacity: 0, y: 18 },
+        initial: false,
         animate: { opacity: 1, y: 0 },
         transition: { duration, delay, ease: EASE },
       };
 
-function HeroVideoBackground({
-  posterSrc,
-  posterFallback,
-  videoSrc,
-}: {
-  posterSrc: string;
-  posterFallback: string;
-  videoSrc: string;
-}) {
+function HeroVideoBackground({ videoSrc }: { videoSrc: string }) {
   return (
-    <div className="absolute inset-0 overflow-hidden" aria-hidden>
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${posterSrc}), url(${posterFallback})`,
-          backgroundPosition: '50% 42%',
-        }}
-      />
+    <div className="absolute inset-0 overflow-hidden bg-[#111820]" aria-hidden>
       <video
         id="enoteb-hero-video"
         className="hero-video-cinematic absolute inset-0 h-full w-full object-cover object-[50%_42%]"
@@ -43,7 +28,6 @@ function HeroVideoBackground({
         loop
         playsInline
         preload="auto"
-        poster={posterSrc}
       >
         <source src={videoSrc} type="video/mp4" />
       </video>
@@ -65,10 +49,6 @@ function HeroOverlays() {
       />
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-44 bg-gradient-to-t from-[#111820] from-35% via-[#111820]/95 to-transparent sm:h-52"
-        aria-hidden
-      />
-      <div
-        className="hero-watermark-mask pointer-events-none absolute bottom-0 right-0 z-[3] sm:bottom-0"
         aria-hidden
       />
     </>
@@ -116,11 +96,7 @@ export function HeroSection() {
       className="relative h-[100svh] min-h-[540px] overflow-hidden bg-[#111820] sm:min-h-[600px] lg:min-h-[620px]"
       data-header-theme="dark"
     >
-      <HeroVideoBackground
-        posterSrc={hero.posterSrc}
-        posterFallback={hero.posterFallback}
-        videoSrc={hero.videoSrc}
-      />
+      <HeroVideoBackground videoSrc={hero.videoSrc} />
       <HeroOverlays />
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] flex-col px-5 pb-3 pt-20 sm:px-8 sm:pb-4 sm:pt-24 lg:px-10">
@@ -141,11 +117,11 @@ export function HeroSection() {
 
           <motion.div
             {...fadeUp(0.28, reduced, 0.9)}
-            className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-center sm:gap-3"
+            className="mt-7 flex w-full flex-col items-center justify-center gap-2.5 text-center sm:w-auto sm:flex-row sm:gap-3"
           >
             <Link
               href="/projets"
-              className="btn-orange-solid link-focus group inline-flex w-fit items-center justify-center gap-2 rounded-none px-5 py-2.5 text-sm font-medium text-white focus-visible:ring-[#e85f14]"
+              className="btn-orange-solid link-focus group mx-auto inline-flex w-fit min-w-[200px] items-center justify-center gap-2 self-center rounded-none px-5 py-2.5 text-sm font-medium text-white focus-visible:ring-[#e85f14] sm:mx-0 sm:min-w-0"
             >
               {hero.primaryCta}
               <ArrowUpRight
@@ -155,7 +131,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/contact"
-              className="link-focus inline-flex w-fit items-center justify-center rounded-none border border-white/[0.18] bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-[#f5f2ed] backdrop-blur-[8px] transition-all duration-500 ease-out hover:-translate-y-px hover:border-white/28 hover:bg-white/[0.09] hover:shadow-[0_6px_20px_-10px_rgba(0,0,0,0.35)] focus-visible:ring-white/30"
+              className="link-focus mx-auto inline-flex w-fit min-w-[200px] items-center justify-center self-center rounded-none border border-white/[0.18] bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-[#f5f2ed] backdrop-blur-[8px] transition-all duration-500 ease-out hover:-translate-y-px hover:border-white/28 hover:bg-white/[0.09] hover:shadow-[0_6px_20px_-10px_rgba(0,0,0,0.35)] focus-visible:ring-white/30 sm:mx-0 sm:min-w-0"
             >
               {hero.secondaryCta}
             </Link>

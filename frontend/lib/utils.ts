@@ -32,21 +32,21 @@ export function getSectorCatalogImage(sectorSlug: string): string {
   return INDUSTRIAL_BY_SECTOR[sectorSlug] ?? DEFAULT_INDUSTRIAL;
 }
 
-/** Image de couverture secteur : catalogue prioritaire, puis upload admin, puis URL API. */
+/** Image de couverture secteur : upload admin prioritaire, puis URL API, puis fallback catalogue. */
 export function resolveSectorCoverImage(
   url: string | null | undefined,
   sectorSlug?: string,
 ): string {
-  if (sectorSlug && INDUSTRIAL_BY_SECTOR[sectorSlug]) {
-    return INDUSTRIAL_BY_SECTOR[sectorSlug];
-  }
-
   if (url && isAdminUpload(url)) {
     return resolveImageUrl(url);
   }
 
   if (url && !isPlaceholderImage(url)) {
     return resolveImageUrl(url);
+  }
+
+  if (sectorSlug && INDUSTRIAL_BY_SECTOR[sectorSlug]) {
+    return INDUSTRIAL_BY_SECTOR[sectorSlug];
   }
 
   return DEFAULT_INDUSTRIAL;

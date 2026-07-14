@@ -30,7 +30,7 @@ export function AdminLoginForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      const redirect = searchParams.get('redirect');
+      const redirect = searchParams?.get('redirect');
       router.replace(redirect?.startsWith('/admin') ? redirect : '/admin/dashboard');
     }
   }, [isAuthenticated, isLoading, router, searchParams]);
@@ -48,7 +48,7 @@ export function AdminLoginForm() {
 
     try {
       await login(email.trim(), password);
-      const redirect = searchParams.get('redirect');
+      const redirect = searchParams?.get('redirect');
       router.replace(redirect?.startsWith('/admin') ? redirect : '/admin/dashboard');
     } catch (submitError) {
       setError(formatAdminError(submitError));

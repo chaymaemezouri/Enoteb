@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
+    "build:deploy": "next build --no-lint",
+    "pack:deploy": "node scripts/pack-deploy.js",
+    "deploy:zip": "npm run build:deploy && npm run pack:deploy",
     "start": "node server.js",
     "lint": "next lint",
     "lint:fix": "next lint --fix",

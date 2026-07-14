@@ -131,11 +131,11 @@ Dans *Setup Node.js App* → votre app API → **Environment variables** (ou fic
 | `JWT_REFRESH_SECRET` | Autre secret long aléatoire |
 | `JWT_EXPIRES_IN` | `15m` |
 | `JWT_REFRESH_EXPIRES_IN` | `7d` |
-| `SMTP_HOST` | `mail.enoteb.ma` |
+| `SMTP_HOST` | `mail.enoteb.com` |
 | `SMTP_PORT` | `587` |
-| `SMTP_USER` | `contact@enoteb.ma` |
-| `SMTP_PASS` | Mot de passe de la boîte mail cPanel |
-| `CONTACT_EMAIL` | `contact@enoteb.ma` |
+| `SMTP_USER` | `m.elfilali@enoteb.com` |
+| `SMTP_PASS` | Mot de passe de la boîte mail cPanel (entre guillemets si caractères spéciaux) |
+| `CONTACT_EMAIL` | `m.elfilali@enoteb.com` |
 | `CORS_ORIGIN` | `https://enoteb.ma` |
 | `UPLOAD_DIR` | `/home/USER/enoteb-api/backend/uploads` (chemin absolu) |
 | `MAX_FILE_SIZE` | `5242880` |
@@ -251,23 +251,33 @@ Le backend force déjà la redirection HTTPS en production (`HttpsRedirectMiddle
 ### 6.1 Créer la boîte mail
 
 1. cPanel → **Comptes de messagerie** (*Email Accounts*).
-2. Créer `contact@enoteb.ma` avec un mot de passe fort.
+2. Utiliser la boîte `m.elfilali@enoteb.com` (ou créer `contact@enoteb.ma` selon votre hébergeur).
 
 ### 6.2 Paramètres SMTP (backend)
 
-| Paramètre | Valeur typique HeberFacile |
-|-----------|---------------------------|
-| Hôte | `mail.enoteb.ma` |
+| Paramètre | Valeur production ENOTEB |
+|-----------|--------------------------|
+| Hôte | `mail.enoteb.com` |
 | Port | `587` (STARTTLS) ou `465` (SSL) |
-| Utilisateur | `contact@enoteb.ma` |
-| Mot de passe | Mot de passe de la boîte |
-| Destinataire (`CONTACT_EMAIL`) | `contact@enoteb.ma` |
+| Utilisateur | `m.elfilali@enoteb.com` |
+| Mot de passe | Mot de passe de la boîte (mettre entre `"..."` dans `.env` si caractères spéciaux) |
+| Destinataire (`CONTACT_EMAIL`) | `m.elfilali@enoteb.com` |
+
+Exemple dans `backend/.env` :
+
+```env
+SMTP_HOST="mail.enoteb.com"
+SMTP_PORT=587
+SMTP_USER="m.elfilali@enoteb.com"
+SMTP_PASS="votre-mot-de-passe"
+CONTACT_EMAIL="m.elfilali@enoteb.com"
+```
 
 Si le port 587 est bloqué, tester `465` avec `secure: true` (adapter `SMTP_PORT` dans la config).
 
 ### 6.3 Test
 
-Soumettre le formulaire sur `https://enoteb.ma/contact` et vérifier la réception sur `contact@enoteb.ma`.
+Soumettre le formulaire sur `https://enoteb.ma/contact` et vérifier la réception sur `m.elfilali@enoteb.com`.
 
 ---
 

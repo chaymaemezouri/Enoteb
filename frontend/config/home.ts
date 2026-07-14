@@ -7,9 +7,6 @@ export const homeContent = {
     subtitle:
       'Études, bâtiment, aménagement et construction industrielle des projets exigeants livrés avec précision et engagement.',
     videoSrc: '/videos/enoteb-hero.mp4',
-    posterSrc: '/images/image.png',
-    posterFallback:
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=80',
     primaryCta: 'Découvrir nos projets',
     secondaryCta: 'Nous contacter',
   },
@@ -37,8 +34,7 @@ export const homeContent = {
       'et une exigence constante de qualité, de coûts et de\u00a0délais.',
     ],
     ctaLabel: 'En savoir plus',
-    imageSrc:
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=85',
+    imageSrc: '/images/const1.png',
     imageAlt: 'Chantier de construction ENOTEB',
     features: [
       {
@@ -73,7 +69,7 @@ export const homeContent = {
         description:
           'Charpente, structures lourdes, réservoirs, tuyauterie et installations pour l’industrie, l’énergie et la pharmacie.',
         icon: 'industry' as const,
-        imageSrc: '/images/cards/Construction Industrielle .png',
+        imageSrc: '/images/cards/Construction Industrielle.png',
       },
       {
         title: 'Bâtiment & Travaux Publics',

@@ -12,6 +12,8 @@
 # next.js
 /.next/
 /out/
+.deploy-staging/
+next-build.zip
 
 # production
 /build

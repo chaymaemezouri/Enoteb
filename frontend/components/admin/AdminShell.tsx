@@ -30,7 +30,7 @@ const navItems = [
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
   const { logout, profile, isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadDemandes, setUnreadDemandes] = useState(0);
