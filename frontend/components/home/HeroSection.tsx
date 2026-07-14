@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { homeContent } from '@/config/home';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -18,9 +19,50 @@ const fadeUp = (delay: number, reduced: boolean, duration = 0.95) =>
       };
 
 function HeroVideoBackground({ videoSrc }: { videoSrc: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Obligatoire pour l'autoplay iPhone / Android
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('muted', '');
+
+    const tryPlay = () => {
+      void video.play().catch(() => {
+        // Autoplay bloqué : relance au premier geste utilisateur
+      });
+    };
+
+    tryPlay();
+    video.addEventListener('loadeddata', tryPlay);
+    video.addEventListener('canplay', tryPlay);
+
+    const unlockOnGesture = () => {
+      tryPlay();
+      window.removeEventListener('touchstart', unlockOnGesture);
+      window.removeEventListener('click', unlockOnGesture);
+    };
+    window.addEventListener('touchstart', unlockOnGesture, { once: true, passive: true });
+    window.addEventListener('click', unlockOnGesture, { once: true });
+
+    return () => {
+      video.removeEventListener('loadeddata', tryPlay);
+      video.removeEventListener('canplay', tryPlay);
+      window.removeEventListener('touchstart', unlockOnGesture);
+      window.removeEventListener('click', unlockOnGesture);
+    };
+  }, [videoSrc]);
+
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#111820]" aria-hidden>
       <video
+        ref={videoRef}
         id="enoteb-hero-video"
         className="hero-video-cinematic absolute inset-0 h-full w-full object-cover object-[50%_42%]"
         autoPlay
@@ -28,9 +70,8 @@ function HeroVideoBackground({ videoSrc }: { videoSrc: string }) {
         loop
         playsInline
         preload="auto"
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+        src={videoSrc}
+      />
     </div>
   );
 }

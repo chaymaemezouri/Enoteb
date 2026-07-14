@@ -48,11 +48,47 @@ const PUBLIC_STATIC_EXTENSIONS = new Set([
   '.pdf',
 ]);
 
-function sendStaticFile(res, filePath, cacheControl) {
+function sendStaticFile(req, res, filePath, cacheControl) {
   const ext = path.extname(filePath).toLowerCase();
-  res.statusCode = 200;
-  res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream');
+  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  res.setHeader('Accept-Ranges', 'bytes');
   res.setHeader('Cache-Control', cacheControl);
+  res.setHeader('Content-Type', contentType);
+
+  // Mobile Safari / Chrome demandent souvent un Range pour les vidéos.
+  if (range && (ext === '.mp4' || ext === '.webm')) {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+    if (!match) {
+      res.statusCode = 416;
+      res.setHeader('Content-Range', `bytes */${fileSize}`);
+      res.end();
+      return true;
+    }
+
+    const start = match[1] ? parseInt(match[1], 10) : 0;
+    const end = match[2] ? parseInt(match[2], 10) : fileSize - 1;
+
+    if (Number.isNaN(start) || Number.isNaN(end) || start > end || start >= fileSize) {
+      res.statusCode = 416;
+      res.setHeader('Content-Range', `bytes */${fileSize}`);
+      res.end();
+      return true;
+    }
+
+    const chunkEnd = Math.min(end, fileSize - 1);
+    res.statusCode = 206;
+    res.setHeader('Content-Range', `bytes ${start}-${chunkEnd}/${fileSize}`);
+    res.setHeader('Content-Length', String(chunkEnd - start + 1));
+    fs.createReadStream(filePath, { start, end: chunkEnd }).pipe(res);
+    return true;
+  }
+
+  res.statusCode = 200;
+  res.setHeader('Content-Length', String(fileSize));
   fs.createReadStream(filePath).pipe(res);
   return true;
 }
@@ -82,7 +118,7 @@ function tryServePublicFile(req, res, pathname) {
     return false;
   }
 
-  return sendStaticFile(res, filePath, 'public, max-age=86400');
+  return sendStaticFile(req, res, filePath, 'public, max-age=86400');
 }
 
 function tryServeNextStatic(req, res, pathname) {
@@ -102,8 +138,7 @@ function tryServeNextStatic(req, res, pathname) {
       continue;
     }
 
-    const ext = path.extname(filePath).toLowerCase();
-    return sendStaticFile(res, filePath, 'public, max-age=31536000, immutable');
+    return sendStaticFile(req, res, filePath, 'public, max-age=31536000, immutable');
   }
 
   return false;
