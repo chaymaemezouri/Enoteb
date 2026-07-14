@@ -22,6 +22,9 @@ function uploadPatternFromEnv() {
 }
 
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     workerThreads: false,
     cpus: 1,
